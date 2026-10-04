@@ -41,6 +41,8 @@ pooled archives (payloads, block offsets and start states, model tables, lower-c
 - `fetch(assembly, contig, start, length, reverse_complement=False, tokens=False)` - a slice by coordinates; assembly
   and contig by name (header up to the first space or tab) or index.
 - `windows(asm, start, W, reverse_complement=None, tokens=False, check=True)` - windows at stream offsets.
+- `decode(assembly)` - the whole base stream decoded on the device in chunks -> host tensor; `check_full(assembly)` -
+  that, the FASTA rebuilt from the contig table and hashed: XXH3 == the header's source XXH3 (no source file needed).
 - `fasta(assembly, verify=True)` - full decode on the CPU -> the FASTA file's bytes; every block XXH3 and the FASTA
   XXH3 against the header (the source file's).
 - `contigs(assembly)`, `info(assembly)`, `resident_bytes()`, `block_size`, `reference_sha256`, `names`.

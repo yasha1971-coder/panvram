@@ -116,7 +116,20 @@ struct Core {
     py::list contigs(int64_t i) const { py::list l; for (auto& r : at(i).rec) l.append(py::make_tuple(r.name, r.hdr, r.len, r.boff, r.lw)); return l; }
     py::dict info(int64_t i) const { const Archive& X = at(i); py::dict d;
         d["path"] = X.path; d["Q"] = X.Q; d["bases"] = X.nbases; d["blocks"] = X.nb; d["file_bytes"] = X.file_bytes; d["payload_bytes"] = X.payload_bytes;
-        d["block_hashes"] = !X.hashes.empty(); d["fasta_xxh3"] = hex((const uint8_t*)&X.fasta_xxh, 8); d["contigs"] = X.rec.size(); d["lower_case_runs"] = X.low_s.size(); d["reference_name"] = X.refname; return d; }
+        d["block_hashes"] = !X.hashes.empty(); d["fasta_xxh3"] = x16(X.fasta_xxh); d["contigs"] = X.rec.size(); d["lower_case_runs"] = X.low_s.size(); d["reference_name"] = X.refname; return d; }
+    static std::string x16(uint64_t v) { char b[17]; snprintf(b, sizeof b, "%016llx", (unsigned long long)v); return b; }
+    // XXH3 of the FASTA file rebuilt from an assembly's decoded base stream (case applied; e.g. the GPU's output copied
+    // to the host) and the record layout - streamed, no FASTA in memory; "%016llx" as in the manifest
+    std::string fasta_xxh3(int64_t i, torch::Tensor bases) const {
+        const Archive& X = at(i); bases = bases.contiguous();
+        if (bases.device().type() != torch::kCPU || bases.scalar_type() != torch::kUInt8 || (uint64_t)bases.numel() != X.nbases) throw Err("bases: uint8 CPU tensor of the assembly's length");
+        const uint8_t* B = bases.data_ptr<uint8_t>(); XXH3_state_t* h = XXH3_createState(); XXH3_64bits_reset(h);
+        std::vector<char> buf; buf.reserve(1 << 21);
+        auto flush = [&](bool all) { if (all || buf.size() >= (1u << 20)) { XXH3_64bits_update(h, buf.data(), buf.size()); buf.clear(); } };
+        for (auto& r : X.rec) { buf.push_back('>'); buf.insert(buf.end(), r.hdr.begin(), r.hdr.end()); buf.push_back('\n');
+            for (uint64_t x = 0; x < r.len; x += r.lw) { const uint64_t k = std::min<uint64_t>(r.lw, r.len - x); buf.insert(buf.end(), B + r.boff + x, B + r.boff + x + k); buf.push_back('\n'); flush(false); } }
+        flush(true); const uint64_t v = XXH3_64bits_digest(h); XXH3_freeState(h); return x16(v);
+    }
     py::dict pools() const { py::dict d;
         d["P"] = P; d["pay_base"] = pay_base; d["off"] = off; d["st"] = st; d["tab"] = tab; d["blk_base"] = blk_base; d["nbases"] = nbases;
         d["low_s"] = low_s; d["low_l"] = low_l; d["low_base"] = low_base; d["low_cnt"] = low_cnt; d["ref"] = ref;
@@ -138,6 +151,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         .def("windows", &pv::Core::windows, py::arg("asm"), py::arg("start"), py::arg("W"), py::arg("rc") = py::none(), py::arg("tokens") = false, py::arg("apply_case") = true,
              py::arg("verify") = false, py::arg("threads") = 0, py::call_guard<py::gil_scoped_release>())
         .def("fasta", &pv::Core::fasta, py::arg("i"), py::arg("verify") = true)
+        .def("fasta_xxh3", &pv::Core::fasta_xxh3, py::call_guard<py::gil_scoped_release>())
         .def("contigs", &pv::Core::contigs).def("info", &pv::Core::info).def("pools", &pv::Core::pools)
         .def_property_readonly("Q", [](const pv::Core& c) { return c.Q; })
         .def_property_readonly("n", [](const pv::Core& c) { return c.A.size(); })

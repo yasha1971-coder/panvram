@@ -191,6 +191,28 @@ class Cohort:
         rc = torch.tensor([bool(reverse_complement)]) if reverse_complement else None
         return self.windows(asm, st, length, rc, tokens)[0]
 
+    def decode(self, assembly, chunk=1 << 28, out=None):
+        """The whole base stream of an assembly (contigs concatenated, case as in the FASTA) decoded on the cohort's
+        device in chunks of `chunk` bases -> uint8 [bases] on the host (pinned when the device is CUDA; `out` reused
+        if given)."""
+        a = self._asm(assembly)
+        n = self._core.info(a)["bases"]
+        if out is None or out.numel() < n:
+            out = torch.empty(n, dtype=torch.uint8, pin_memory=self.device.type == "cuda")
+        out = out[:n]
+        asm = torch.tensor([a], dtype=torch.int64)
+        for s in range(0, n, chunk):
+            k = min(chunk, n - s)
+            out[s:s + k].copy_(self.windows(asm, torch.tensor([s], dtype=torch.int64), k)[0], non_blocking=False)
+        return out
+
+    def check_full(self, assembly, out=None):
+        """Full decode on the cohort's device, the FASTA rebuilt from it (layout from the contig table) hashed with
+        XXH3 -> (equal to the header's source XXH3, the hash "%016llx")."""
+        a = self._asm(assembly)
+        h = self._core.fasta_xxh3(a, self.decode(a, out=out))
+        return h == self._core.info(a)["fasta_xxh3"], h
+
     def fasta(self, assembly, verify=True):
         """Full decode of an assembly on the CPU -> the FASTA file's bytes. verify: every block XXH3 (if present) and
         the XXH3 of the rebuilt FASTA against the header's (the source file's)."""
