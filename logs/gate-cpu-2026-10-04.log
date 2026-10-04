@@ -1,0 +1,15 @@
+# panvram f9cb27b, ace-core CPU, 2026-10-04T08:29:53Z; cohort: the first 8 assemblies of MANIFEST.tsv (v1 archives from the recode) + T2T; device cpu (the CPU decoder serves both sides)
+## q4k
+GATE open	8 assemblies	dataset q4k (Q 4096)	device cpu	11.1 s	resident 3.305 GB (reference 3.117, payload 0.115, block table 0.070, model tables 0.002)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE fasta	8 assemblies rebuilt by the CPU decoder, XXH3 == source	33 s
+GATE RESULT	PASS
+1 passed in 45.20s
+## q16k
+GATE open	8 assemblies	dataset q16k (Q 16384)	device cpu	8.8 s	resident 3.232 GB (reference 3.117, payload 0.095, block table 0.018, model tables 0.002)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE fasta	8 assemblies rebuilt by the CPU decoder, XXH3 == source	33 s
+GATE RESULT	PASS
+1 passed in 43.44s

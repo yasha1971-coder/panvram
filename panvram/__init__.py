@@ -5,6 +5,8 @@ random windows and coordinate slices decoded on the card by a queue kernel, a CP
     x = c.sample(n, W, generator=g)                  # uint8 [n, W] (bytes or tokens) on the device
     y = c.fetch(assembly, contig, start, length)     # a slice by coordinates
 """
+import torch  # noqa: F401  (loads libtorch / libc10 that _C links against)
+
 from . import _C
 from .cohort import DATASETS, Cohort
 

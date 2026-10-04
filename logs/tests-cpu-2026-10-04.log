@@ -1,0 +1,9 @@
+# panvram f9cb27b, ace-core CPU (torch 2.14.1+cpu), 2026-10-04T08:29:40Z; load: v1 recode (16 threads) and corruption test (14 processes) running
+test_synth.py::test_windows_fetch_fasta[q1k-cpu] PASSED                  [ 16%]
+test_synth.py::test_windows_fetch_fasta[q4k-cpu] PASSED                  [ 33%]
+test_synth.py::test_windows_fetch_fasta[q16k-cpu] PASSED                 [ 50%]
+test_synth.py::test_cuda_equals_cpu SKIPPED (no CUDA)                    [ 66%]
+test_synth.py::test_refusals PASSED                                      [ 83%]
+test_synth.py::test_corrupt_payload_caught_with_hashes PASSED            [100%]
+SKIPPED [1] test_synth.py:74: no CUDA
+========================= 5 passed, 1 skipped in 5.95s =========================

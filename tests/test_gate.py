@@ -9,10 +9,9 @@ import os
 import random
 import time
 
+import panvram  # first, as a user would: it loads torch itself
 import pytest
 import torch
-
-import panvram
 from fasta_cut import FastaIndex, transform
 
 COHORT = os.environ.get("PANVRAM_COHORT")
