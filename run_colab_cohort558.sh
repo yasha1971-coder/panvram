@@ -2,7 +2,9 @@
 # run_colab_cohort558.sh - the whole HPRC cohort (558 assemblies, refrel3 v1 q4k) resident on one Colab GPU, measured and
 # checked without source files. From Drive (uploaded from ace-core, nothing fetched but T2T if absent):
 #   MyDrive/panvram/panvram.tar.gz          the package (git archive, the commit inside)
-#   MyDrive/panvram/cohort558/              558 x <name>.q4k.rr3 + SHA256SUMS
+#   MyDrive/panvram/cohort558/              558 x <name>.q4k.rr3 + SHA256SUMS, or instead
+#   MyDrive/panvram/cohort558_q4k.tar       the same in one uncompressed tar + cohort558_q4k.tar.sha256 next to it
+#                                           (the tar's sha256 checked first, then unpacked to the VM disk)
 #   MyDrive/panvram/manifest_v1.tsv         names, source hashes, fasta_xxh3, archive sha256 (aceapex research/refrel)
 #   MyDrive/aceapex_corpus/t2t.fa[.gz]      T2T-CHM13v2.0 (md5 checked; else NCBI)
 # Stages (fail-fast, the failing stage in ..._FAILED.txt):
@@ -12,17 +14,21 @@
 #      (== CPU decoder); fetch at 1000 coordinates (== CPU decoder); every assembly decoded in full on the GPU, FASTA
 #      rebuilt from the contig table, XXH3 == fasta_xxh3 of the manifest (all 558, time)
 # Result: MyDrive/aceapex_logs/panvram_cohort558_<date>.txt; failure: panvram_cohort558_<date>_FAILED.txt.
-# Env: DRIVE, W, PV_TAR, COHORT_SRC, MANIFEST
+# Env: DRIVE, W, PV_TAR, COHORT_SRC (folder), COHORT_TAR, MANIFEST
 set -Eeuo pipefail
 shopt -s nullglob
 DRIVE=${DRIVE:-/content/drive/MyDrive}
 STORE=$DRIVE/aceapex_corpus; LOGS=$DRIVE/aceapex_logs
 PV_TAR=${PV_TAR:-$DRIVE/panvram/panvram.tar.gz}
 COHORT_SRC=${COHORT_SRC:-$DRIVE/panvram/cohort558}
+COHORT_TAR=${COHORT_TAR:-$DRIVE/panvram/cohort558_q4k.tar}
 MANIFEST=${MANIFEST:-$DRIVE/panvram/manifest_v1.tsv}
 W=${W:-/content/cohort558_run}; PV=$W/panvram; C=$W/cohort
 [ -d $DRIVE ] || { echo "Drive not mounted: from google.colab import drive; drive.mount('/content/drive')"; echo "DONE — выключи runtime"; exit 1; }
-for f in $PV_TAR $COHORT_SRC/SHA256SUMS $MANIFEST; do [ -s $f ] || { echo "missing $f (upload from ace-core)"; echo "DONE — выключи runtime"; exit 1; }; done
+for f in $PV_TAR $MANIFEST; do [ -s $f ] || { echo "missing $f (upload from ace-core)"; echo "DONE — выключи runtime"; exit 1; }; done
+if [ -s $COHORT_SRC/SHA256SUMS ]; then SRC=dir
+elif [ -s $COHORT_TAR ] && [ -s $COHORT_TAR.sha256 ]; then SRC=tar
+else echo "missing the cohort: $COHORT_SRC/ (with SHA256SUMS) or $COHORT_TAR + $COHORT_TAR.sha256"; echo "DONE — выключи runtime"; exit 1; fi
 mkdir -p $W $C $LOGS
 DAY=$(date -u +%Y-%m-%d); RUNLOG=$W/run-$DAY.log; OUT=$LOGS/panvram_cohort558_$DAY.txt; STAGE=setup
 exec > >(tee -a $RUNLOG) 2>&1
@@ -59,8 +65,15 @@ if [ ! -s $FA ]; then
 fi
 echo "cd1e52ce400c027ed0b7ab4b9d613f5a  $FA" | md5sum -c -
 ln -sf $FA $C/t2t.fa
-t0=$(date +%s); cp $COHORT_SRC/SHA256SUMS $C/; cp $COHORT_SRC/*.q4k.rr3 $C/
-echo "S1 copied $(ls $C/*.q4k.rr3 | wc -l) archives, $(du -sb $C | cut -f1) B in $(( $(date +%s) - t0 )) s"
+t0=$(date +%s)
+if [ $SRC = tar ]; then
+  cp $COHORT_TAR $W/cohort.tar; echo "S1 tar copied from Drive: $(stat -c%s $W/cohort.tar) B in $(( $(date +%s) - t0 )) s"
+  want=$(cut -d' ' -f1 $COHORT_TAR.sha256); have=$(sha256sum $W/cohort.tar | cut -d' ' -f1)
+  [ "$want" = "$have" ] || { echo "tar sha256 $have != $want"; false; }
+  echo "S1 tar sha256 == $(basename $COHORT_TAR).sha256 ($have)"
+  tar -xf $W/cohort.tar -C $C; rm -f $W/cohort.tar
+else cp $COHORT_SRC/SHA256SUMS $C/; cp $COHORT_SRC/*.q4k.rr3 $C/; fi
+echo "S1 cohort from $SRC: $(ls $C/*.q4k.rr3 | wc -l) archives, $(du -cb $C/*.q4k.rr3 | tail -1 | cut -f1) B on the VM disk, $(( $(date +%s) - t0 )) s"
 t0=$(date +%s); ( cd $C && sha256sum -c --quiet SHA256SUMS ); echo "S1 sha256sum -c: all OK ($(( $(date +%s) - t0 )) s)"
 awk -F'\t' 'NR>1{print $8"  "$1".q4k.rr3"}' $MANIFEST | sort > $W/man.sums; sort $C/SHA256SUMS > $W/drive.sums
 cmp -s $W/man.sums $W/drive.sums || { echo "SHA256SUMS differ from the manifest's q4k_sha256"; diff $W/man.sums $W/drive.sums | head; false; }
