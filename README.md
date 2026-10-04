@@ -71,8 +71,9 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
   the same windows cut from the FASTA the CPU decoder rebuilds (every block XXH3 and the FASTA XXH3 == the source's;
   `PANVRAM_SOURCES` also compares with the source files) byte for byte, and == the CPU decoder's own windows; fetch at
   1000 random coordinates (contig by length, length 1 .. 2^20) == the FASTA. `PANVRAM_COHORT=dir pytest -s tests/test_gate.py`.
-- `run_colab_panvram.sh` - CUDA build, both tests and the gate for q4k and q16k on four HPRC haplotypes encoded on the
-  VM, throughput (`scripts/bench.py`). The tarball comes from Drive (`MyDrive/panvram/panvram.tar.gz`, `git archive`).
+- `run_colab_panvram.sh` - CUDA build, both tests and the gate for q4k and q16k on four HPRC haplotypes, throughput
+  (`scripts/bench.py`). From Drive: the tarball (`MyDrive/panvram/panvram.tar.gz`, `git archive`) and the eight
+  archives of MANIFEST.tsv (`MyDrive/panvram/cohort/*.rr3` + `SHA256SUMS`, checked); without them it encodes on the VM.
 
 ## Measured
 
@@ -82,7 +83,7 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
 | gate on the CPU path, 8 HPRC assemblies + T2T, q4k and q16k | 1024 / 1024 windows == FASTA, 1000 / 1000 fetches == FASTA, 8 FASTA rebuilt == source (XXH3), each dataset | `logs/gate-cpu-2026-10-04.log` |
 | resident, 8 assemblies, q4k | reference 3.117 GB + payload 0.115 + block table 0.070 + model tables 0.002 GB | same |
 | resident, 8 assemblies, q16k | reference 3.117 GB + payload 0.095 + block table 0.018 + model tables 0.002 GB | same |
-| v1 archive per assembly (with block XXH3), first 50 of MANIFEST.tsv | q4k 22.22 MB, q16k 14.62 MB mean; FASTA 3.051 GB mean | `MANIFEST.tsv` |
+| v1 archive per assembly (with block XXH3), 558 of MANIFEST.tsv, each decoded back == source (XXH3) | q4k 22.10 MB, q16k 14.51 MB mean (total 12.33 / 8.10 GB); FASTA 1.707 TB | `MANIFEST.tsv` |
 | cohort, 558 HPRC assemblies, refrel3 before v1 (Q 16384, no block hashes), all decoded == FASTA | 13.04 MB per assembly | aceapex `research/refrel/logs/cohort-table-2026-10-04.txt` @ 6de4666 |
 | GPU path | not measured yet (`run_colab_panvram.sh`) | - |
 
@@ -95,7 +96,12 @@ The 558 HPRC haplotype assemblies (year-1 94, release 2 464; CHM13 v1.1 and GRCh
 name, source URL, source hash type and hash (from the HPRC indexes, checked at download), FASTA bytes, FASTA XXH3,
 q4k and q16k archive bytes and SHA-256, status. The v1 archives are re-encoded from the cohort's refrel3 archives
 (FASTA in memory, never re-downloaded); each is decoded back in full and compared with the source's XXH3 before its row
-is written (aceapex `refrel3v1 recode`). Rows marked `pending` are not done yet.
+is written (aceapex `refrel3v1 recode`); all 558 rows `ok`.
+
+Archive bytes depend on the encoder build (FORMAT.md section 7): the manifest's sha256 are those of gcc 11.4.0
+`-O3 -march=native -funroll-loops` on ace-core, reproduced by `-O3 -march=x86-64-v3 -funroll-loops` (FMA contraction
+on; checked on two archives). Without FMA (`-march=x86-64-v2`, `-ffp-contract=off`) or with another compiler the
+bytes can differ while decoding to the same FASTA - compare archives by decoding, or build the encoder with these flags.
 
 ## Provenance
 

@@ -4,20 +4,25 @@
 #   MyDrive/panvram/panvram.tar.gz
 # The cohort for the gate: T2T and four HPRC year-1 haplotypes (HG00438.1/.2, HG00621.1/.2) from the Drive store
 # run_colab_r3.sh uses (MyDrive/aceapex_corpus: t2t.fa[.gz], hprc/<name>.fa.gz; else fetched: T2T NCBI + md5, HPRC S3
-# + sha256 of the year-1 index), encoded on the VM to refrel3 v1 q4k and q16k by the reference encoder (aceapex
-# research/refrel/refrel3v1.cpp at the pinned commit; sha256 of each archive printed next to MANIFEST.tsv's).
+# + sha256 of the year-1 index). The refrel3 v1 archives (q4k, q16k) come from ace-core via Drive:
+#   MyDrive/panvram/cohort/<name>.<q4k|q16k>.rr3 + SHA256SUMS (== MANIFEST.tsv), checked with sha256sum -c;
+# if that directory is absent they are encoded on the VM by aceapex research/refrel/refrel3v1.cpp at the pinned commit,
+# built with the flags of MANIFEST.tsv (gcc -O3 -march=x86-64-v3 -funroll-loops: FMA contraction on; the encoder's
+# match scores are doubles, so other flags / compilers can give other archive bytes - every archive decodes == FASTA
+# either way); sha256 of each archive printed next to MANIFEST.tsv's.
 #   S0 build: pip install -e . (torch cpp_extension, the GPU's arch), panvram.with_cuda must be true
 #   S1 tests/test_synth.py: synthetic fixtures, CPU and CUDA paths, CUDA == CPU, refusals
 #   S2 gate (tests/test_gate.py) for q4k and q16k: sample(1024, 8192) on the GPU == the windows of the FASTA rebuilt by
 #      the CPU decoder (== the source files), == the CPU decoder's windows; fetch at 1000 coordinates == FASTA
 #   S3 scripts/bench.py q4k and q16k: windows/s by W and n, fetch latency, resident bytes
 # Result: MyDrive/aceapex_logs/panvram_<date>.txt; any failure: ..._FAILED.txt with the stage, line and command.
-# Env: DRIVE, W, PV_TAR, ACEAPEX_COMMIT, DATASETS ("q4k q16k")
+# Env: DRIVE, W, PV_TAR, COHORT_SRC, ACEAPEX_COMMIT, DATASETS ("q4k q16k")
 set -Eeuo pipefail
 shopt -s nullglob
 DRIVE=${DRIVE:-/content/drive/MyDrive}
 STORE=$DRIVE/aceapex_corpus; LOGS=$DRIVE/aceapex_logs
 PV_TAR=${PV_TAR:-$DRIVE/panvram/panvram.tar.gz}
+COHORT_SRC=${COHORT_SRC:-$DRIVE/panvram/cohort}
 ACEAPEX_COMMIT=${ACEAPEX_COMMIT:-5b6d5cec0f5962a561ac48822a1b5c48793a5b47}
 DATASETS=(${DATASETS:-q4k q16k})
 W=${W:-/content/panvram_run}; PV=$W/panvram; ACE=$W/aceapex; D=$W/fa; C=$W/cohort; B=$W/bin
@@ -44,7 +49,7 @@ rm -rf $PV; mkdir -p $PV; tar -xzf $PV_TAR -C $W
 PV_COMMIT=$( (gzip -dc $PV_TAR 2>/dev/null || true) | git get-tar-commit-id 2>/dev/null || true); PV_COMMIT=${PV_COMMIT:-unknown}; echo "panvram $PV_COMMIT"
 if [ -d $ACE/.git ]; then git -C $ACE fetch -q origin refrel; else git clone -q -b refrel https://github.com/yasha1971-coder/aceapex.git $ACE; fi
 git -C $ACE checkout -q $ACEAPEX_COMMIT; echo "aceapex $(git -C $ACE rev-parse HEAD) (encoder)"
-( cd $ACE && g++ -std=c++17 -O3 -march=native -funroll-loops -Isrc -Iresearch/refrel research/refrel/refrel3v1.cpp src/aceapex_api.cpp -lzstd -lpthread -o $B/refrel3v1 2> $W/enc_build.txt )
+( cd $ACE && g++ -std=c++17 -O3 -march=x86-64-v3 -funroll-loops -Isrc -Iresearch/refrel research/refrel/refrel3v1.cpp src/aceapex_api.cpp -lzstd -lpthread -o $B/refrel3v1 2> $W/enc_build.txt )
 
 # ---------------------------------------------------------------- data
 FA=$W/t2t.fa
@@ -68,7 +73,13 @@ for nm in "${NAMES[@]}"; do
 done
 echo "HPRC: ${NAMES[*]} (sha256 == the year-1 index)"
 ln -sf $FA $C/t2t.fa
-STAGE=encode
+STAGE=archives
+gcc --version | head -n 1 | tee -a $W/gpu.txt
+if [ -s $COHORT_SRC/SHA256SUMS ]; then
+  for ds in "${DATASETS[@]}"; do for nm in "${NAMES[@]}"; do cp $COHORT_SRC/$nm.$ds.rr3 $C/; done; done
+  ( cd $C && grep -E "\.($(echo ${DATASETS[@]} | tr ' ' '|'))\.rr3$" $COHORT_SRC/SHA256SUMS | sha256sum -c - ) | tee -a $W/encode.txt
+  echo "archives from $COHORT_SRC (sha256 checked)" | tee -a $W/encode.txt
+fi
 for ds in "${DATASETS[@]}"; do q=$([ $ds = q4k ] && echo 4096 || echo 16384)
   for nm in "${NAMES[@]}"; do [ -s $C/$nm.$ds.rr3 ] || $B/refrel3v1 encode $FA $q $T $D/$nm.fa $C/$nm.$ds.rr3 | tee -a $W/encode.txt
     m=$(awk -F'\t' -v n="y1_$nm" -v d=$ds '$1==n{ print (d=="q4k") ? $8 : $10 }' $PV/MANIFEST.tsv 2>/dev/null || true)
