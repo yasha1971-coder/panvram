@@ -18,6 +18,7 @@
 # Result: MyDrive/aceapex_logs/panvram_<date>.txt; any failure: ..._FAILED.txt with the stage, line and command.
 # Env: DRIVE, W, PV_TAR, COHORT_SRC, ACEAPEX_COMMIT, DATASETS ("q4k q16k")
 set -Eeuo pipefail
+ulimit -c 0   # no core dumps from test runs
 shopt -s nullglob
 DRIVE=${DRIVE:-/content/drive/MyDrive}
 STORE=$DRIVE/aceapex_corpus; LOGS=$DRIVE/aceapex_logs

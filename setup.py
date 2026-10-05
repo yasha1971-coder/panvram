@@ -44,7 +44,7 @@ else:
 
 setup(
     name="panvram",
-    version="0.1.0",
+    version="1.0.0",
     description="Pangenome cohort resident on the GPU: refrel3 v1 archives, random windows and slices decoded on the card",
     packages=find_packages(include=["panvram"]),
     ext_modules=[ext],

@@ -16,6 +16,7 @@
 # Result: MyDrive/aceapex_logs/panvram_cohort558_<date>.txt; failure: panvram_cohort558_<date>_FAILED.txt.
 # Env: DRIVE, W, PV_TAR, COHORT_SRC (folder), COHORT_TAR, MANIFEST
 set -Eeuo pipefail
+ulimit -c 0   # no core dumps from test runs
 shopt -s nullglob
 DRIVE=${DRIVE:-/content/drive/MyDrive}
 STORE=$DRIVE/aceapex_corpus; LOGS=$DRIVE/aceapex_logs

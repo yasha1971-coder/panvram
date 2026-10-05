@@ -12,5 +12,5 @@ from .cohort import DATASETS, Cohort
 
 FormatError = _C.FormatError
 with_cuda = _C.with_cuda
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 __all__ = ["Cohort", "DATASETS", "FormatError", "with_cuda"]

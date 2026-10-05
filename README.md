@@ -4,7 +4,7 @@ A pangenome cohort resident on the GPU: every assembly stored as refrel3 v1 (edi
 T2T-CHM13v2.0 for HPRC; [FORMAT.md](FORMAT.md)), random training windows and coordinate slices decoded on the card by
 a queue kernel, straight into a PyTorch tensor. A CPU decoder serves the same API without a GPU.
 
-Status: local, not published. Numbers below come only from the logs named next to them.
+Version 1.0.0 (prepared locally, not published). Numbers below come only from the logs named next to them.
 
 ```python
 import torch, panvram
@@ -77,20 +77,24 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
   (`scripts/bench.py`). From Drive: the tarball (`MyDrive/panvram/panvram.tar.gz`, `git archive`) and the eight
   archives of MANIFEST.tsv (`MyDrive/panvram/cohort/*.rr3` + `SHA256SUMS`, checked); without them it encodes on the VM.
 
-## Measured
+## Measured (evidence only; each number with its log)
 
-| what | number | log |
+| what | number | evidence |
 |---|---|---|
-| fast tests, CPU (ace-core) | 5 passed, 1 skipped (no CUDA) | `logs/tests-cpu-2026-10-04.log` |
-| gate on the CPU path, 8 HPRC assemblies + T2T, q4k and q16k | 1024 / 1024 windows == FASTA, 1000 / 1000 fetches == FASTA, 8 FASTA rebuilt == source (XXH3), each dataset | `logs/gate-cpu-2026-10-04.log` |
-| resident, 8 assemblies, q4k | reference 3.117 GB + payload 0.115 + block table 0.070 + model tables 0.002 GB | same |
-| resident, 8 assemblies, q16k | reference 3.117 GB + payload 0.095 + block table 0.018 + model tables 0.002 GB | same |
-| v1 archive per assembly (with block XXH3), 558 of MANIFEST.tsv, each decoded back == source (XXH3) | q4k 22.10 MB, q16k 14.51 MB mean (total 12.33 / 8.10 GB); FASTA 1.707 TB | `MANIFEST.tsv` |
-| cohort, 558 HPRC assemblies, refrel3 before v1 (Q 16384, no block hashes), all decoded == FASTA | 13.04 MB per assembly | aceapex `research/refrel/logs/cohort-table-2026-10-04.txt` @ 6de4666 |
-| GPU path | not measured yet (`run_colab_panvram.sh`) | - |
+| fast tests, CPU path (ace-core) | 5 passed, 1 skipped (no CUDA) | `logs/tests-cpu-2026-10-04.log` |
+| public gate, CPU path: 8 HPRC assemblies + T2T, q4k and q16k | 1024 / 1024 windows of 8 192 == FASTA; 1000 / 1000 fetches == FASTA; 8 FASTA rebuilt, XXH3 == source | `logs/gate-cpu-2026-10-04.log` |
+| public gate, GPU path (Colab): 4 HPRC assemblies, archives == MANIFEST.tsv (8 / 8 SHA-256), q4k and q16k | PASS | Colab log `MyDrive/aceapex_logs/panvram_<date>.txt` (not in this repository) |
+| resident on the device, 8 assemblies, q4k (CPU-path pools) | reference 3.117 GB + payload 0.115 + block table 0.070 + model tables 0.002 GB | `logs/gate-cpu-2026-10-04.log` |
+| same, q16k | reference 3.117 GB + payload 0.095 + block table 0.018 + model tables 0.002 GB | same |
+| cohort re-encoded to v1: 558 HPRC assemblies, each decoded back == source (XXH3) | q4k 22.10 MB, q16k 14.51 MB mean per assembly with block XXH3; 1.707 TB FASTA | `MANIFEST.tsv`; aceapex `research/refrel/RESULTS.md` 2e |
+| size per sample, N = 50, without block hashes | q4k 16.33 MB, q16k 13.14 MB; AGC 3.2.4 with T2T 8.65 MB, without reference 22.70 MB | aceapex `research/agc_vs_refrel3/README.md` |
+| CPU in process, N = 50, 10 000 random windows of 8 192 (ace-core, 1 / 16 threads) | q4k 128 459 / 994 036 windows/s; q16k 74 819 / 685 730; AGC with T2T 988 / 4 478 | aceapex `research/agc_vs_refrel3/SUMMARY_runs.md` |
+| CPU in process, whole sample (base stream), 1 / 16 threads | q4k 1.31 / 0.233 s per sample; AGC with T2T 7.76 / 2.99 s | same |
+| one-thread full decode to FASTA (D_Q), HPRC N = 4 | q4k 0.876 GB/s, q16k 0.915 GB/s | hw-apex-bench PR #63 `review/axis3/results/ace-core-2026-10-05-407088c-dq/SUMMARY.md` |
+| corruption, 6 kinds x 10 000 cases per archive kind | with block XXH3: 0 silent (q4k and q16k); without: 1 798 / 2 145 silent; 0 hang, 0 crash in 240 000 | aceapex `research/refrel/logs/v1-corrupt-2026-10-04.log` |
 
-Arithmetic on the rows above (not a measurement): resident per assembly (payload + block table + tables) q4k
-23.4 MB, q16k 14.4 MB; 558 assemblies + T2T: q4k about 16.2 GB, q16k about 11.1 GB.
+aceapex paths are on branch `refrel` of github.com/yasha1971-coder/aceapex (the N = 50 comparison is a local commit
+until published). The GPU throughput of the resident cohort is not in this table: no evidence yet.
 
 ## MANIFEST.tsv
 
@@ -118,10 +122,16 @@ Ported from aceapex (github.com/yasha1971-coder/aceapex, branch `refrel`) `resea
 | `csrc/pv_cuda.cu` | `r3q_kernel` of `refrel3_gpu.cu` - runtime Q, many assemblies resident, window = (assembly, start); new: case / RC / token kernels |
 | `FORMAT.md` | `research/refrel/FORMAT.md` (format unchanged) |
 
-## Limits
+## Limitations
 
-Reference under 2^32 bases (32-bit copy positions in the kernel's ring); Q in {1024, 2048, 4096, 16384}, one per
-cohort; an assembly's payload under 4 GiB; sm_80 or newer for the CUDA path. Encoding is not part of panvram (aceapex
-`refrel3v1 encode`).
+- **Size against AGC.** On N = 50 HPRC samples refrel3 takes 13.1 (q16k) - 16.3 (q4k) MB per sample without block
+  hashes (14.6 - 22.2 MB with them) against 8.65 MB for AGC 3.2.4 with T2T: AGC also compresses against the other
+  assemblies, refrel3 encodes every assembly alone against the reference.
+- **The reference is resident decoded.** T2T-CHM13v2.0 sits on the device as 3.117 G bases (FASTA 3.16 GB) for every
+  cohort, on top of the archives.
+- **GPU: CUDA only, sm_80 or newer.** Other devices use the CPU path. The GPU path does not check block XXH3 (the CPU
+  `fasta` and `windows(..., verify)` do).
+- One block size per cohort; reference under 2^32 bases; an assembly's payload under 4 GiB.
+- Encoding is not part of panvram (aceapex `refrel3v1 encode`); archive bytes depend on the encoder build (FORMAT.md 7).
 
-License: MIT (see LICENSE); `csrc/xxhash.h` BSD-2-Clause.
+License: pending the author's decision (the LICENSE file of 0.1.0 is MIT); `csrc/xxhash.h` is BSD-2-Clause (xxHash).

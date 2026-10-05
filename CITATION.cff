@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use panvram, please cite it as below."
+title: "panvram: a pangenome cohort resident on the GPU as refrel3 archives against one reference"
+type: software
+version: 1.0.0
+authors:
+  - family-names: Shavidze
+    given-names: Yakiv
+    orcid: "https://orcid.org/0009-0008-3622-3448"
+keywords:
+  - genomics
+  - pangenome
+  - compression
+  - GPU
+  - random access
