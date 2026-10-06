@@ -10,6 +10,7 @@ without source files. Prints C558 lines:
               and hashed: XXH3 == fasta_xxh3 of the manifest (the source file's); time per assembly
   RESULT      PASS / FAIL"""
 import csv
+import os
 import random
 import statistics
 import subprocess
@@ -34,15 +35,18 @@ def main():
     want = {r["name"]: r for r in csv.DictReader(open(man), delimiter="\t")}
     m0 = smi()
     t = time.time()
-    c = panvram.Cohort.open(path, device="cuda", dataset=ds)
+    packed = os.environ.get("PANVRAM_PACKED_REF", "0") == "1"
+    compact = os.environ.get("PANVRAM_COMPACT_BLOCKS", "0") == "1"
+    print(f"C558 form\tpacked_reference {int(packed)}\tcompact_blocks {int(compact)}", flush=True)
+    c = panvram.Cohort.open(path, device="cuda", dataset=ds, packed_reference=packed, compact_blocks=compact)
     torch.cuda.synchronize()
     t_open = time.time() - t
     m1 = smi()
     rb = c.resident_bytes()
     missing = sorted(set(want) - set(c.names))
     print(f"C558 open\t{len(c)} assemblies ({len(missing)} of the manifest missing)\t{ds} Q {c.block_size}\t{t_open:.1f} s\t"
-          f"resident {rb['total'] / 1e9:.3f} GB (reference {rb['ref'] / 1e9:.3f}, payload {rb['P'] / 1e9:.3f}, block table "
-          f"{(rb['off'] + rb['st']) / 1e9:.3f}, model tables {rb['tab'] / 1e9:.3f}, case runs {(rb['low_s'] + rb['low_l']) / 1e9:.3f})\t"
+          f"resident {rb['total'] / 1e9:.3f} GB (reference {sum(rb.get(k, 0) for k in ('ref', 'pw', 'pes', 'pel', 'peb')) / 1e9:.3f}, payload {rb['P'] / 1e9:.3f}, block table "
+          f"{sum(rb.get(k, 0) for k in ('off', 'st', 'grp_off', 'grp_st', 'blen', 'bcode', 'exc_b', 'exc_st')) / 1e9:.3f}, model tables {rb['tab'] / 1e9:.3f}, case runs {(rb.get('low_s', 0) + rb.get('low_l', 0)) / 1e9:.3f})\t"
           f"torch allocated {torch.cuda.memory_allocated() / 1e9:.3f} GB\tnvidia-smi used {m0} -> {m1} MiB", flush=True)
     ok = not missing
 

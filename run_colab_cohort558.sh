@@ -81,17 +81,27 @@ cmp -s $W/man.sums $W/drive.sums || { echo "SHA256SUMS differ from the manifest'
 echo "S1 SHA256SUMS == manifest ($(wc -l < $W/man.sums) archives)"
 
 # ---------------------------------------------------------------- S2 cohort
-STAGE=S2
-python3 scripts/cohort558.py $C $MANIFEST q4k 2>&1 | tee $W/c558.txt
-grep -q "C558 RESULT.PASS" $W/c558.txt
+# FORMS: resident forms "packed,compact" (C1 c: FORMS="0,0 1,0 0,1 1,1"); default the default form only
+for form in ${FORMS:-0,0}; do STAGE="S2 form $form"
+  PANVRAM_PACKED_REF=${form%,*} PANVRAM_COMPACT_BLOCKS=${form#*,} python3 scripts/cohort558.py $C $MANIFEST q4k 2>&1 | tee $W/c558_${form/,/_}.txt
+  grep -q "C558 RESULT.PASS" $W/c558_${form/,/_}.txt; done
+
+# S3 (C1 b) COHORT_REGION: MyDrive/panvram/cohort_region/{requests.tsv,truth.tsv} (PROTOCOL_COHORT_REGION) if present
+REGION=${REGION:-$DRIVE/panvram/cohort_region}
+if [ -s $REGION/requests.tsv ] && [ -s $REGION/truth.tsv ]; then
+  for form in ${FORMS:-0,0}; do STAGE="S3 region form $form"
+    PANVRAM_PACKED_REF=${form%,*} PANVRAM_COMPACT_BLOCKS=${form#*,} python3 scripts/cohort_region.py $C $REGION/requests.tsv $REGION/truth.tsv q4k 2>&1 | tee $W/region_${form/,/_}.txt
+    grep -q "CR RESULT.PASS" $W/region_${form/,/_}.txt; done
+else echo "S3 skipped: no $REGION/requests.tsv + truth.tsv"; fi
 
 # ---------------------------------------------------------------- report
 STAGE=report
 { echo "# panvram cohort558 (q4k) on the GPU - $(head -n 1 $W/gpu.txt); panvram $PV_COMMIT; $(date -u +%FT%TZ)"
   sed -n '2,$p' $W/gpu.txt
   echo; grep -h "^S0\|^S1" $RUNLOG
-  echo; grep -vP "^C558 full\t" $W/c558.txt | grep "^C558"
-  echo; echo "## per assembly (GPU full decode, FASTA XXH3 vs manifest)"; grep -P "^C558 full\t" $W/c558.txt
+  for f in $W/c558_*.txt; do echo; echo "## $(basename $f .txt)"; grep -vP "^C558 full\t" $f | grep "^C558"; done
+  for f in $W/region_*.txt; do [ -s $f ] && { echo; echo "## $(basename $f .txt)"; grep "^CR" $f; }; done
+  echo; echo "## per assembly (GPU full decode, FASTA XXH3 vs manifest)"; for f in $W/c558_*.txt; do grep -P "^C558 full\t" $f; done
 } > $OUT
 echo "written: $OUT"
 echo "DONE — выключи runtime"
