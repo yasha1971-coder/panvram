@@ -1,0 +1,7 @@
+# Exact versions of the tested environment (ace-core, CPU path; logs/tests-cpu-*, logs/gate-cpu-*).
+# System: Ubuntu 22.04, g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, libzstd-dev 1.4.8+dfsg-3build1, Python 3.10.12
+# torch from https://download.pytorch.org/whl/cpu
+torch==2.14.1+cpu
+numpy==2.2.6
+pytest==9.1.1
+ninja==1.13.2
