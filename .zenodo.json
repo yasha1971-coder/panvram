@@ -4,11 +4,27 @@
   "version": "1.0.0",
   "license": "MIT",
   "creators": [
-    {"name": "Shavidze, Yakiv", "orcid": "0009-0008-3622-3448"}
+    {
+      "name": "Shavidze, Yakiv",
+      "orcid": "0009-0008-3622-3448"
+    }
   ],
   "description": "PyTorch extension that keeps a cohort of genome assemblies resident on the GPU (or CPU) as refrel3 v1 archives against one decoded reference, and decodes random training windows and coordinate slices on the device. Format: FORMAT.md; dataset: DATASET.md.",
-  "keywords": ["genomics", "pangenome", "compression", "GPU", "random access", "PyTorch"],
+  "keywords": [
+    "genomics",
+    "pangenome",
+    "compression",
+    "GPU",
+    "random access",
+    "PyTorch"
+  ],
   "related_identifiers": [
-    {"identifier": "10.5281/zenodo.XXXXXXX", "relation": "isSupplementedBy", "scheme": "doi", "resource_type": "dataset"}
-  ]
+    {
+      "identifier": "10.5281/zenodo.XXXXXXX",
+      "relation": "isSupplementedBy",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    }
+  ],
+  "notes": "Contact: Yakiv Shavidze, aceapex.contour@outlook.com (the Zenodo creator schema has no e-mail field)."
 }
