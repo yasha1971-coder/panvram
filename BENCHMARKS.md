@@ -37,5 +37,7 @@ Not measured yet (`run_colab_cohort558.sh`, C1 b/c prepared, not run).
 ## Where we lose
 
 - **Size against AGC** (aceapex BENCHMARKS section 1): 13.04 - 16.22 MB per assembly without block hashes against 5.40 MB
-  for AGC with T2T at N = 558; plus the decoded T2T resident (3.117 G bases; 0.779 GB with `packed_reference`).
+  for AGC with T2T at N = 558 (2.4 - 3.0 x); at N = 50 the gap was 1.5 - 1.9 x (8.65 against 13.14 - 16.33 MB): with a
+  larger cohort AGC wins by more (two measurements; the cause is not stated). Plus the decoded T2T resident (3.117 G
+  bases; 0.779 GB with `packed_reference`).
 - **GPU:** CUDA only, sm_80 or newer; compact forms not yet run on a GPU.
