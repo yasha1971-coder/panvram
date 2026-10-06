@@ -1,0 +1,9 @@
+# panvram resident bytes, CPU path, 558 HPRC assemblies (MANIFEST.tsv) + T2T, ace-core 2026-10-06T00:00:55Z
+RES	q4k	558 assemblies	packed_reference 0	compact_blocks 0	total 16642219335	reference 3117292070	payload 8448112345	block table 4923167388	model tables 153647532	case runs 0	open 12.9 s
+RES	q4k	558 assemblies	packed_reference 1	compact_blocks 0	total 14304250302	reference 779323037	payload 8448112345	block table 4923167388	model tables 153647532	case runs 0	open 24.7 s
+RES	q4k	558 assemblies	packed_reference 0	compact_blocks 1	total 13972010135	reference 3117292070	payload 8448112345	block table 2252958188	model tables 153647532	case runs 0	open 14.2 s
+RES	q4k	558 assemblies	packed_reference 1	compact_blocks 1	total 11634041102	reference 779323037	payload 8448112345	block table 2252958188	model tables 153647532	case runs 0	open 25.5 s
+RES	q16k	558 assemblies	packed_reference 0	compact_blocks 0	total 11563752056	reference 3117292070	payload 7062013026	block table 1230799428	model tables 153647532	case runs 0	open 10.6 s
+RES	q16k	558 assemblies	packed_reference 1	compact_blocks 0	total 9225783023	reference 779323037	payload 7062013026	block table 1230799428	model tables 153647532	case runs 0	open 22.4 s
+RES	q16k	558 assemblies	packed_reference 0	compact_blocks 1	total 10901804744	reference 3117292070	payload 7062013026	block table 568852116	model tables 153647532	case runs 0	open 10.9 s
+RES	q16k	558 assemblies	packed_reference 1	compact_blocks 1	total 8563835711	reference 779323037	payload 7062013026	block table 568852116	model tables 153647532	case runs 0	open 22.7 s

@@ -5,6 +5,7 @@
 // live in caller-owned pooled memory (Archive::attach), Q is the archive's.
 #pragma once
 #include "refrel3.h"
+#include "pv_compact.h"
 #include "rr_sha256.h"
 #define XXH_INLINE_ALL
 #include "xxhash.h"
@@ -56,13 +57,17 @@ static inline void build_tab(R3Tab& T) {
 }
 struct CompTable { uint8_t t[256]; CompTable() { for (int c = 0; c < 256; c++) t[c] = rr_comp((uint8_t)c); } };
 static const CompTable COMP;
-static inline void exec_ops(const RrOp* ops, int n, const uint8_t* lit, const uint8_t* ref, uint8_t* out) {
+static inline void ref_copy(uint8_t* o, const uint8_t* ref, uint64_t src, uint32_t len) { memcpy(o, ref + src, len); }
+static inline void ref_copy(uint8_t* o, const PackedRef& ref, uint64_t src, uint32_t len) { for (uint32_t j = 0; j < len; j++) o[j] = ref[src + j]; }
+static inline uint8_t ref_at(const uint8_t* ref, uint64_t q) { return ref[q]; }
+static inline uint8_t ref_at(const PackedRef& ref, uint64_t q) { return ref[q]; }
+template <class RP> static inline void exec_ops(const RrOp* ops, int n, const uint8_t* lit, const RP& ref, uint8_t* out) {
     for (int k = 0; k < n; k++) { const RrOp& q = ops[k];
         if (q.kind == 0) memcpy(out + q.dst, lit + q.src, q.len);
-        else if (q.kind == 1) memcpy(out + q.dst, ref + q.src, q.len);
+        else if (q.kind == 1) ref_copy(out + q.dst, ref, q.src, q.len);
         else if (q.kind == 2) { const uint32_t dist = q.dst - (uint32_t)q.src;
             if (dist >= q.len) memcpy(out + q.dst, out + q.src, q.len); else for (uint32_t j = 0; j < q.len; j++) out[q.dst + j] = out[q.src + j]; }
-        else { const uint8_t* r = ref + q.src + q.len - 1; uint8_t* o = out + q.dst; for (uint32_t j = 0; j < q.len; j++) o[j] = COMP.t[*(r - j)]; } }
+        else { uint8_t* o = out + q.dst; const uint64_t r = q.src + q.len - 1; for (uint32_t j = 0; j < q.len; j++) o[j] = COMP.t[ref_at(ref, r - j)]; } }
 }
 // output transforms shared by the CPU path and (as device functions) the kernels: complement keeping case, tokens
 static inline uint8_t comp_case(uint8_t c) { switch (c) { case 'A': return 'T'; case 'C': return 'G'; case 'G': return 'C'; case 'T': return 'A';
@@ -81,6 +86,11 @@ struct Archive {
     void attach(const R3Tab* t, const uint32_t* o, const int64_t* s, const uint8_t* p) {
         T = t; off = o; st = s; P = p; T_own.reset(); std::vector<uint32_t>().swap(off_own); std::vector<int64_t>().swap(st_own); std::vector<uint8_t>().swap(P_own); }
     R3Diag state(uint64_t b) const { R3Diag g; g.c = (uint64_t)(st[b] >> 1); g.dir = (uint32_t)(st[b] & 1); return g; }
+    // compact block table (opt-in): offsets and states from CompactTab; off / st unused then
+    const CompactTab* ct = nullptr; uint64_t gb0 = 0, g0 = 0;
+    void locate(uint64_t b, uint32_t* o, uint32_t* l, R3Diag* g) const {
+        if (ct) { ct->get(gb0, g0, b, o, l, g); return; }
+        *o = off[b]; *l = off[b + 1] - off[b]; *g = state(b); }
 };
 static inline int64_t pack_state(R3Diag g) { return (int64_t)((uint64_t)g.c << 1) | (int64_t)(g.dir & 1); }
 
@@ -135,9 +145,10 @@ static void open_v1(const std::vector<uint8_t>& file, const std::string& path, c
 
 // block b (upper case) into out; 0 ok, 1 decode error, 2 block XXH3 mismatch (verify and hashes present)
 struct Scratch { std::vector<RrOp> ops; std::vector<uint8_t> lit, blk; explicit Scratch(uint32_t Q) : ops(RR_MAXOPS), lit(Q), blk(Q) {} };
-static inline int decode_block(const Archive& X, const uint8_t* ref, uint64_t ref_n, uint64_t b, uint8_t* out, Scratch& S, bool verify) {
+template <class RP> static inline int decode_block(const Archive& X, const RP& ref, uint64_t ref_n, uint64_t b, uint8_t* out, Scratch& S, bool verify) {
     const uint32_t blen = (uint32_t)std::min<uint64_t>(X.Q, X.nbases - b * X.Q);
-    const int k = r3_decode_block(X.P + X.off[b], X.off[b + 1] - X.off[b], X.T, ref, ref_n, blen, X.state(b), S.ops.data(), (uint32_t)S.ops.size(), S.lit.data(), (uint32_t)S.lit.size());
+    uint32_t o, l; R3Diag g; X.locate(b, &o, &l, &g);
+    const int k = r3_decode_block(X.P + o, l, X.T, ref, ref_n, blen, g, S.ops.data(), (uint32_t)S.ops.size(), S.lit.data(), (uint32_t)S.lit.size());
     if (k < 0) return 1;
     exec_ops(S.ops.data(), k, S.lit.data(), ref, out);
     if (verify && !X.hashes.empty() && XXH3_64bits(out, blen) != X.hashes[b]) return 2;
@@ -148,7 +159,7 @@ static inline size_t first_run(const Archive& X, uint64_t x) {
     size_t lo = 0, hi = X.low_s.size(); while (lo < hi) { const size_t m = (lo + hi) / 2; if (X.low_s[m] + X.low_l[m] <= x) lo = m + 1; else hi = m; } return lo;
 }
 // bases [s, s + W) of the stream into out, case applied if asked; 0 ok, else decode_block's code
-static inline int window_cpu(const Archive& X, const uint8_t* ref, uint64_t ref_n, uint64_t s, uint64_t W, uint8_t* out, Scratch& S, bool apply_case, bool verify) {
+template <class RP> static inline int window_cpu(const Archive& X, const RP& ref, uint64_t ref_n, uint64_t s, uint64_t W, uint8_t* out, Scratch& S, bool apply_case, bool verify) {
     if (!W) return 0;
     for (uint64_t b = s / X.Q; b <= (s + W - 1) / X.Q; b++) {
         const int e = decode_block(X, ref, ref_n, b, S.blk.data(), S, verify); if (e) return e;

@@ -31,10 +31,14 @@ def gen(tmp_path_factory):
     return {"dirs": out, "ref": files["synth_ref.fa"], "fa": fa, "idx": {k: FastaIndex(v) for k, v in fa.items()}}
 
 
+FORMS = [(False, False), (True, False), (False, True), (True, True)]   # (packed_reference, compact_blocks)
+
+
+@pytest.mark.parametrize("form", FORMS, ids=["bytes-full", "packed-full", "bytes-compact", "packed-compact"])
 @pytest.mark.parametrize("device", DEVICES)
 @pytest.mark.parametrize("ds", ["q1k", "q4k", "q16k"])
-def test_windows_fetch_fasta(gen, ds, device):
-    c = panvram.Cohort.open(gen["dirs"][ds], device=device, dataset=ds, reference=gen["ref"])
+def test_windows_fetch_fasta(gen, ds, device, form):
+    c = panvram.Cohort.open(gen["dirs"][ds], device=device, dataset=ds, reference=gen["ref"], packed_reference=form[0], compact_blocks=form[1])
     assert c.names == ["synthA", "synthB"] and c.block_size == {"q1k": 1024, "q4k": 4096, "q16k": 16384}[ds]
     for i, nm in enumerate(c.names):
         assert c.fasta(i) == gen["fa"][nm]
@@ -138,3 +142,17 @@ def test_corrupt_payload_caught_with_hashes(gen, tmp_path):
             continue
         assert fa == gen["fa"]["synthA"]
     assert caught > 0
+
+
+@pytest.mark.parametrize("form", FORMS[1:], ids=["packed-full", "bytes-compact", "packed-compact"])
+def test_compact_forms_resident_bytes(gen, form):
+    """The compact forms hold fewer bytes and the same windows as the default."""
+    base = panvram.Cohort.open(gen["dirs"]["q1k"], device="cpu", reference=gen["ref"], dataset="q1k")
+    c = panvram.Cohort.open(gen["dirs"]["q1k"], device="cpu", reference=gen["ref"], dataset="q1k", packed_reference=form[0], compact_blocks=form[1])
+    rb, rc = base.resident_bytes(), c.resident_bytes()
+    assert rc["total"] < rb["total"]
+    g = torch.Generator().manual_seed(5)
+    x, co = base.sample(500, 3000, generator=g, return_coords=True)
+    asm = co[:, 0]
+    start = torch.tensor([base.contigs(int(a))[int(ci)][3] + int(s) for a, ci, s, _ in co.tolist()])
+    assert torch.equal(c.windows(asm, start, 3000), x)

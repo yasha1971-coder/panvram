@@ -11,6 +11,7 @@
 #include <c10/cuda/CUDAException.h>
 #include <c10/cuda/CUDAGuard.h>
 #include "refrel3.h"
+#include "pv_compact.h"
 
 namespace {
 struct QOp { uint32_t src; uint16_t dst, len; uint32_t kind; };
@@ -25,9 +26,15 @@ struct QSink { uint8_t* blk; QOp* q; volatile int* head; volatile int* tail; int
         QOp& e = q[h % QN]; e.src = (uint32_t)src; e.dst = (uint16_t)dst; e.len = (uint16_t)len; e.kind = kind;
         __threadfence_block(); *head = h + 1; return true; } };
 struct Cohort { const uint8_t* P; const int64_t* pay_base; const uint32_t* off; const int64_t* st; const R3Tab* T; const int64_t* blk_base; const int64_t* nbases;
-                const uint8_t* ref; uint64_t ref_n; uint32_t Q; int64_t nasm; };
+                const uint8_t* ref; uint64_t ref_n; uint32_t Q; int64_t nasm;
+                pv::PackedRef pref; pv::CompactTab ct; const int64_t* blk0; const int64_t* grp_base; };   // opt-in compact forms
+// the reference as the kernel reads it: bytes (default) or 2 bits per base
+template <bool PACKED> struct RefOf;
+template <> struct RefOf<false> { __device__ static const uint8_t* get(const Cohort& D) { return D.ref; } };
+template <> struct RefOf<true> { __device__ static pv::PackedRef get(const Cohort& D) { return D.pref; } };
 
 // status bits: 1 decode error, 4 bounded wait expired, 8 window outside the assembly
+template <bool PACKED, bool COMPACT>
 __global__ void __launch_bounds__(32, 16) pv_queue_kernel(Cohort D, const int64_t* __restrict__ wasm, const int64_t* __restrict__ wstart, uint32_t W, uint32_t bpw,
                                                           uint8_t* __restrict__ out, int* status) {
     extern __shared__ __align__(16) uint8_t sm[];
@@ -41,13 +48,16 @@ __global__ void __launch_bounds__(32, 16) pv_queue_kernel(Cohort D, const int64_
     if (wstart[w] < 0 || s + W > n_bases) { if (lane == 0 && j == 0) atomicOr(status, 8); return; }
     const uint64_t b0 = s / Q, b1 = (s + W - 1) / Q, b = b0 + j; if (b > b1) return;
     const uint64_t bst = b * Q; const uint32_t blen = (uint32_t)min((uint64_t)Q, n_bases - bst);
-    const uint64_t bb = (uint64_t)D.blk_base[a] + b; const uint8_t* src = D.P + D.pay_base[a] + D.off[bb]; const uint32_t slen = D.off[bb + 1] - D.off[bb];
-    R3Diag g0; g0.c = (uint64_t)(D.st[bb] >> 1); g0.dir = (uint32_t)(D.st[bb] & 1);
+    const auto ref = RefOf<PACKED>::get(D);
+    uint32_t boff, slen; R3Diag g0;
+    if (COMPACT) D.ct.get((uint64_t)D.blk0[a], (uint64_t)D.grp_base[a], b, &boff, &slen, &g0);
+    else { const uint64_t bb = (uint64_t)D.blk_base[a] + b; boff = D.off[bb]; slen = D.off[bb + 1] - D.off[bb]; g0.c = (uint64_t)(D.st[bb] >> 1); g0.dir = (uint32_t)(D.st[bb] & 1); }
+    const uint8_t* src = D.P + D.pay_base[a] + boff;
     if (lane == 0) { *head = 0; *tail = 0; *done = 0; }
     __syncwarp();
     if (lane == 0) {
         QSink sk; sk.blk = blk; sk.q = q; sk.head = head; sk.tail = tail; sk.status = status;
-        s_nk = r3_decode_stream(src, slen, D.T + a, D.ref, D.ref_n, blen, g0, sk);
+        s_nk = r3_decode_stream(src, slen, D.T + a, ref, D.ref_n, blen, g0, sk);
         __threadfence_block(); *done = s_nk < 0 ? 2 : 1;
     } else {
         const unsigned m = 0xFFFFFFFEu; int next = 0; uint32_t spin = 0;
@@ -56,8 +66,8 @@ __global__ void __launch_bounds__(32, 16) pv_queue_kernel(Cohort D, const int64_
             h = __shfl_sync(m, h, 1); d = __shfl_sync(m, d, 1);
             if (next < h) {
                 const QOp e = q[next % QN];
-                if (e.kind == 1) for (uint32_t i = lane - 1; i < e.len; i += 31) blk[e.dst + i] = D.ref[e.src + i];
-                else if (e.kind == 3) for (uint32_t i = lane - 1; i < e.len; i += 31) blk[e.dst + i] = rr_comp(D.ref[e.src + e.len - 1 - i]);
+                if (e.kind == 1) for (uint32_t i = lane - 1; i < e.len; i += 31) blk[e.dst + i] = ref[e.src + i];
+                else if (e.kind == 3) for (uint32_t i = lane - 1; i < e.len; i += 31) blk[e.dst + i] = rr_comp(ref[e.src + e.len - 1 - i]);
                 else { const uint32_t dist = (uint32_t)e.dst - e.src;
                     for (uint32_t c = 0; c < e.len;) { const uint32_t step = min(dist, (uint32_t)e.len - c);
                         for (uint32_t i = lane - 1; i < step; i += 31) blk[e.dst + c + i] = blk[e.src + c + i];
@@ -101,14 +111,12 @@ __global__ void pv_rc_tok_kernel(uint32_t W, const uint8_t* __restrict__ rc, boo
 }
 }  // namespace
 
-std::vector<torch::Tensor> pv_windows_cuda(torch::Tensor P, torch::Tensor pay_base, torch::Tensor off, torch::Tensor st, torch::Tensor tab, torch::Tensor blk_base,
-                                           torch::Tensor nbases, torch::Tensor low_s, torch::Tensor low_l, torch::Tensor low_base, torch::Tensor low_cnt, torch::Tensor ref,
-                                           int64_t Q, torch::Tensor wasm, torch::Tensor wstart, int64_t W, c10::optional<torch::Tensor> rc, bool tokens, bool apply_case) {
-    TORCH_CHECK(P.is_cuda(), "pooled cohort not on a CUDA device");
+namespace {
+// shared tail of both entry points: the queue kernel (by reference / table form), then the transforms
+std::vector<torch::Tensor> run_windows(Cohort D, bool packed, bool compact, c10::Device dev, torch::Tensor low_s, torch::Tensor low_l, torch::Tensor low_base,
+                                       torch::Tensor low_cnt, int64_t Q, torch::Tensor wasm, torch::Tensor wstart, int64_t W, c10::optional<torch::Tensor> rc, bool tokens, bool apply_case) {
     TORCH_CHECK(Q == 1024 || Q == 2048 || Q == 4096 || Q == 16384, "block size");
     TORCH_CHECK(W >= 0 && W < (1ll << 31), "W");
-    const c10::cuda::CUDAGuard guard(P.device());
-    auto dev = P.device();
     wasm = wasm.to(dev, torch::kInt64).contiguous(); wstart = wstart.to(dev, torch::kInt64).contiguous();
     const int64_t n = wasm.numel(); TORCH_CHECK(wstart.numel() == n, "assembly and start counts differ");
     torch::Tensor out = torch::empty({n, W}, torch::TensorOptions().dtype(torch::kUInt8).device(dev));
@@ -116,24 +124,55 @@ std::vector<torch::Tensor> pv_windows_cuda(torch::Tensor P, torch::Tensor pay_ba
     if (n == 0 || W == 0) return {out, status};
     torch::Tensor r; if (rc && rc->defined()) { r = rc->to(dev, torch::kUInt8).contiguous(); TORCH_CHECK(r.numel() == n, "reverse_complement mask size"); }
     auto stream = c10::cuda::getCurrentCUDAStream();
-    Cohort D; D.P = P.data_ptr<uint8_t>(); D.pay_base = pay_base.data_ptr<int64_t>(); D.off = (const uint32_t*)off.data_ptr<int32_t>(); D.st = st.data_ptr<int64_t>();
-    D.T = (const R3Tab*)tab.data_ptr<uint8_t>(); D.blk_base = blk_base.data_ptr<int64_t>(); D.nbases = nbases.data_ptr<int64_t>();
-    D.ref = ref.data_ptr<uint8_t>(); D.ref_n = (uint64_t)ref.numel(); D.Q = (uint32_t)Q; D.nasm = nbases.numel();
     const uint64_t bpw = ((uint64_t)W + Q - 1) / Q + 1; TORCH_CHECK((uint64_t)n * bpw < (1ull << 31), "too many blocks in one call (windows x blocks per window >= 2^31)");
     const size_t smem = (size_t)Q + QN * sizeof(QOp);
-    pv_queue_kernel<<<(unsigned)(n * bpw), 32, smem, stream>>>(D, wasm.data_ptr<int64_t>(), wstart.data_ptr<int64_t>(), (uint32_t)W, (uint32_t)bpw, out.data_ptr<uint8_t>(), status.data_ptr<int>());
+    const dim3 grid((unsigned)(n * bpw)); const int64_t* wa = wasm.data_ptr<int64_t>(); const int64_t* ws = wstart.data_ptr<int64_t>(); uint8_t* op = out.data_ptr<uint8_t>(); int* sp = status.data_ptr<int>();
+    if (!packed && !compact) pv_queue_kernel<false, false><<<grid, 32, smem, stream>>>(D, wa, ws, (uint32_t)W, (uint32_t)bpw, op, sp);
+    else if (packed && !compact) pv_queue_kernel<true, false><<<grid, 32, smem, stream>>>(D, wa, ws, (uint32_t)W, (uint32_t)bpw, op, sp);
+    else if (!packed && compact) pv_queue_kernel<false, true><<<grid, 32, smem, stream>>>(D, wa, ws, (uint32_t)W, (uint32_t)bpw, op, sp);
+    else pv_queue_kernel<true, true><<<grid, 32, smem, stream>>>(D, wa, ws, (uint32_t)W, (uint32_t)bpw, op, sp);
     C10_CUDA_KERNEL_LAUNCH_CHECK();
     // grid.y is limited to 65535: transforms in slices of windows
     for (int64_t w0 = 0; w0 < n; w0 += 65535) { const int64_t k = std::min<int64_t>(65535, n - w0);
         if (apply_case && !tokens && low_s.numel()) {
             dim3 g((unsigned)((W + CH - 1) / CH), (unsigned)k);
-            pv_case_kernel<<<g, 256, 0, stream>>>(wasm.data_ptr<int64_t>() + w0, wstart.data_ptr<int64_t>() + w0, (uint32_t)W, low_s.data_ptr<int64_t>(), low_l.data_ptr<int64_t>(),
-                                                  low_base.data_ptr<int64_t>(), low_cnt.data_ptr<int64_t>(), out.data_ptr<uint8_t>() + w0 * W);
+            pv_case_kernel<<<g, 256, 0, stream>>>(wa + w0, ws + w0, (uint32_t)W, low_s.data_ptr<int64_t>(), low_l.data_ptr<int64_t>(),
+                                                  low_base.data_ptr<int64_t>(), low_cnt.data_ptr<int64_t>(), op + w0 * W);
             C10_CUDA_KERNEL_LAUNCH_CHECK(); }
         if (r.defined() || tokens) {
             dim3 g((unsigned)(((W + 1) / 2 + CH - 1) / CH), (unsigned)k);
-            pv_rc_tok_kernel<<<g, 256, 0, stream>>>((uint32_t)W, r.defined() ? r.data_ptr<uint8_t>() + w0 : nullptr, tokens, out.data_ptr<uint8_t>() + w0 * W);
+            pv_rc_tok_kernel<<<g, 256, 0, stream>>>((uint32_t)W, r.defined() ? r.data_ptr<uint8_t>() + w0 : nullptr, tokens, op + w0 * W);
             C10_CUDA_KERNEL_LAUNCH_CHECK(); }
     }
     return {out, status};
+}
+}  // namespace
+
+// default path: byte reference, full block table
+std::vector<torch::Tensor> pv_windows_cuda(torch::Tensor P, torch::Tensor pay_base, torch::Tensor off, torch::Tensor st, torch::Tensor tab, torch::Tensor blk_base,
+                                           torch::Tensor nbases, torch::Tensor low_s, torch::Tensor low_l, torch::Tensor low_base, torch::Tensor low_cnt, torch::Tensor ref,
+                                           int64_t Q, torch::Tensor wasm, torch::Tensor wstart, int64_t W, c10::optional<torch::Tensor> rc, bool tokens, bool apply_case) {
+    TORCH_CHECK(P.is_cuda(), "pooled cohort not on a CUDA device");
+    const c10::cuda::CUDAGuard guard(P.device());
+    Cohort D{}; D.P = P.data_ptr<uint8_t>(); D.pay_base = pay_base.data_ptr<int64_t>(); D.off = (const uint32_t*)off.data_ptr<int32_t>(); D.st = st.data_ptr<int64_t>();
+    D.T = (const R3Tab*)tab.data_ptr<uint8_t>(); D.blk_base = blk_base.data_ptr<int64_t>(); D.nbases = nbases.data_ptr<int64_t>();
+    D.ref = ref.data_ptr<uint8_t>(); D.ref_n = (uint64_t)ref.numel(); D.Q = (uint32_t)Q; D.nasm = nbases.numel();
+    return run_windows(D, false, false, P.device(), low_s, low_l, low_base, low_cnt, Q, wasm, wstart, W, rc, tokens, apply_case);
+}
+// opt-in compact forms. t: P pay_base tab nbases low_s low_l low_base low_cnt | ref pw pes pel peb | off st blk_base |
+// grp_off grp_st blen bcode exc_b exc_st grp_base blk0 (unused entries empty)
+std::vector<torch::Tensor> pv_windows_cuda2(std::vector<torch::Tensor> t, int64_t Q, int64_t ref_n, int64_t pne, int64_t nexc, bool packed, bool compact,
+                                            torch::Tensor wasm, torch::Tensor wstart, int64_t W, c10::optional<torch::Tensor> rc, bool tokens, bool apply_case) {
+    TORCH_CHECK(t.size() == 24, "windows_cuda2: 24 tensors");
+    TORCH_CHECK(t[0].is_cuda(), "pooled cohort not on a CUDA device");
+    const c10::cuda::CUDAGuard guard(t[0].device());
+    Cohort D{}; D.P = t[0].data_ptr<uint8_t>(); D.pay_base = t[1].data_ptr<int64_t>(); D.T = (const R3Tab*)t[2].data_ptr<uint8_t>(); D.nbases = t[3].data_ptr<int64_t>();
+    D.ref_n = (uint64_t)ref_n; D.Q = (uint32_t)Q; D.nasm = t[3].numel();
+    if (packed) { D.pref.w = (const uint32_t*)t[9].data_ptr<int32_t>(); D.pref.n = (uint64_t)ref_n; D.pref.es = t[10].data_ptr<int64_t>(); D.pref.el = t[11].data_ptr<int64_t>();
+                  D.pref.eb = t[12].data_ptr<uint8_t>(); D.pref.ne = pne; }
+    else D.ref = t[8].data_ptr<uint8_t>();
+    if (compact) { D.ct.grp_off = t[16].data_ptr<int64_t>(); D.ct.grp_st = t[17].data_ptr<int64_t>(); D.ct.len = (const uint16_t*)t[18].data_ptr<int16_t>(); D.ct.code = t[19].data_ptr<int16_t>();
+                   D.ct.exc_b = t[20].data_ptr<int64_t>(); D.ct.exc_st = t[21].data_ptr<int64_t>(); D.ct.nexc = nexc; D.ct.Q = (uint32_t)Q; D.grp_base = t[22].data_ptr<int64_t>(); D.blk0 = t[23].data_ptr<int64_t>(); }
+    else { D.off = (const uint32_t*)t[13].data_ptr<int32_t>(); D.st = t[14].data_ptr<int64_t>(); D.blk_base = t[15].data_ptr<int64_t>(); }
+    return run_windows(D, packed, compact, t[0].device(), t[4], t[5], t[6], t[7], Q, wasm, wstart, W, rc, tokens, apply_case);
 }

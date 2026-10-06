@@ -24,11 +24,15 @@ def test_gate():
     seed = int(os.environ.get("PANVRAM_SEED", "20261004"))
     src = os.environ.get("PANVRAM_SOURCES")
     t0 = time.time()
-    c = panvram.Cohort.open(COHORT, device=dev, dataset=ds, reference=os.environ.get("PANVRAM_REFERENCE"))
+    packed = os.environ.get("PANVRAM_PACKED_REF", "0") == "1"
+    compact = os.environ.get("PANVRAM_COMPACT_BLOCKS", "0") == "1"
+    c = panvram.Cohort.open(COHORT, device=dev, dataset=ds, reference=os.environ.get("PANVRAM_REFERENCE"), packed_reference=packed, compact_blocks=compact)
     t_open = time.time() - t0
     rb = c.resident_bytes()
+    print(f"\nGATE form\tpacked_reference {int(packed)}\tcompact_blocks {int(compact)}")
     print(f"\nGATE open\t{len(c)} assemblies\tdataset {ds} (Q {c.block_size})\tdevice {c.device}\t{t_open:.1f} s\tresident {rb['total'] / 1e9:.3f} GB "
-          f"(reference {rb['ref'] / 1e9:.3f}, payload {rb['P'] / 1e9:.3f}, block table {(rb['off'] + rb['st']) / 1e9:.3f}, model tables {rb['tab'] / 1e9:.3f})")
+          f"(reference {sum(rb.get(k, 0) for k in ('ref', 'pw', 'pes', 'pel', 'peb')) / 1e9:.4f}, payload {rb['P'] / 1e9:.4f}, "
+          f"block table {sum(rb.get(k, 0) for k in ('off', 'st', 'grp_off', 'grp_st', 'blen', 'bcode', 'exc_b', 'exc_st')) / 1e9:.4f}, model tables {rb['tab'] / 1e9:.4f})")
     g = torch.Generator(device=dev).manual_seed(seed)
     x, co = c.sample(1024, 8192, generator=g, return_coords=True)
     assert x.shape == (1024, 8192) and x.dtype == torch.uint8 and x.device.type == torch.device(dev).type

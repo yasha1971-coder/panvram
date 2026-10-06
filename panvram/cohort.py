@@ -32,20 +32,24 @@ class Cohort:
             if not _C.with_cuda:
                 raise RuntimeError("panvram was built without CUDA (CPU path only): reinstall where nvcc and a CUDA torch are present")
             _arch_ok(self.device)
-            keep = ("P", "pay_base", "off", "st", "tab", "blk_base", "nbases", "low_s", "low_l", "low_base", "low_cnt", "ref")
-            self._dev = {k: pools[k].to(self.device) for k in keep}
+            self._dev = {k: v.to(self.device) for k, v in pools.items() if isinstance(v, torch.Tensor) and not k.startswith("ctg_")}
+            self._ints = {k: v for k, v in pools.items() if isinstance(v, int)}
             self._ctg = {k: v.to(self.device) for k, v in self._ctg.items()}
         else:
             self._dev = None
         self._valid = {}
 
     @classmethod
-    def open(cls, path, device="cuda", dataset="q4k", reference=None, threads=0, assemblies=None):
+    def open(cls, path, device="cuda", dataset="q4k", reference=None, threads=0, assemblies=None,
+             packed_reference=False, compact_blocks=False):
         """Open the cohort directory `path`: every `*.<dataset>.rr3` in it (sorted by name; `assemblies` = a list of
         names to take only those) and the reference they were encoded against - `reference` if given, else
         `path/reference.fa`, else the file named in the archives' header in `path`. Every archive is checked before
         any decode (FORMAT.md section 5): header XXH3, reference SHA-256 and size, sections, tables. One block size
-        per cohort. device: "cuda", "cuda:N" or "cpu"."""
+        per cohort. device: "cuda", "cuda:N" or "cpu".
+        Opt-in compact resident forms (same archives, same output): packed_reference - the reference in 2 bits per
+        base + a table of non-ACGT runs instead of one byte per base; compact_blocks - the block table in two levels
+        (per 32 blocks offset + state, per block 16-bit length + 16-bit state code) instead of 12 bytes per block."""
         if dataset is not None and not re.fullmatch(r"q\d+k", dataset):
             raise ValueError(f"dataset: {DATASETS} (or another q<N>k suffix), or None for every *.rr3")
         pat = f"*.{dataset}.rr3" if dataset else "*.rr3"
@@ -74,7 +78,7 @@ class Cohort:
         device = torch.device(device)
         if device.type == "cuda" and device.index is None:
             device = torch.device("cuda", torch.cuda.current_device())
-        core = _C.Core(os.fspath(reference), [os.fspath(f) for f in files], int(threads))
+        core = _C.Core(os.fspath(reference), [os.fspath(f) for f in files], int(threads), bool(packed_reference), bool(compact_blocks))
         return cls(core, names, device)
 
     # ------------------------------------------------------------------ description
@@ -99,7 +103,9 @@ class Cohort:
     def resident_bytes(self):
         """Bytes of the cohort on its device (reference included), by component."""
         src = self._dev if self._dev is not None else self._core.pools()
-        d = {k: v.numel() * v.element_size() for k, v in src.items() if k in ("P", "off", "st", "tab", "low_s", "low_l", "ref")}
+        keys = ("P", "off", "st", "tab", "low_s", "low_l", "ref", "pw", "pes", "pel", "peb",
+                "grp_off", "grp_st", "blen", "bcode", "exc_b", "exc_st")
+        d = {k: v.numel() * v.element_size() for k, v in src.items() if k in keys and isinstance(v, torch.Tensor)}
         d["total"] = sum(d.values())
         return d
 
@@ -133,8 +139,16 @@ class Cohort:
         if self._dev is None:
             return self._core.windows(asm, start, W, reverse_complement, tokens, True, False, 0)
         d = self._dev
-        out, status = _C.windows_cuda(d["P"], d["pay_base"], d["off"], d["st"], d["tab"], d["blk_base"], d["nbases"], d["low_s"], d["low_l"],
-                                      d["low_base"], d["low_cnt"], d["ref"], self._core.Q, asm, start, W, reverse_complement, tokens, True)
+        if not (self._core.packed_reference or self._core.compact_blocks):
+            out, status = _C.windows_cuda(d["P"], d["pay_base"], d["off"], d["st"], d["tab"], d["blk_base"], d["nbases"], d["low_s"], d["low_l"],
+                                          d["low_base"], d["low_cnt"], d["ref"], self._core.Q, asm, start, W, reverse_complement, tokens, True)
+        else:
+            e = torch.empty(0, dtype=torch.uint8, device=self.device)
+            g = lambda k: d.get(k, e) if d.get(k) is not None else e
+            t = [g(k) for k in ("P", "pay_base", "tab", "nbases", "low_s", "low_l", "low_base", "low_cnt", "ref", "pw", "pes", "pel", "peb",
+                                "off", "st", "blk_base", "grp_off", "grp_st", "blen", "bcode", "exc_b", "exc_st", "grp_base", "blk0")]
+            out, status = _C.windows_cuda2(t, self._core.Q, self._core.ref_bases, self._ints.get("pne", 0), self._ints.get("nexc", 0),
+                                           self._core.packed_reference, self._core.compact_blocks, asm, start, W, reverse_complement, tokens, True)
         if check:
             s = int(status.item())
             if s:

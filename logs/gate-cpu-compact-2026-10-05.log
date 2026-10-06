@@ -1,0 +1,49 @@
+# panvram f8b0e3c+uncommitted compact forms, ace-core CPU, 2026-10-05T23:55:19Z; 8 HPRC assemblies + T2T; device cpu
+## q4k packed_reference=0 compact_blocks=0
+GATE open	8 assemblies	dataset q4k (Q 4096)	device cpu	8.1 s	resident 3.305 GB (reference 3.1173, payload 0.1148, block table 0.0704, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 31.23s
+## q4k packed_reference=1 compact_blocks=0
+GATE open	8 assemblies	dataset q4k (Q 4096)	device cpu	19.9 s	resident 0.967 GB (reference 0.7793, payload 0.1148, block table 0.0704, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 48.46s
+## q4k packed_reference=0 compact_blocks=1
+GATE open	8 assemblies	dataset q4k (Q 4096)	device cpu	8.1 s	resident 3.266 GB (reference 3.1173, payload 0.1148, block table 0.0320, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 31.54s
+## q4k packed_reference=1 compact_blocks=1
+GATE open	8 assemblies	dataset q4k (Q 4096)	device cpu	19.8 s	resident 0.928 GB (reference 0.7793, payload 0.1148, block table 0.0320, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 48.58s
+## q16k packed_reference=0 compact_blocks=0
+GATE open	8 assemblies	dataset q16k (Q 16384)	device cpu	8.0 s	resident 3.232 GB (reference 3.1173, payload 0.0952, block table 0.0176, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 31.31s
+## q16k packed_reference=1 compact_blocks=0
+GATE open	8 assemblies	dataset q16k (Q 16384)	device cpu	19.8 s	resident 0.894 GB (reference 0.7793, payload 0.0952, block table 0.0176, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 48.66s
+## q16k packed_reference=0 compact_blocks=1
+GATE open	8 assemblies	dataset q16k (Q 16384)	device cpu	8.0 s	resident 3.223 GB (reference 3.1173, payload 0.0952, block table 0.0081, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 31.34s
+## q16k packed_reference=1 compact_blocks=1
+GATE open	8 assemblies	dataset q16k (Q 16384)	device cpu	19.9 s	resident 0.885 GB (reference 0.7793, payload 0.0952, block table 0.0081, model tables 0.0022)
+GATE sample	1024 x 8192 on cpu	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE RESULT	PASS
+1 passed in 48.55s

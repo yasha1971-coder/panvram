@@ -1,3 +1,5 @@
+// panvram change (only): r3_refbase / r3_decode_stream / r3_decode_block take the reference as a template parameter
+// (byte pointer as before, or the 2-bit pv::PackedRef of pv_compact.h); the decoding itself is unchanged.
 // refrel3.h - research: an assembly block as edits against the decoded reference, entropy-coded with static
 // per-assembly context models (rANS, one stream per 16 KiB block; the tables in the meta). v1 (refrel_format.h) and
 // v2 (refrel_v2.h) stay as they are.
@@ -98,7 +100,8 @@ RR_HD static inline void r3_push(R3Diag* cache, int* nc, R3Diag g) {
     for (; j > 0; j--) cache[j] = cache[j - 1]; cache[0] = g;
 }
 // the reference base the current diagonal predicts at block offset o (0..3, 4 = none)
-RR_HD static inline int r3_refbase(const uint8_t* ref, uint64_t ref_n, R3Diag g, uint32_t o) {
+template <class RP>   // panvram: the reference as any indexable (byte pointer or pv::PackedRef), see pv_compact.h
+RR_HD static inline int r3_refbase(const RP& ref, uint64_t ref_n, R3Diag g, uint32_t o) {
     const int64_t q = g.dir ? (int64_t)g.c - (int64_t)o : (int64_t)g.c + (int64_t)o;
     if (q < 0 || (uint64_t)q >= ref_n) return 4;
     const uint8_t b = g.dir ? rr_comp(ref[q]) : ref[q]; const int k = r3_b2(b); return k < 4 ? k : 4;
@@ -107,8 +110,8 @@ RR_HD static inline int r3_refbase(const uint8_t* ref, uint64_t ref_n, R3Diag g,
 // 1 reference, 2 self, 3 reverse complement) to sink.op(kind, src, dst, len) in order; a sink returns false to stop
 // (capacity). Returns the op count or -1. r3_decode_block (CPU and the classic kernel) is the array sink; the queue kernel
 // writes literals into the block buffer and hands copies to the other lanes as they come.
-template <class Sink>
-RR_HD static inline int r3_decode_stream(const uint8_t* src, uint32_t n, const R3Tab* T, const uint8_t* ref, uint64_t ref_n, uint32_t blen, R3Diag start, Sink& sk) {
+template <class Sink, class RP>
+RR_HD static inline int r3_decode_stream(const uint8_t* src, uint32_t n, const R3Tab* T, const RP& ref, uint64_t ref_n, uint32_t blen, R3Diag start, Sink& sk) {
     R3Dec d; r3_dinit(&d, src, n); if (d.bad) return -1;
     R3Diag cache[4]; int nc = 1; cache[0] = start; int prevk = -1; uint32_t o = 0, k = 0, li = 0;
     const uint8_t B[6] = {'A', 'C', 'G', 'T', 'N', 0};
@@ -156,7 +159,8 @@ RR_HD static inline int r3_decode_stream(const uint8_t* src, uint32_t n, const R
 struct R3ArraySink { RrOp* ops; uint32_t maxops, k; uint8_t* lbuf; uint32_t litcap;
     RR_HD bool lit(uint32_t, uint32_t li, uint8_t b) { if (li >= litcap) return false; lbuf[li] = b; return true; }
     RR_HD bool op(uint32_t kind, uint64_t src, uint32_t dst, uint32_t len) { if (k >= maxops) return false; ops[k].kind = kind; ops[k].src = src; ops[k].dst = dst; ops[k].len = len; k++; return true; } };
-RR_HD static inline int r3_decode_block(const uint8_t* src, uint32_t n, const R3Tab* T, const uint8_t* ref, uint64_t ref_n, uint32_t blen,
+template <class RP>
+RR_HD static inline int r3_decode_block(const uint8_t* src, uint32_t n, const R3Tab* T, const RP& ref, uint64_t ref_n, uint32_t blen,
                                         R3Diag start, RrOp* ops, uint32_t maxops, uint8_t* lit, uint32_t litcap) {
     R3ArraySink sk; sk.ops = ops; sk.maxops = maxops; sk.k = 0; sk.lbuf = lit; sk.litcap = litcap;
     return r3_decode_stream(src, n, T, ref, ref_n, blen, start, sk);
