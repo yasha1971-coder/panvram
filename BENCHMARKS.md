@@ -5,7 +5,7 @@ different hardware and are never put in one column.
 
 ## CPU: refrel3 against AGC 3.2.4, HPRC N = 50 (in process)
 
-- Where: aceapex branch `refrel`, `research/agc_vs_refrel3/` (commit f526bc7, local until published): `README.md`,
+- Where: aceapex branch `refrel`, `research/agc_vs_refrel3/` (commit a6a27e2, local until published): `README.md`,
   `SUMMARY_runs.md`, `logs/`, tools (`truth.cpp`, `agcbench.cpp`, `rr3bench.cpp`, `agc_cli_batch.py`,
   `make_requests.py`, `run_all.sh`, `summarize.py`), `binaries.sha256`.
 - Hardware: ace-core, AMD EPYC 4344P (8 cores / 16 threads), 125 GB RAM, Ubuntu 22.04; silence gate before the runs
