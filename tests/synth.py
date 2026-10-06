@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Deterministic synthetic reference and assemblies for the fast tests (tests/data/*.rr3 were encoded from these).
 Only random.Random(seed).random() is used: its sequence is fixed across Python versions.
 

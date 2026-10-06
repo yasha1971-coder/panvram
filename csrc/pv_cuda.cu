@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // pv_cuda.cu - panvram on the GPU: the refrel3 queue kernel over a resident cohort, then the output transforms.
 // Queue kernel ported from aceapex research/refrel/refrel3_gpu.cu @ 5b6d5ce (r3q_kernel): one warp per refrel3 block;
 // lane 0 decodes the block's rANS stream (r3_decode_stream of refrel3.h, the code the CPU path runs), literals straight

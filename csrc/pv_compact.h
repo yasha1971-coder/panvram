@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // pv_compact.h - compact resident forms (opt-in; the archives and their format are unchanged), shared by the CPU path
 // and the CUDA kernel:
 //   PackedRef   the decoded reference in 2 bits per base (16 bases per uint32 word, A 0 C 1 G 2 T 3) + a sorted table

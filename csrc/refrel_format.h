@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // refrel_format.h - research format "refrel" (not ACEPX2): an assembly as LZ77 against a decoded reference.
 // The assembly's bases (all records concatenated, upper case; case and line layout kept aside) are cut into 16 KiB
 // blocks. A block is a token stream + its literal bytes; a match copies either from the reference (an absolute position

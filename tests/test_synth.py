@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Fast tests on the synthetic fixtures (tests/data, encoded from tests/synth.py by aceapex research/refrel/refrel3v1
 @ 5b6d5ce): every path (CPU, and CUDA when present) against windows cut from the FASTA; refusals."""
 import os

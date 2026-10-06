@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """resident.py <cohort dir> <dataset> - bytes held by Cohort.open on the CPU path for the four resident forms
 (packed_reference x compact_blocks), by component; prints RES lines. Opening checks every archive (FORMAT.md 5)."""
 import sys

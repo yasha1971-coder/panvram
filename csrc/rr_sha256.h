@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // rr_sha256.h - SHA-256 (FIPS 180-4), plain C++, for the reference check of the refrel3 v1 container.
 #pragma once
 #include <stdint.h>

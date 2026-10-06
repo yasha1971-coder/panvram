@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """pip install -e .   (torch C++ extension; CUDA when nvcc and a CUDA build of torch are present, else the CPU path)
 Env: PANVRAM_CUDA=0|1 (default: auto), TORCH_CUDA_ARCH_LIST (default: the visible GPUs of sm_80 or newer, else
 8.0;8.6;8.9;9.0+PTX), MAX_JOBS."""

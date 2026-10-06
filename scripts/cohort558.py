@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """cohort558.py <cohort dir> <manifest_v1.tsv> [dataset] - the whole cohort resident on the GPU, measured and checked
 without source files. Prints C558 lines:
   open        Cohort.open time, resident bytes by component, torch allocated, nvidia-smi memory used before / after

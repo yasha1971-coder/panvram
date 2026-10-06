@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Windows cut straight from FASTA bytes (independent of panvram's own tables): the comparison side of the tests."""
 COMP = bytes.maketrans(b"ACGTacgt", b"TGCAtgca")
 TOK = bytes(0 if c in b"Aa" else 1 if c in b"Cc" else 2 if c in b"Gg" else 3 if c in b"Tt" else 4 for c in range(256))

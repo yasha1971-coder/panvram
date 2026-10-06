@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // pv_core.cpp - panvram host side and the Python binding (module panvram._C).
 // Core: the reference (decoded, upper case, SHA-256) and the cohort's refrel3 v1 archives opened with every check
 // (pv_v1.h), their arrays pooled into tensors - payloads, block offsets (32-bit, per assembly), block start states,

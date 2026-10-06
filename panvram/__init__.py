@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """panvram - a pangenome cohort resident on the GPU as refrel3 v1 archives (edits against one decoded reference);
 random windows and coordinate slices decoded on the card by a queue kernel, a CPU decoder for the same.
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // pv_v1.h - refrel3 v1 reader (FORMAT.md), host side: the reference (FASTA -> upper-case base stream + SHA-256), an
 // archive opened with every check of FORMAT.md section 5 before any decode, the CPU block decoder, full decode -> FASTA.
 // Ported from aceapex research/refrel @ 5b6d5ce: open_v1 / block_v1 / full_v1 (refrel3v1.cpp), build_tab (refrel3.cpp),

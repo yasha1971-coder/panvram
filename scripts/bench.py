@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """bench.py <cohort dir> [dataset] [device] [quick] - sample() throughput on a resident cohort: windows/s and output GB/s per
 (W, n, tokens), each the median of 5 timed runs of 10 back-to-back calls after a warm-up (one device sync per run, the
 decode status checked after); fetch latency (one call, sync) by length. Prints BENCH lines."""

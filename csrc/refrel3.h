@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // panvram change (only): r3_refbase / r3_decode_stream / r3_decode_block take the reference as a template parameter
 // (byte pointer as before, or the 2-bit pv::PackedRef of pv_compact.h); the decoding itself is unchanged.
 // refrel3.h - research: an assembly block as edits against the decoded reference, entropy-coded with static

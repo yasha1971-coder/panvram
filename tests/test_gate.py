@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """The public gate (run before anything of panvram goes out):
   import panvram -> Cohort.open(cohort) -> sample(1024, 8192) on the GPU -> the same windows cut from the FASTA that the
   CPU decoder rebuilds (every block XXH3 and the FASTA XXH3 == the source file's, from the header) - byte for byte;

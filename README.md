@@ -134,4 +134,4 @@ Ported from aceapex (github.com/yasha1971-coder/aceapex, branch `refrel`) `resea
 - One block size per cohort; reference under 2^32 bases; an assembly's payload under 4 GiB.
 - Encoding is not part of panvram (aceapex `refrel3v1 encode`); archive bytes depend on the encoder build (FORMAT.md 7).
 
-License: pending the author's decision (the LICENSE file of 0.1.0 is MIT); `csrc/xxhash.h` is BSD-2-Clause (xxHash).
+License: MIT (see LICENSE); `csrc/xxhash.h` is BSD-2-Clause (xxHash, its own notice kept).

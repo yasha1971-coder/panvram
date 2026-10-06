@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """panvram.Cohort - a pangenome cohort resident in memory (GPU or CPU) as refrel3 v1 archives against one decoded
 reference; windows and coordinate slices decoded on demand by the CUDA queue kernel or the CPU decoder."""
 import glob
