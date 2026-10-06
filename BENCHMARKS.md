@@ -41,3 +41,5 @@ Not measured yet (`run_colab_cohort558.sh`, C1 b/c prepared, not run).
   larger cohort AGC wins by more (two measurements; the cause is not stated). Plus the decoded T2T resident (3.117 G
   bases; 0.779 GB with `packed_reference`).
 - **GPU:** CUDA only, sm_80 or newer; compact forms not yet run on a GPU.
+- **Coordinates:** translation of reference coordinates to haplotype coordinates is not implemented; fetch works only in
+  the coordinates of each assembly.
