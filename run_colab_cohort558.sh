@@ -100,7 +100,7 @@ STAGE=report
   sed -n '2,$p' $W/gpu.txt
   echo; grep -h "^S0\|^S1" $RUNLOG
   for f in $W/c558_*.txt; do echo; echo "## $(basename $f .txt)"; grep -vP "^C558 full\t" $f | grep "^C558"; done
-  for f in $W/region_*.txt; do [ -s $f ] && { echo; echo "## $(basename $f .txt)"; grep "^CR" $f; }; done
+  for f in $W/region_*.txt; do if [ -s $f ]; then echo; echo "## $(basename $f .txt)"; grep "^CR" $f; fi; done
   echo; echo "## per assembly (GPU full decode, FASTA XXH3 vs manifest)"; for f in $W/c558_*.txt; do grep -P "^C558 full\t" $f; done
 } > $OUT
 echo "written: $OUT"
