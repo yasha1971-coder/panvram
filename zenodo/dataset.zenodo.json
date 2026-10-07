@@ -1,0 +1,20 @@
+{
+  "title": "HPRC cohort (558 haplotype assemblies) as refrel3 v1 archives against T2T-CHM13v2.0 (q4k and q16k)",
+  "upload_type": "dataset",
+  "version": "1.0.0",
+  "license": "cc-zero",
+  "creators": [
+    {
+      "name": "Shavidze, Yakiv",
+      "orcid": "0009-0008-3622-3448"
+    }
+  ],
+  "description": "The 558 haplotype assemblies of the Human Pangenome Reference Consortium (year-1 94, release 2 464) re-encoded as refrel3 v1 archives against the decoded T2T-CHM13v2.0 reference, in two block sizes: q4k (Q = 4096, 12 330 370 123 B) and q16k (Q = 16384, 8 097 986 851 B), both with per-block XXH3. One tar per dataset (archives at the tar root, SHA256SUMS inside) with its SHA-256; MANIFEST.tsv gives for every assembly the source URL and hash of the HPRC indexes, the FASTA XXH3 and the SHA-256 of both archives; every archive decodes back to its source FASTA (XXH3 == source). Reader and format: panvram (FORMAT.md). The reference is not included (NCBI GCA_009914755.4, md5 of the FASTA in DATASET.md).",
+  "keywords": ["genomics", "pangenome", "HPRC", "T2T-CHM13", "compression", "random access", "GPU"],
+  "notes": "Data use (HPRC, https://humanpangenome.org/data-use/): the data are in the public domain (CC0 on the AWS Registry of Open Data). HPRC expects users not to sell all or part of the Pangenome Reference on any media, not to seek intellectual property protection that would block access to or use of any element of it, and not to take any action that could reasonably be expected to result in participant re-identification, including contacting or communicating with participants. Acknowledgement for publications: \"We would like to acknowledge the Human Pangenome Reference Consortium (BioProject ID: PRJNA730823) and its funder, the National Human Genome Research Institute (NHGRI).\" Contact: Yakiv Shavidze, aceapex.contour@outlook.com.",
+  "related_identifiers": [
+    {"identifier": "PRJNA730823", "relation": "isDerivedFrom", "scheme": "other", "resource_type": "dataset"},
+    {"identifier": "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA730823", "relation": "isDerivedFrom", "scheme": "url", "resource_type": "dataset"},
+    {"identifier": "https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_009914755.4/", "relation": "requires", "scheme": "url", "resource_type": "dataset"}
+  ]
+}
