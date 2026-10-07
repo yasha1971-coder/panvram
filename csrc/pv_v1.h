@@ -116,6 +116,7 @@ static void open_v1(const std::vector<uint8_t>& file, const std::string& path, c
     X.refname.assign((const char*)a + 138, nl);
     const uint8_t* mzp = a + V1_HDR + 2 + nl;
     if (mr > (1ull << 32) || ZSTD_getFrameContentSize(mzp, mz) != mr) fail("meta frame");
+    if (ZSTD_findFrameCompressedSize(mzp, mz) != mz) fail("meta frame count (exactly one zstd frame)");
     std::vector<uint8_t> M(mr); if (ZSTD_decompress(M.data(), mr, mzp, mz) != mr) fail("meta decompress");
     size_t i = 0; bool bad = false;
     auto need = [&](size_t k) { if (i + k > M.size()) { bad = true; return false; } return true; };

@@ -61,9 +61,10 @@ delta / recent diagonal / absolute / self / other strand at a cached locus), par
 
 On open, before any decode: magic, version, Q in the allowed set, flags, section sizes add up to the file size, block
 count = ceil(n / Q), block-hash section size, **header XXH3**, **reference SHA-256 and size equal to the loaded
-reference** (else refuse: wrong reference), meta frame size and decompression, contig lengths sum to n, case runs inside
+reference** (else refuse: wrong reference), meta frame size and decompression, the meta section is exactly one zstd
+frame (no further frame after it), contig lengths sum to n, case runs inside
 n, every model context sums to 4096 or 0, block lengths sum to the payload. On decode: every rANS stream consumed
-exactly with the final state, every copy inside the block / reference; with checks on, every block's XXH3 (if present)
+exactly with the final state, no symbol read from an all-zero context, every copy inside the block / reference; with checks on, every block's XXH3 (if present)
 and the XXH3 of the rebuilt FASTA against the header.
 
 ## 6. Versioning

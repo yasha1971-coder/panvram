@@ -154,7 +154,8 @@ RR_HD static inline int r3_decode_stream(const uint8_t* src, uint32_t n, const R
         if (!sk.op(okind, osrc, o, (uint32_t)L)) return -1;
         k++; o += (uint32_t)L; prevk = kind;
     }
-    if (d.x != R3_L || d.p != d.e) return -1;                             // the encoder starts from L: all used
+    if (d.bad || d.x != R3_L || d.p != d.e) return -1;                    // the encoder starts from L: all used; a symbol
+                                                                          // read from an all-zero context fails the block (bad)
     return (int)k;
 }
 struct R3ArraySink { RrOp* ops; uint32_t maxops, k; uint8_t* lbuf; uint32_t litcap;
