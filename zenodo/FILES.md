@@ -1,12 +1,14 @@
 # Zenodo dataset record - files (draft; not uploaded)
 
-Metadata: `zenodo/dataset.zenodo.json`. Nine files, about 20.43 GB in total (limit 50 GB per record):
+Metadata: `zenodo/dataset.zenodo.json`. Nine files, 20 429 332 480 B of tars + 0.43 MB (limit 50 GB per record). Built 2026-10-07 on ace-core in
+~/outgoing/zenodo (not uploaded); every member read back: 558/558 SHA-256 == MANIFEST.tsv in both tars; determinism: a
+second build of cohort558_q16k.tar gave the same SHA-256.
 
 | # | file | size | made by |
 |---:|---|---:|---|
-| 1 | cohort558_q4k.tar | ~12.33 GB (12 330 370 123 B of archives + SHA256SUMS + tar headers) | `scripts/make_dataset_tars.sh` |
+| 1 | cohort558_q4k.tar | 12 330 864 640 B; sha256 d0a4a0baab5bba5e573c8f2ae5dd18f2a66f6ac222c29e9809e38ad99b26ecdc | `scripts/make_dataset_tars.sh` |
 | 2 | cohort558_q4k.tar.sha256 | 84 B | same |
-| 3 | cohort558_q16k.tar | ~8.10 GB (8 097 986 851 B of archives + SHA256SUMS + tar headers) | same |
+| 3 | cohort558_q16k.tar | 8 098 467 840 B; sha256 3b8c497e9193984724128e0fd18df02d131a05c341df41df44fe3ed89a8114d5 | same |
 | 4 | cohort558_q16k.tar.sha256 | 85 B | same |
 | 5 | MANIFEST.tsv | 196 949 B | repository |
 | 6 | SHA256SUMS.q4k | 56 583 B | repository |
