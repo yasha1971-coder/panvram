@@ -1,0 +1,31 @@
+# R2: panvram CPU image under rootless dockerd (29.1.2, security ["name=seccomp,profile=builtin","name=rootless","name=cgroupns"], log-opts max-size 100m max-file 3), 2026-10-07T07:20:50Z, ace-core Linux 5.15.0-163-generic
+# image panvram-cpu:r2 id sha256:cf4044401953aef19f7eb901c04166ae1a4063904b8fa75930b39af19f5e10d1; base ubuntu:22.04@sha256:5ec03bb3441e8b0bf3b4f9cd4629a1ae763010dc3035bb8da3ae6cf026486401; pip --require-hashes (requirements.lock sha256 c22f368e2a7b38411d776f24e466bb739dc93283d22063dca5750265894192c3); panvram 0a5d8ff + this commit; build 83.8 s
+# in the image: torch 2.14.1+cpu, numpy 2.2.6, Python 3.10.12, with_cuda False
+# cmd: docker run --rm --network none -v <v1 archives>:ro -v <t2t>:ro -v .data/cohort:/cohort:ro -v <dir with source_sha256.tsv>:/r2:ro -v scripts/gate_container.py:/gate.py:ro panvram-cpu:r2 bash -c 'ulimit -c 0 && python3 /gate.py /cohort /r2/source_sha256.tsv'
+# source_sha256.tsv (SHA-256 of the uncompressed sources, computed outside; sha256 f0dd44a07a8c91018bc2bac5560657de0fff94d878f3216d23ac198da48fcdb2):
+#   y1_HG00438.1	d18be91b6e312259fcf62946f8278fe2982bb2f44aa23986b8578480c83e7bb5	0fae37e31e54fb34
+#   y1_HG00438.2	21b9bedeee455638d304c858577273480c34140eec706de7bd8e33ab7cff6aa0	dd9c58efe72c3e7e
+#   y1_HG00621.1	cc2d6a100e01366300e9b98bf4a4e0851a2af289b62d3fc6f36350835a33a967	92d36c1ffac5c77b
+#   y1_HG00621.2	96af478e6dff1202399d88e4c5483d45790ebb2e171e23f53c67d66db6154506	1ddaf8b98d9bee03
+#   y1_HG00673.1	f2e8f8ddfbbb98832ab6e4a960c865822f2ee188444270c3e0eaf4b7a7a8c069	503057c75802fbde
+#   y1_HG00673.2	52601fc032760782398adf1aea58c628c7e844666a05e958c6f7601b018e6fd1	58d83e29d3fad021
+#   y1_HG00735.1	abfd113af4606e590d17168b04cc7f636bdc9ba16df33ac3ce6b95cb22d29d29	7c0e229355ff2cfb
+#   y1_HG00735.2	fbfe4a8adca0126d23f8c3eddbebf1b912ed4c4bb09d5c57548ce03fd10c7ee2	125726a7e89394cd
+GATE q4k y1_HG00438.1	check_full == header (0fae37e31e54fb34, MANIFEST 0fae37e31e54fb34)	FASTA 3062940590 B sha256 == source	8.2 s
+GATE q4k y1_HG00438.2	check_full == header (dd9c58efe72c3e7e, MANIFEST dd9c58efe72c3e7e)	FASTA 3073690027 B sha256 == source	8.0 s
+GATE q4k y1_HG00621.1	check_full == header (92d36c1ffac5c77b, MANIFEST 92d36c1ffac5c77b)	FASTA 2942281822 B sha256 == source	7.7 s
+GATE q4k y1_HG00621.2	check_full == header (1ddaf8b98d9bee03, MANIFEST 1ddaf8b98d9bee03)	FASTA 3060821366 B sha256 == source	8.1 s
+GATE q4k y1_HG00673.1	check_full == header (503057c75802fbde, MANIFEST 503057c75802fbde)	FASTA 2962299991 B sha256 == source	7.7 s
+GATE q4k y1_HG00673.2	check_full == header (58d83e29d3fad021, MANIFEST 58d83e29d3fad021)	FASTA 3091765147 B sha256 == source	8.7 s
+GATE q4k y1_HG00735.1	check_full == header (7c0e229355ff2cfb, MANIFEST 7c0e229355ff2cfb)	FASTA 3071469709 B sha256 == source	8.6 s
+GATE q4k y1_HG00735.2	check_full == header (125726a7e89394cd, MANIFEST 125726a7e89394cd)	FASTA 3075774746 B sha256 == source	7.9 s
+GATE q16k y1_HG00438.1	check_full == header (0fae37e31e54fb34, MANIFEST 0fae37e31e54fb34)	FASTA 3062940590 B sha256 == source	8.3 s
+GATE q16k y1_HG00438.2	check_full == header (dd9c58efe72c3e7e, MANIFEST dd9c58efe72c3e7e)	FASTA 3073690027 B sha256 == source	8.4 s
+GATE q16k y1_HG00621.1	check_full == header (92d36c1ffac5c77b, MANIFEST 92d36c1ffac5c77b)	FASTA 2942281822 B sha256 == source	8.2 s
+GATE q16k y1_HG00621.2	check_full == header (1ddaf8b98d9bee03, MANIFEST 1ddaf8b98d9bee03)	FASTA 3060821366 B sha256 == source	8.5 s
+GATE q16k y1_HG00673.1	check_full == header (503057c75802fbde, MANIFEST 503057c75802fbde)	FASTA 2962299991 B sha256 == source	8.1 s
+GATE q16k y1_HG00673.2	check_full == header (58d83e29d3fad021, MANIFEST 58d83e29d3fad021)	FASTA 3091765147 B sha256 == source	8.5 s
+GATE q16k y1_HG00735.1	check_full == header (7c0e229355ff2cfb, MANIFEST 7c0e229355ff2cfb)	FASTA 3071469709 B sha256 == source	8.5 s
+GATE q16k y1_HG00735.2	check_full == header (125726a7e89394cd, MANIFEST 125726a7e89394cd)	FASTA 3075774746 B sha256 == source	8.4 s
+GATE RESULT 16/16 PASS	151 s
+wall 151.43 s
