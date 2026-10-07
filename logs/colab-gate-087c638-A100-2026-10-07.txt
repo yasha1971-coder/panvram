@@ -1,0 +1,85 @@
+# panvram on the GPU - NVIDIA A100-SXM4-40GB, 40960 MiB, 580.82.07, 8.0; panvram e768115dc02479ec5a88c4f6c466733e411ec5f7; encoder aceapex 5b6d5cec0f5962a561ac48822a1b5c48793a5b47; 2026-10-07T12:14:40Z; 12 host threads
+Cuda compilation tools, release 13.0, V13.0.88
+Build cuda_13.0.r13.0/compiler.36424714_0
+torch 2.11.0+cu130 cuda 13.0 arch list ['sm_75', 'sm_80', 'sm_86', 'sm_90', 'sm_100', 'sm_120']
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+
+## archives (encoded on the VM)
+ARCHIVE q4k HG00438.1 21765741 B sha256 7a0b3cc91237ddb40f070949c02c65701818042977163160ddb16b1a09edda8a MANIFEST 7a0b3cc91237ddb40f070949c02c65701818042977163160ddb16b1a09edda8a
+ARCHIVE q4k HG00438.2 21398081 B sha256 3bb1e1db6eef79aee51373219ab0115f7b0395c77643f7b69a2c5120698fe7f2 MANIFEST 3bb1e1db6eef79aee51373219ab0115f7b0395c77643f7b69a2c5120698fe7f2
+ARCHIVE q4k HG00621.1 21055988 B sha256 cf9bac5de5d7e6d9dc592f23edb3dc5650e238a9ecd529550578eab5a1312c8a MANIFEST cf9bac5de5d7e6d9dc592f23edb3dc5650e238a9ecd529550578eab5a1312c8a
+ARCHIVE q4k HG00621.2 20912606 B sha256 b1818cc77d3cf031e8a6cec0602da53515854f3c6b3112a0ec4ba0090436fc14 MANIFEST b1818cc77d3cf031e8a6cec0602da53515854f3c6b3112a0ec4ba0090436fc14
+ARCHIVE q16k HG00438.1 14178830 B sha256 c3f6999af29c9d4e235d07b93f50663e337e2ddfbe3a3496010131ec07e9b729 MANIFEST c3f6999af29c9d4e235d07b93f50663e337e2ddfbe3a3496010131ec07e9b729
+ARCHIVE q16k HG00438.2 13783523 B sha256 10a2480c3581a42ec50e3d44c02a0a77378227a9a408765c34d484a5b8b3ece8 MANIFEST 10a2480c3581a42ec50e3d44c02a0a77378227a9a408765c34d484a5b8b3ece8
+ARCHIVE q16k HG00621.1 13747486 B sha256 7179912a6c4dcd284224f33700adcd9266d9c8a868e24d23fa90c5b961c929ce MANIFEST 7179912a6c4dcd284224f33700adcd9266d9c8a868e24d23fa90c5b961c929ce
+ARCHIVE q16k HG00621.2 13390703 B sha256 4e48d26a6b9b52c47c206340ec06739389951a573dd0d549e0203abe6bf020c9 MANIFEST 4e48d26a6b9b52c47c206340ec06739389951a573dd0d549e0203abe6bf020c9
+
+## S0 build
+S0 pip install -e . : 134 s
+S0 panvram 1.0.0 with_cuda True device NVIDIA A100-SXM4-40GB sm_80
+
+## S1 tests/test_synth.py
+..............................                                           [100%]
+30 passed in 7.57s
+
+## S2 gate
+q4k:
+GATE form	packed_reference 0	compact_blocks 0
+GATE open	4 assemblies	dataset q4k (Q 4096)	device cuda:0	20.9 s	resident 3.211 GB (reference 3.1173, payload 0.0575, block table 0.0351, model tables 0.0011)
+GATE sample	1024 x 8192 on cuda:0	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE fasta	4 assemblies rebuilt by the CPU decoder, XXH3 == source and == source files	33 s
+GATE RESULT	PASS
+q16k:
+GATE form	packed_reference 0	compact_blocks 0
+GATE open	4 assemblies	dataset q16k (Q 16384)	device cuda:0	20.8 s	resident 3.175 GB (reference 3.1173, payload 0.0477, block table 0.0088, model tables 0.0011)
+GATE sample	1024 x 8192 on cuda:0	1024 == FASTA	0 differ	CPU decoder windows ==
+GATE fetch	1000 coordinates (length 1 .. 2^20, contig by length)	1000 == FASTA	0 differ
+GATE fasta	4 assemblies rebuilt by the CPU decoder, XXH3 == source and == source files	33 s
+GATE RESULT	PASS
+
+## S3 throughput
+BENCH open	NVIDIA A100-SXM4-40GB	4 assemblies	q4k Q 4096	20.9 s	resident 3.211 GB
+BENCH sample	W 1024	n 1024	tokens 0	818,133 windows/s	0.84 GB/s out	1.25 ms per call
+BENCH sample	W 1024	n 1024	tokens 1	734,303 windows/s	0.75 GB/s out	1.39 ms per call
+BENCH sample	W 1024	n 16384	tokens 0	6,423,208 windows/s	6.58 GB/s out	2.55 ms per call
+BENCH sample	W 1024	n 16384	tokens 1	6,299,838 windows/s	6.45 GB/s out	2.60 ms per call
+BENCH sample	W 1024	n 65536	tokens 0	12,601,910 windows/s	12.90 GB/s out	5.20 ms per call
+BENCH sample	W 1024	n 65536	tokens 1	12,285,733 windows/s	12.58 GB/s out	5.33 ms per call
+BENCH sample	W 8192	n 1024	tokens 0	757,972 windows/s	6.21 GB/s out	1.35 ms per call
+BENCH sample	W 8192	n 1024	tokens 1	716,849 windows/s	5.87 GB/s out	1.43 ms per call
+BENCH sample	W 8192	n 16384	tokens 0	4,327,599 windows/s	35.45 GB/s out	3.79 ms per call
+BENCH sample	W 8192	n 16384	tokens 1	3,759,447 windows/s	30.80 GB/s out	4.36 ms per call
+BENCH sample	W 8192	n 65536	tokens 0	6,457,497 windows/s	52.90 GB/s out	10.15 ms per call
+BENCH sample	W 8192	n 65536	tokens 1	5,291,579 windows/s	43.35 GB/s out	12.38 ms per call
+BENCH sample	W 65536	n 1024	tokens 0	431,976 windows/s	28.31 GB/s out	2.37 ms per call
+BENCH sample	W 65536	n 1024	tokens 1	392,569 windows/s	25.73 GB/s out	2.61 ms per call
+BENCH sample	W 65536	n 16384	tokens 0	1,185,831 windows/s	77.71 GB/s out	13.82 ms per call
+BENCH sample	W 65536	n 16384	tokens 1	852,434 windows/s	55.87 GB/s out	19.22 ms per call
+BENCH fetch	length 100	median 0.34 ms (one call, sync)
+BENCH fetch	length 10000	median 0.28 ms (one call, sync)
+BENCH fetch	length 1000000	median 0.45 ms (one call, sync)
+BENCH fetch	length 10000000	median 1.62 ms (one call, sync)
+BENCH done
+BENCH open	NVIDIA A100-SXM4-40GB	4 assemblies	q16k Q 16384	20.9 s	resident 3.175 GB
+BENCH sample	W 1024	n 1024	tokens 0	284,771 windows/s	0.29 GB/s out	3.60 ms per call
+BENCH sample	W 1024	n 1024	tokens 1	345,685 windows/s	0.35 GB/s out	2.96 ms per call
+BENCH sample	W 1024	n 16384	tokens 0	1,564,778 windows/s	1.60 GB/s out	10.47 ms per call
+BENCH sample	W 1024	n 16384	tokens 1	1,507,136 windows/s	1.54 GB/s out	10.87 ms per call
+BENCH sample	W 1024	n 65536	tokens 0	2,156,687 windows/s	2.21 GB/s out	30.39 ms per call
+BENCH sample	W 1024	n 65536	tokens 1	2,162,670 windows/s	2.21 GB/s out	30.30 ms per call
+BENCH sample	W 8192	n 1024	tokens 0	294,367 windows/s	2.41 GB/s out	3.48 ms per call
+BENCH sample	W 8192	n 1024	tokens 1	313,757 windows/s	2.57 GB/s out	3.26 ms per call
+BENCH sample	W 8192	n 16384	tokens 0	1,214,551 windows/s	9.95 GB/s out	13.49 ms per call
+BENCH sample	W 8192	n 16384	tokens 1	1,153,865 windows/s	9.45 GB/s out	14.20 ms per call
+BENCH sample	W 8192	n 65536	tokens 0	1,607,791 windows/s	13.17 GB/s out	40.76 ms per call
+BENCH sample	W 8192	n 65536	tokens 1	1,511,871 windows/s	12.39 GB/s out	43.35 ms per call
+BENCH sample	W 65536	n 1024	tokens 0	199,218 windows/s	13.06 GB/s out	5.14 ms per call
+BENCH sample	W 65536	n 1024	tokens 1	183,311 windows/s	12.01 GB/s out	5.59 ms per call
+BENCH sample	W 65536	n 16384	tokens 0	462,480 windows/s	30.31 GB/s out	35.43 ms per call
+BENCH sample	W 65536	n 16384	tokens 1	402,858 windows/s	26.40 GB/s out	40.67 ms per call
+BENCH fetch	length 100	median 0.55 ms (one call, sync)
+BENCH fetch	length 10000	median 0.43 ms (one call, sync)
+BENCH fetch	length 1000000	median 0.78 ms (one call, sync)
+BENCH fetch	length 10000000	median 3.46 ms (one call, sync)
+BENCH done
