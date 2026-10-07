@@ -43,11 +43,12 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | reader | number (log) | commit / log |
 |---|---|---|
 | CPU (panvram) | 1116/1116 check_full; gate 8 assemblies q4k + q16k: 1024/1024 windows, 1000/1000 fetches == FASTA | panvram 087c638 `logs/check-full-1116-2026-10-07.log`; f5feecd `logs/gate-cpu-2026-10-04.log` (cb0e2c08...) |
-| decoder written from the specification | **Python** (not C99): 26/26 full decodes, 1 300/1 300 fetches, 9/9 refusals on the clean-room package; ops == frozen code on every block (92 938 + 1 208); rANS trace == frozen code (9 358 events) | aceapex 83ebfd9 `research/cleanroom/v2/REPORT_V2.md` (ebb65bd6...), `specdec.py` |
+| independent implementation from the specification (Python), clean-room round 2 | a new agent with no sources, only the package `refrel3_cleanroom_v2.zip` (SHA-256 291ae64d1ca43745f4063b49d5c2b310dc34bae3e701ec2147b4737ffc87bfb6): full decodes 26/26, fetches 1 300/1 300, refusals 9/9 at the expected stage, test vectors 372/372; gaps reported 9, blocking 0 | round-2 report of the user, 2026-10-07 - **NO LOG HERE** until the report file is added; package on Drive gdrive:ACEAPEX-OVH/outgoing (check 0 differences) |
+| our check decoder from the specification | Python (not C99): 26/26 full decodes, 1 300/1 300 fetches, 9/9 refusals on the clean-room package; ops == frozen code on every block (92 938 + 1 208); rANS trace == frozen code (9 358 events) | aceapex 83ebfd9 `research/cleanroom/v2/REPORT_V2.md` (ebb65bd6...), `specdec.py` |
 | GPU | Colab gate, 8 archives (sha256 8/8 == MANIFEST), q4k and q16k PASS | **NO LOG HERE** (MyDrive/aceapex_logs/panvram_<date>.txt); reader 087c638 not yet run on a GPU |
 | region, haplotype coordinates | samtools 1.24 faidx on the 8 source FASTA vs panvram fetch, protocol v1.1 coordinates [start0,end0): 8000/8000 q4k, 8000/8000 q16k | panvram 0a5d8ff `logs/samtools-truth-2026-10-07/RESULT.txt` (919de928...), requests.tsv (359caa23...) |
 | reproduce | `scripts/samtools_truth.py <work> .data/cohort sources.tsv 1000`; `scripts/check_full_all.py ...` | |
-| limitation | reference (T2T) coordinates: not done (L1; aceapex research/bench2610/f_liftover). A C99 decoder of refrel3 v1 does not exist. |
+| limitation | reference (T2T) coordinates: not done (L1; aceapex research/bench2610/f_liftover). A C99 decoder of refrel3 v1 does not exist; the independent implementation is Python. |
 
 ## 5. Corruption
 
