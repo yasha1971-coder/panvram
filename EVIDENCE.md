@@ -14,8 +14,9 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | commit / log | panvram cf4efd0 `logs/resident-558-2026-10-06.log` (sha256 6e46b65e...); panvram 087c638 `logs/check-full-1116-2026-10-07.log` (e0f0f539...) |
 | artifacts | MANIFEST.tsv (3b6941ef...) = SHA-256 of the 1 116 archives (SHA256SUMS.q4k / .q16k) |
 | reproduce | `python3 scripts/resident.py <v1 dir> q4k` (resident bytes); `python3 scripts/check_full_all.py <v1 dir> <manifest_v1.tsv> <t2t.fa>` |
-| GPU part of the statement | Colab **RTX PRO 6000 Blackwell Server** (sm_120, 96 GB), panvram 02b23d0: 16.642 GB VRAM (nvidia-smi 0 -> 16 441 MiB), open 12.9 s, 558/558 XXH3 on the GPU, 1.40 M windows/s - as reported by the user; **NO LOG HERE** until `panvram_cohort558_2026-10-05.txt` and `panvram_2026-10-04.txt` are added |
-| limitation | until the Colab log is added, the 558-on-one-GPU statement rests on CPU-path byte counts only. |
+| GPU part of the statement (log) | Colab **NVIDIA RTX PRO 6000 Blackwell Server Edition** (97 887 MiB, driver 580.82.07, sm_120, CUDA 13.0, torch 2.11.0+cu130), panvram 02b23d0, q4k, 558 assemblies (0 missing): open 12.9 s, resident 16.642 GB (reference 3.117, payload 8.448, block table 4.923, model tables 0.154), torch allocated 16.646 GB, nvidia-smi used 0 -> 16 441 MiB; sample 1024 x 8192: median 0.73 ms per call = 1 401 185 windows/s (11.48 GB/s, 5 calls, 474 assemblies hit) == CPU decoder; fetch 1000/1000 == CPU decoder (median 0.10 ms); full decode on the GPU 558/558 XXH3 == manifest (1.680 T bases, 3.5 min); RESULT PASS |
+| GPU commit / log | panvram `logs/colab-cohort558-blackwell-2026-10-05.txt` (sha256 2097320b...) |
+| limitation | one GPU type (Blackwell, 96 GB) and q4k default form only; the windows/s figure is one batch size (1 024 x 8 192, median of 5 calls); compact forms on the GPU: C1 full run pending. |
 
 ## 2. Window law
 
@@ -36,7 +37,7 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | commit / log | aceapex 7e4387a `research/refrel/logs/cohort-v1-BUILD.md` (sha256 3e068c12...) |
 | clean-room rebuild | aceapex 05477c2 `research/cleanroom/repro.sh`: frozen tool rebuilt from 5b6d5ce, binary b7d1842d..., 24 fixtures byte-identical, package zip 75ff3f60... reproduced |
 | reproduce | the g++ line of cohort-v1-BUILD.md; `bash research/cleanroom/repro.sh <dir>` |
-| limitation | another compiler can give other bytes. gcc 13.3.0 (Colab) gave 21 757 194 B for y1_HG00438.1 q4k - **the cause is not established** (ledger C-101: hypothesis; the log above shows FMA changes bytes on gcc 11.4, not that FMA is the gcc 13.3 difference); Colab log NO LOG HERE. |
+| limitation | another compiler can give other bytes. gcc 13.3.0 (Colab) gave 21 757 194 B for y1_HG00438.1 q4k (all 8 VM-encoded archives differ from MANIFEST, each decodes == FASTA; panvram `logs/colab-gate-blackwell-2026-10-04.txt`) - **the cause is not established** (ledger C-101: hypothesis; FMA is shown to change bytes on gcc 11.4, not shown to be the gcc 13.3 difference). |
 
 ## 4. One archive, several readers
 
@@ -46,7 +47,7 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | independent implementation from the specification (Python), clean-room round 2 | a new agent with no sources, only the package `refrel3_cleanroom_v2.zip` (SHA-256 291ae64d1ca43745f4063b49d5c2b310dc34bae3e701ec2147b4737ffc87bfb6): full decodes 26/26, fetches 1 300/1 300, refusals 9/9 at the expected stage, test vectors 372/372; gaps reported 9, blocking 0 | aceapex 61f04cf `research/cleanroom/round2/RESULTS_R2.md`, results.json, SPEC_GAPS_R2.md (22d493f6...) from cleanroom_round2.tar.gz (72187a3b...); refusals: stage 9/9, exact reason string 4/9 (§15 defines no decode-stage strings: gap G2) |
 | our check decoder from the specification | Python (not C99): 26/26 full decodes, 1 300/1 300 fetches, 9/9 refusals on the clean-room package; ops == frozen code on every block (92 938 + 1 208); rANS trace == frozen code (9 358 events) | aceapex 83ebfd9 `research/cleanroom/v2/REPORT_V2.md` (ebb65bd6...), `specdec.py` |
 | GPU, reader 087c638 (with the two stricter checks) | Colab **NVIDIA A100-SXM4-40GB** (sm_80, driver 580.82.07, CUDA 13.0, torch 2.11.0+cu130), panvram e768115, 4 assemblies: q4k PASS and q16k PASS - 1024/1024 windows of 8 192 == FASTA and == the CPU decoder, 1000/1000 fetches == FASTA, 4 assemblies rebuilt, XXH3 == source and == source files; fast tests 30 passed. A100 numbers are not compared with the Blackwell run of 05.10 | panvram `logs/colab-gate-087c638-A100-2026-10-07.txt` (sha256 d0695bf8...) |
-| GPU, earlier gate | Colab gate, 8 archives (sha256 8/8 == MANIFEST), q4k and q16k PASS | **NO LOG HERE** (MyDrive/aceapex_logs/panvram_<date>.txt) |
+| GPU, earlier gate | Colab RTX PRO 6000 Blackwell (sm_120), panvram ed986f0: archives from ace-core 8/8 sha256 == MANIFEST; q4k and q16k gate PASS (4 assemblies, 1024/1024 windows, 1000/1000 fetches, FASTA XXH3 == source) | panvram `logs/colab-gate-blackwell-2026-10-04.txt` (sha256 e0e647e6...) |
 | region, haplotype coordinates | samtools 1.24 faidx on the 8 source FASTA vs panvram fetch, protocol v1.1 coordinates [start0,end0): 8000/8000 q4k, 8000/8000 q16k | panvram 0a5d8ff `logs/samtools-truth-2026-10-07/RESULT.txt` (919de928...), requests.tsv (359caa23...) |
 | reproduce | `scripts/samtools_truth.py <work> .data/cohort sources.tsv 1000`; `scripts/check_full_all.py ...` | |
 | limitation | reference (T2T) coordinates: not done (L1; aceapex research/bench2610/f_liftover). A C99 decoder of refrel3 v1 does not exist; the independent implementation is Python. |
