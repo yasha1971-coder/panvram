@@ -73,28 +73,28 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
   the same windows cut from the FASTA the CPU decoder rebuilds (every block XXH3 and the FASTA XXH3 == the source's;
   `PANVRAM_SOURCES` also compares with the source files) byte for byte, and == the CPU decoder's own windows; fetch at
   1000 random coordinates (contig by length, length 1 .. 2^20) == the FASTA. `PANVRAM_COHORT=dir pytest -s tests/test_gate.py`.
+- `notebooks/quickstart_558.ipynb` - public quickstart: downloads the package, T2T (md5) and the archives listed in
+  MANIFEST.tsv (SHA-256 checked), then the 558-assembly run of `scripts/cohort558.py` per resident form (dataset location:
+  placeholder until published).
 - `run_colab_panvram.sh` - CUDA build, both tests and the gate for q4k and q16k on four HPRC haplotypes, throughput
   (`scripts/bench.py`). From Drive: the tarball (`MyDrive/panvram/panvram.tar.gz`, `git archive`) and the eight
   archives of MANIFEST.tsv (`MyDrive/panvram/cohort/*.rr3` + `SHA256SUMS`, checked); without them it encodes on the VM.
 
-## Measured (evidence only; each number with its log)
+## Measured (each number from a file in `logs/`)
 
-| what | number | evidence |
+| what | number | log |
 |---|---|---|
-| fast tests, CPU path (ace-core) | 5 passed, 1 skipped (no CUDA) | `logs/tests-cpu-2026-10-04.log` |
-| public gate, CPU path: 8 HPRC assemblies + T2T, q4k and q16k | 1024 / 1024 windows of 8 192 == FASTA; 1000 / 1000 fetches == FASTA; 8 FASTA rebuilt, XXH3 == source | `logs/gate-cpu-2026-10-04.log` |
-| public gate, GPU path (Colab): 4 HPRC assemblies, archives == MANIFEST.tsv (8 / 8 SHA-256), q4k and q16k | PASS | Colab log `MyDrive/aceapex_logs/panvram_<date>.txt` (not in this repository) |
-| resident on the device, 8 assemblies, q4k (CPU-path pools) | reference 3.117 GB + payload 0.115 + block table 0.070 + model tables 0.002 GB | `logs/gate-cpu-2026-10-04.log` |
-| same, q16k | reference 3.117 GB + payload 0.095 + block table 0.018 + model tables 0.002 GB | same |
-| cohort re-encoded to v1: 558 HPRC assemblies, each decoded back == source (XXH3) | q4k 22.10 MB, q16k 14.51 MB mean per assembly with block XXH3; 1.707 TB FASTA | `MANIFEST.tsv`; aceapex `research/refrel/RESULTS.md` 2e |
-| size per sample, N = 50, without block hashes | q4k 16.33 MB, q16k 13.14 MB; AGC 3.2.4 with T2T 8.65 MB, without reference 22.70 MB | aceapex `research/agc_vs_refrel3/README.md` |
-| CPU in process, N = 50, 10 000 random windows of 8 192 (ace-core, 1 / 16 threads) | q4k 128 459 / 994 036 windows/s; q16k 74 819 / 685 730; AGC with T2T 988 / 4 478 | aceapex `research/agc_vs_refrel3/SUMMARY_runs.md` |
-| CPU in process, whole sample (base stream), 1 / 16 threads | q4k 1.31 / 0.233 s per sample; AGC with T2T 7.76 / 2.99 s | same |
-| one-thread full decode to FASTA (D_Q), HPRC N = 4 | q4k 0.876 GB/s, q16k 0.915 GB/s | hw-apex-bench PR #63 `review/axis3/results/ace-core-2026-10-05-407088c-dq/SUMMARY.md` |
-| corruption, 6 kinds x 10 000 cases per archive kind | with block XXH3: 0 silent (q4k and q16k); without: 1 798 / 2 145 silent; 0 hang, 0 crash in 240 000 | aceapex `research/refrel/logs/v1-corrupt-2026-10-04.log` |
+| 558 assemblies resident on one GPU, q4k, four resident forms (Colab NVIDIA A100-SXM4-80GB, sm_80, panvram 56c32dc) | default 16.642 GB (nvidia-smi 16 310 MiB), 743 271 windows/s; 2-bit reference 14.304 GB, 674 822 /s; compact block table 13.972 GB, 710 235 /s; **both compact 11.634 GB (nvidia-smi 11 534 MiB), 736 762 windows/s**; every form: sample == CPU decoder, 1000 / 1000 fetches, full decode on the GPU 558 / 558 XXH3 == manifest, PASS | `logs/colab-c1-558-forms-A100-2026-10-07.log` |
+| 558 assemblies resident, default form (Colab NVIDIA RTX PRO 6000 Blackwell Server Edition, sm_120, panvram 02b23d0) | 16.642 GB (nvidia-smi 0 -> 16 441 MiB), open 12.9 s, 1 401 185 windows/s (1 024 x 8 192, median of 5 calls), 1000 / 1000 fetches, 558 / 558 XXH3 == manifest, PASS | `logs/colab-cohort558-blackwell-2026-10-05.txt` |
+| public gate on the GPU, reader with the two stricter checks (Colab NVIDIA A100-SXM4-40GB, panvram e768115), 4 HPRC assemblies, q4k and q16k | 1024 / 1024 windows of 8 192 == FASTA and == CPU decoder, 1000 / 1000 fetches, 4 FASTA rebuilt XXH3 == source files; fast tests 30 passed; PASS | `logs/colab-gate-087c638-A100-2026-10-07.txt` |
+| check_full of every manifest archive, CPU path (ace-core) | 1116 / 1116 (558 x q4k / q16k) XXH3 == header == manifest | `logs/check-full-1116-2026-10-07.log` |
+| region fetch against samtools 1.24 on the source FASTA, 8 assemblies x 1 000 requests, [start0, end0) | 8000 / 8000 q4k, 8000 / 8000 q16k | `logs/samtools-truth-2026-10-07/RESULT.txt` |
+| CPU container, `--network none`, base image pinned by digest, wheels by hash | 8 assemblies x q4k / q16k: check_full and full decode == source SHA-256, 16 / 16 | `logs/r2-gate-2026-10-07.log` |
+| independent implementation from the specification (Python, clean-room round 2: no sources, the specification package only) | full decodes 26 / 26, fetches 1 300 / 1 300, refusals 9 / 9 at the expected stage, test vectors 372 / 372 | `logs/cleanroom-round2-2026-10-07/RESULTS_R2.md` |
+| archive sizes, 558 assemblies | q4k 16.22 MB, q16k 13.04 MB per assembly without block hashes; AGC 3.2.4 (one create, T2T inside, T2T alone subtracted) 5.40 MB | `logs/sizes-558-2026-10-06.txt` |
 
-aceapex paths are on branch `refrel` of github.com/yasha1971-coder/aceapex (the N = 50 comparison is a local commit
-until published). The GPU throughput of the resident cohort is not in this table: no evidence yet.
+Statement by statement, with commits, SHA-256 of every artifact, reproduction commands and one limitation each:
+[EVIDENCE.md](EVIDENCE.md).
 
 ## MANIFEST.tsv
 
@@ -124,14 +124,31 @@ Ported from aceapex (github.com/yasha1971-coder/aceapex, branch `refrel`) `resea
 
 ## Limitations
 
-- **Size against AGC.** On N = 50 HPRC samples refrel3 takes 13.1 (q16k) - 16.3 (q4k) MB per sample without block
-  hashes (14.6 - 22.2 MB with them) against 8.65 MB for AGC 3.2.4 with T2T: AGC also compresses against the other
+- **Size against AGC.** On the 558 HPRC assemblies refrel3 takes 13.04 (q16k) - 16.22 (q4k) MB per assembly without
+  block hashes against 5.40 MB for AGC 3.2.4 (`logs/sizes-558-2026-10-06.txt`): AGC also compresses against the other
   assemblies, refrel3 encodes every assembly alone against the reference.
-- **The reference is resident decoded.** T2T-CHM13v2.0 sits on the device as 3.117 G bases (FASTA 3.16 GB) for every
-  cohort, on top of the archives.
+- **"Fits in 16 GB" is a memory measurement, not a run on a 16 GB card.** The compact forms hold 558 assemblies in
+  11.634 GB (nvidia-smi 11 534 MiB) on an 80 GB A100; no run was made on a 16 GB card.
+- **Archive bytes are reproducible with the encoder recipe only.** gcc 11.4.0 `-O3 -march=x86-64-v3 -funroll-loops`
+  (any thread count, any x86-64-v3+ CPU) gives the manifest's bytes; other compilers or flags can give other bytes
+  (gcc 13.3 on Colab did) that decode to the same FASTA (FORMAT.md section 7).
+- **Coordinates are the haplotype's own.** `fetch` takes an assembly's contig and 0-based offsets; there is no
+  translation from reference (T2T) coordinates to haplotype coordinates.
+- **The reference is resident decoded.** T2T-CHM13v2.0 sits on the device as 3.117 G bases (0.779 GB in the 2-bit
+  form) for every cohort, on top of the archives.
 - **GPU: CUDA only, sm_80 or newer.** Other devices use the CPU path. The GPU path does not check block XXH3 (the CPU
   `fasta` and `windows(..., verify)` do).
 - One block size per cohort; reference under 2^32 bases; an assembly's payload under 4 GiB.
-- Encoding is not part of panvram (aceapex `refrel3v1 encode`); archive bytes depend on the encoder build (FORMAT.md 7).
+- Encoding is not part of panvram (aceapex `refrel3v1 encode`).
 
-License: MIT (see LICENSE); `csrc/xxhash.h` is BSD-2-Clause (xxHash, its own notice kept).
+## Data use (HPRC)
+
+The cohort is the Human Pangenome Reference Consortium's assemblies (public domain / CC0 on the AWS Registry of Open
+Data; full terms quoted in [DATASET.md](DATASET.md)). The HPRC asks users not to sell all or part of the Pangenome
+Reference, not to seek intellectual property protection that would block access to it, and not to take any action that
+could reasonably be expected to result in participant re-identification, including contacting participants. When
+publishing results that use it, acknowledge: "We would like to acknowledge the Human Pangenome Reference Consortium
+(BioProject ID: PRJNA730823) and its funder, the National Human Genome Research Institute (NHGRI)."
+
+License: MIT (see LICENSE), Yakiv Shavidze; `csrc/xxhash.h` is BSD-2-Clause (xxHash, its own notice kept).
+Cite: [CITATION.cff](CITATION.cff) (ORCID 0009-0008-3622-3448).
