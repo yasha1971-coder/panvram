@@ -1,0 +1,11 @@
+# panvram 4686751 + scripts/samtools_truth.py, ace-core CPU, 2026-10-07T07:05:33Z; Linux 5.15.0-163-generic; samtools 1.24 Using htslib 1.24 
+# coordinates: hw-apex protocol v1.1 (PROTOCOL_AXIS3.md sha256 f0bb442a804d5989a6e6262304e46250cdf7a93c815038729a1ad21e8927402a), [start0,end0) -> samtools contig:start0+1-end0, panvram fetch(start0, end0-start0); uppercase
+# sources: 8 first assemblies of MANIFEST.tsv; source .fa.gz sha256 == manifest; FASTA XXH3 == manifest for all 8 (4 plain, 4 recompressed to BGZF from the verified gz, stream XXH3 checked)
+# method check before the run: 10 requests on y1_HG00438.1, q4k 10/10 q16k 10/10; negative control (start shifted by -1) 10/10 differ
+# cmd: LD_LIBRARY_PATH=~/build/htslib-latest/lib SAMTOOLS=~/build/htslib-latest/bin/samtools .venv/bin/python scripts/samtools_truth.py <work> .data/cohort sources.tsv 1000
+requests 8000 (8 assemblies x 1000) requests.tsv sha256 359caa2364f1056058ac4e234fcb78ef3e7cb828ce33a56f79e2301f5468ef12
+truth.tsv sha256 da8a8ff774dd381fe31baf63461214103b92ce50a05653c8bf662ecc5e06e1e5
+q4k: panvram fetch == samtools 8000/8000
+q16k: panvram fetch == samtools 8000/8000
+RESULT PASS
+58.21 s wall, peak RSS 3 920 792 KB
