@@ -17,8 +17,14 @@ sha, md5 = h256.hexdigest(), hmd5.hexdigest()
 
 
 def server_files():
+    """file list of the draft; 5 attempts (the listing itself answers 504 now and then)"""
     req = urllib.request.Request(f"https://zenodo.org/api/deposit/depositions/{state['id']}/files"); req.add_header("Authorization", "Bearer " + TOKEN)
-    with urllib.request.urlopen(req, timeout=120) as r: return {f["filename"]: f for f in json.load(r)}
+    for attempt in range(1, 6):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r: return {f["filename"]: f for f in json.load(r)}
+        except Exception as e:
+            print(f"{name}: file list attempt {attempt}: {type(e).__name__} {getattr(e, 'code', '')}", file=sys.stderr, flush=True); time.sleep(30 * attempt)
+    return {}
 
 
 t0 = time.time(); verdict = None

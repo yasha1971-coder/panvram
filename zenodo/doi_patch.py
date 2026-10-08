@@ -20,18 +20,16 @@ for r in z.get("related_identifiers", []):
 z["related_identifiers"] = [r for r in z["related_identifiers"] if not r["identifier"].startswith(REPO_URL)] + [{"identifier": REPO_URL, "relation": "isSupplementTo", "scheme": "url", "resource_type": "software"}]
 edits[p] = json.dumps(z, indent=2, ensure_ascii=False) + "\n"
 p = Path("README.md"); s = p.read_text()
-s = s.replace("Version 1.0.0 (prepared locally, not published). Numbers below come only from the logs named next to them.",
+s = s.replace("Version 1.0.0. Numbers below come only from the logs named next to them.",
               f"Version 1.0.0. Repository: {REPO_URL}. Dataset (the 558 refrel3 v1 archives, q4k and q16k): DOI {DOI}.\nNumbers below come only from the logs named next to them.")
 edits[p] = s
 p = Path("notebooks/quickstart_558.ipynb"); nb = json.loads(p.read_text())
 for c in nb["cells"]:
     src = "".join(c["source"])
-    src = src.replace('DATASET_URL = "https://zenodo.org/records/REPLACE-RECORD-ID/files"   # placeholder: the dataset record (cohort558_<dataset>.tar + .sha256)',
-                      f'DATASET_URL = "https://zenodo.org/records/{RECORD}/files"   # dataset record, DOI {DOI}')
-    src = src.replace('PANVRAM_SRC = "https://REPLACE-WITH-PANVRAM-RELEASE/panvram-1.0.0.tar.gz"  # placeholder: the package release',
-                      f'PANVRAM_SRC = "{REPO_URL}/archive/refs/tags/v1.0.0.tar.gz"  # the package release (tag v1.0.0)')
-    src = src.replace("**Before running:** set `DATASET_URL` to the dataset record (placeholder until it exists) and `PANVRAM_SRC` to the package",
-                      f"**Before running:** nothing - `DATASET_URL` is the dataset record (DOI {DOI}) and `PANVRAM_SRC` the package")
+    src = src.replace('DATASET_BASE_URL = "https://zenodo.org/records/REPLACE-RECORD-ID/files"   # placeholder until the DOI exists; a local/Drive directory path also works',
+                      f'DATASET_BASE_URL = "https://zenodo.org/records/{RECORD}/files"   # the dataset record, DOI {DOI}; a local/Drive directory path also works')
+    src = src.replace("**Before running:** set `DATASET_BASE_URL` (the dataset record - placeholder until the DOI exists - or a local / Drive directory holding the same files) and `PANVRAM_SOURCE` (the package release tag, or a local tarball) - the package source.",
+                      f"**Before running:** nothing - `DATASET_BASE_URL` is the dataset record (DOI {DOI}) and `PANVRAM_SOURCE` the package release (tag v1.0.0); a local / Drive directory or tarball also works.")
     c["source"] = src.splitlines(True)
 edits[p] = json.dumps(nb, indent=1, ensure_ascii=False)
 originals = {p: p.read_bytes() for p in edits}

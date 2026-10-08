@@ -1,22 +1,66 @@
-# Zenodo dataset record - files (draft; not uploaded)
+# Zenodo dataset record - files (draft 23232317, DOI 10.5281/zenodo.23232317 reserved, NOT published)
 
-Metadata: `zenodo/dataset.zenodo.json`. Nine files, 20 429 332 480 B of tars + 0.43 MB (limit 50 GB per record). Built 2026-10-07 on ace-core in
-~/outgoing/zenodo (not uploaded); every member read back: 558/558 SHA-256 == MANIFEST.tsv in both tars; determinism: a
-second build of cohort558_q16k.tar gave the same SHA-256.
+Metadata: `zenodo/dataset.zenodo.json`. 48 files  20 429 771 699 B on the server (limit 50 GB per record). The two tars were built
+2026-10-07 on ace-core (`scripts/make_dataset_tars.sh`; every member read back: 558/558 SHA-256 == MANIFEST.tsv; a second build of
+cohort558_q16k.tar gave the same SHA-256) and uploaded 2026-10-08 as parts of 500 MiB (`split -b 500m -d -a 2`, streamed through
+`zenodo/part_filter.py`: one part on disk at a time, bucket PUT with up to 5 attempts, md5 of the response == local md5).
+Whole tars: cohort558_q4k.tar 12 330 864 640 B sha256 d0a4a0baab5bba5e573c8f2ae5dd18f2a66f6ac222c29e9809e38ad99b26ecdc;
+cohort558_q16k.tar 8 098 467 840 B sha256 3b8c497e9193984724128e0fd18df02d131a05c341df41df44fe3ed89a8114d5 (`cat` the parts in name order).
+The table below is the file list returned by the deposit API (name, size, md5) after the upload; every row matched the local
+size and md5 (40/40 parts, 8/8 small files, no extra files).
 
-| # | file | size | made by |
-|---:|---|---:|---|
-| 1 | cohort558_q4k.tar | 12 330 864 640 B; sha256 d0a4a0baab5bba5e573c8f2ae5dd18f2a66f6ac222c29e9809e38ad99b26ecdc | `scripts/make_dataset_tars.sh` |
-| 2 | cohort558_q4k.tar.sha256 | 84 B | same |
-| 3 | cohort558_q16k.tar | 8 098 467 840 B; sha256 3b8c497e9193984724128e0fd18df02d131a05c341df41df44fe3ed89a8114d5 | same |
-| 4 | cohort558_q16k.tar.sha256 | 85 B | same |
-| 5 | MANIFEST.tsv | 196 949 B | repository |
-| 6 | SHA256SUMS.q4k | 56 583 B | repository |
-| 7 | SHA256SUMS.q16k | 57 141 B | repository |
-| 8 | DATASET.md | 118 030 B | repository |
-| 9 | FORMAT.md | (format of the archives) | repository |
+| # | file | bytes | md5 (server == local) | sha256 (local) |
+|---:|---|---:|---|---|
+| 1 | cohort558_q4k.tar.sha256 | 84 | e1efef6f2867eee5070d8b0e910e6d50 | b524ab4d7fea1b3ea5879d0979570481b0ae003997d34c0d717041f609182b12 |
+| 2 | cohort558_q16k.tar.sha256 | 85 | 5c8855ee12acf495e5b6cd67f3490830 | 969b9efd5f2e2f1883d2128a454f4df3aff46743fb7202810e53d3ac2f808673 |
+| 3 | PARTS.sha256 | 3656 | 8e21933a459d037ea7556a9113bde614 | d548c79cbd19d89b777ccf81af4f190d5734ff71ea1df008d2270f91b4d74eae |
+| 4 | MANIFEST.tsv | 196949 | 79eab17605a968f65c7e83f511491fd0 | 3b6941efeccb00a7b092573b0482281711f249e62465f771325704d9334d31d0 |
+| 5 | SHA256SUMS.q4k | 56583 | 0c0c26dbc512e975e62da12d8eacc52a | ab12d0a98af168536f2cff30f49f8866fb614be3a61dca4221d4c15cbc94d848 |
+| 6 | SHA256SUMS.q16k | 57141 | 79554e0c3d2ac9f3d94f81947cbf8f1f | c17e433c95183e51da66c04526bbd81205807ba7030623a36f1d8545e7afd392 |
+| 7 | FORMAT.md | 5309 | 0cc2750ef1f82437ba9bea99afd467aa | e3f2a842a5f9c016b465ce05b15844f07abbf54224eaac435b8fd192a9ea3df5 |
+| 8 | DATASET.md | 119412 | c6ec80f60b96028c78be583ac4566af4 | 2dd8f9dd5c97ef21afcefd447f0cddbe9c80e399b30ee2e2629964ba9fda1060 |
+| 9 | cohort558_q4k.tar.part00 | 524288000 | e37259a001ea0e4282da1532594139e5 | 1cffb7f89c923e7a0fbc233749facd62aff306e94db52c5872c2cabbe0ac7023 |
+| 10 | cohort558_q4k.tar.part01 | 524288000 | 243c567202d10f2fcbfbf418ef50d443 | baa50fed4eb8082745cc4a8e68a6f5bb3fd8d5d7bfd9101ddd98a343033546f2 |
+| 11 | cohort558_q4k.tar.part02 | 524288000 | 8807c0f9ea8773aa9b254364198699de | 977a30437885aba1c7c96b76b863f4db41f5d8d938b7ab0b983ff92f0d152bcf |
+| 12 | cohort558_q4k.tar.part03 | 524288000 | 01021840ddb7d2aaa0a211ff1b97b88e | 8aede44cb54eb741e9f40cd6052259fe899ac21f1f9f84491da214fdc592fb84 |
+| 13 | cohort558_q4k.tar.part04 | 524288000 | 4eea96f1e27110d5351396421995bc9f | 4508fcba5f41c353adf0d155a8b9dd1169ea34f9f13e3b94a04f6433a07c80bf |
+| 14 | cohort558_q4k.tar.part05 | 524288000 | 48ebfb277edd1bb8ea11a5c5e7dae448 | 4842b3b472c60d61024b73b38b68f660b296ea4b8f0c62866ac8062f1769544d |
+| 15 | cohort558_q4k.tar.part06 | 524288000 | 8a8094a3355198b3a9e4dadc7798345e | 744739eaa0916cf92cc453fc2d5254db37de38239f97af297699987f08a77686 |
+| 16 | cohort558_q4k.tar.part07 | 524288000 | 6ad5a37874d797c4b66ccfaf09f78519 | 111b48d41d68bdab9b687c790971d1e2b2f7df6ef08d45fa6a1411e0a8523066 |
+| 17 | cohort558_q4k.tar.part08 | 524288000 | ef7839b6010343d582f9de41bced6b55 | 0f30d90881afd548ca96f06ded877f4b0623c38896a3a9a1c6c58ea74b59041c |
+| 18 | cohort558_q4k.tar.part09 | 524288000 | 021c299b08a16409a4cad4c868bcd935 | 7ec1f2a165ec32aa214f418e7c0f57e8499b41ec3100f99a29ec6654fbd3a205 |
+| 19 | cohort558_q4k.tar.part10 | 524288000 | aa3161090f8ecd1b62d798af9d2d0f39 | 673fa3f7312e9975846b6339f5926e478420c5e29e0d8c99d82d3ea63c0ef127 |
+| 20 | cohort558_q4k.tar.part11 | 524288000 | f1374f86830c398788989972f2f6158c | 7270cdfda7bc4f9a585e605ce56e70574b3c0e1a7577993fb9209d160dcbbbf2 |
+| 21 | cohort558_q4k.tar.part12 | 524288000 | be4b9ee5269341e5d827660a2a4c9bb6 | e958070b2ff6779c4806c3d0bfce114c7da5250d47dbeb5991f02a1d3799828e |
+| 22 | cohort558_q4k.tar.part13 | 524288000 | df4882a44f20c1719dd85f7c8d6d1d71 | 127d64a744b6270d48111e7675a6c92d406402a95c970428c19e75ec00a5f9ce |
+| 23 | cohort558_q4k.tar.part14 | 524288000 | 861c11ed79484ccede32b0fa61696420 | 32ded611261d7a129b891f07c4993609c5e2ed8c6d89316a9b5ceb736224c146 |
+| 24 | cohort558_q4k.tar.part15 | 524288000 | ef2a434eaa50e07ef8e03fb3ea425574 | 0fbbe0f183bdb9e0290c2b995cf5b70cc508e081dc9efdaf8db8b57f44fd859f |
+| 25 | cohort558_q4k.tar.part16 | 524288000 | 9a330a2351c3de4e46700089e5921736 | df91230378bd792d69dc5dc04bc529707a9c1fb6e4236a034aaf1e598cc171be |
+| 26 | cohort558_q4k.tar.part17 | 524288000 | f8b2b9faa9ef497d4b54b94ec53e7817 | 214b76cca1a55bd62e3c0d03a80a0e13153dd55751e39c87938eb746a0e7e13e |
+| 27 | cohort558_q4k.tar.part18 | 524288000 | 97b624a8b28cc407df99ac107954277b | ec34fe7a5ca0494f02c54137e6068c4ea165a3ecaf2f11db2f762607beb96820 |
+| 28 | cohort558_q4k.tar.part19 | 524288000 | f89970c739d1dcbbb49761d2b2e8158f | 0811c1cb2c1741184d6d9cd6939e1fb09d8f459903036ff16ccdc60a39dc278c |
+| 29 | cohort558_q4k.tar.part20 | 524288000 | a7698318a62b38006a6f06e3325bcbe8 | aa24b3d255e266f2c7cb18e18c02328df33a935f58bff32116f6edec1600890d |
+| 30 | cohort558_q4k.tar.part21 | 524288000 | d4127af95fb7c0f98bc6d1fbe3c748c0 | 8ef2337b9b889bebf11dd100610a67ce782b2083dbb4a014f2d96067a76df5a8 |
+| 31 | cohort558_q4k.tar.part22 | 524288000 | 77e343b03da47e157759a15b63f70ae1 | d10508ed0af14399e6cae2b02906648f0592cc2350399e3a9d8f12aca69513ca |
+| 32 | cohort558_q4k.tar.part23 | 272240640 | bd79a3f5d6aaec0ca9b6ef730e901bd1 | d5334ce0c40b899724a3ce7b9b5ec8c97279b2557f90963e3842aa3394911168 |
+| 33 | cohort558_q16k.tar.part00 | 524288000 | 63df5c98968d8aa7310d9b4045deedae | f7df5843b5eee7b88f0a34df86c10d8650ebe9f85ca8ee872da634a262fe9bf4 |
+| 34 | cohort558_q16k.tar.part01 | 524288000 | 968fc286820fdc6fa0349e24a4c9242c | fd640f80266afea5cb56047c39a884e3f6ea19ab1c6207125e75a68840a6f636 |
+| 35 | cohort558_q16k.tar.part02 | 524288000 | 782e6106099a3cc352273ed347093a23 | 7d08574b239bc7858146a9cc158e7d578f359eec0e5b469174972b3408ea8332 |
+| 36 | cohort558_q16k.tar.part03 | 524288000 | 1f7b2402a3201cf686e27985c83d1254 | cc360b7e926909fa38111aaa8db1603afe52662ea5fa3598e7fac5a3b3b5031f |
+| 37 | cohort558_q16k.tar.part04 | 524288000 | 460ff6bee50337121c47ec8ccb522688 | ce16d8090fb9050b71a4e1f4ebae48b8b3f9976e1c1be68fd0cabfa88d567cad |
+| 38 | cohort558_q16k.tar.part05 | 524288000 | 2f8d0bb31dc347aa421bec59d09e063d | 3af8771dfbf8b144ec12ef01fc3cf4bf6918699e48a0ee4f94fd6db6ae64eb9f |
+| 39 | cohort558_q16k.tar.part06 | 524288000 | 263fd12d75ead91ead8c69e86dc17249 | 260d97cc9bb666fe8dadaaf69b47bd0d0feb9caf4869b78a27238b51a35506e9 |
+| 40 | cohort558_q16k.tar.part07 | 524288000 | 380159954439945a70d7b0ab52b50d79 | 9522d9a2e823a25718cf827249589f3d3c18abdc79d14f1f6755053e3e1372f2 |
+| 41 | cohort558_q16k.tar.part08 | 524288000 | e5a508b4f6b40ca3a970e8236abd9e82 | 17e018b3e579feaa00d8d063c0d4a4a2b144166158b455069a9ee3972ccf6d2f |
+| 42 | cohort558_q16k.tar.part09 | 524288000 | 7993a6cb30ca0fddfd9ed8f0b7a39263 | 17b59256b8fa8a20a0bdf245e346b40fb9aaf707cc66c8885b48c7f94bf1cd6b |
+| 43 | cohort558_q16k.tar.part10 | 524288000 | b2ea86b13d00b729a681b26e2967f665 | 2da22fd6c8c5ef50e33d84cdbd22447312dc0329d75a12cdd4a594e572ad0cbd |
+| 44 | cohort558_q16k.tar.part11 | 524288000 | d1d31c28d0250b7eb99962a31027b5df | a92872f45a2a21390815031f2b687b9a97d7b0c741c3093d12908821b864268d |
+| 45 | cohort558_q16k.tar.part12 | 524288000 | 0207be37a9a8d49168a7396cd103f787 | a786fb96efaeaf5fffd44414d7bdbadc6e6b243c0d3580a9249cd4b6ce4f6db1 |
+| 46 | cohort558_q16k.tar.part13 | 524288000 | abce6be10a3a033b446c2cd8d32a521f | b7ead5f070dbc77b3b896bbcc2a614da589c51c932923779d857d6f5e5176006 |
+| 47 | cohort558_q16k.tar.part14 | 524288000 | c5020c746ccc28da60bdf5308941c5ef | 5fd2831ba93487e143ba51203cdeb3dbc75e6d68622f35b26f377fe2868e285d |
+| 48 | cohort558_q16k.tar.part15 | 234147840 | 931d0f591e3a75daf20ce42f99429d73 | cd77ac1489efe0d5134aafb3b8c1e28f23c6d6220efb4a0d56431db186e21cfd |
 
 Not included: the reference (T2T-CHM13v2.0, NCBI GCA_009914755.4; md5 in DATASET.md), the source FASTA (HPRC indexes,
 URL and hash per row of MANIFEST.tsv), the software (its own record, `.zenodo.json`).
-Tars: archives at the tar root, deterministic (`--sort=name --owner=0 --group=0 --numeric-owner --mtime='2026-10-04 00:00Z'`);
-each checked by reading every member back and comparing its SHA-256 with MANIFEST.tsv.
+Tars: archives at the tar root, deterministic (`--sort=name --owner=0 --group=0 --numeric-owner --mtime='2026-10-04 00:00Z'`).
+Upload log and parts table (name, bytes, sha256, md5, server md5, seconds): ace-core `~/outgoing/zenodo500/` (part00 of q4k: 85 s).
