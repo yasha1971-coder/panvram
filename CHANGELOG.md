@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 - unreleased (prepared locally)
+## 1.0.0 - (date set at release)
 
 - Version 1.0.0 of the API of 0.1.0 (`Cohort.open`, `sample`, `fetch`, `windows`, `decode`, `check_full`, `fasta`),
   format refrel3 v1 unchanged (FORMAT.md).
@@ -19,9 +19,17 @@
   exactly one zstd frame); check_full 1116 / 1116 (`logs/check-full-1116-2026-10-07.log`).
 - EVIDENCE.md: five statements with numbers, commits, logs, SHA-256, reproduction and limitations.
 - CPU container: Dockerfile with the base image pinned by digest, requirements.lock with wheel SHA-256.
-- Public notebook `notebooks/quickstart_558.ipynb`: package, T2T and the archives downloaded by MANIFEST.tsv (SHA-256
-  checked), no Google Drive.
 - LICENSE: full MIT text, copyright Yakiv Shavidze.
+- Dataset: the 558 refrel3 v1 archives (q4k, q16k) as one tar per dataset shipped in 500 MiB parts on Zenodo,
+  DOI 10.5281/zenodo.23232317 (`zenodo/FILES.md`: 48 files, every part with its SHA-256 in `PARTS.sha256`, the whole tar
+  with `cohort558_<dataset>.tar.sha256`; DATASET.md: how to rebuild the tar from its parts).
+- Window law (EVIDENCE statement 2): the hw-apex verdict job on HPRC N = 4 - refrel3 q4k / q16k PASS (|error| <= 3.3 % at
+  1 / 8 / 64 KiB), model A for zstd / LZ4 / OZSEG (`logs/window-law-B-2026-10-08/`).
+- M6 (EVIDENCE statement 4): AGC windows 868 -> 26 /s as N grows 50 -> 558 (one thread), refrel3 q4k 200 884 -> 145 222 /s,
+  counters and curves (`logs/m6-2026-10-07/`).
+- `logs/`: every log cited by EVIDENCE.md is a file of this repository (`logs/SHA256SUMS`).
+- Public notebook: the dataset tar from its parts (`PARTS.sha256` -> cat -> tar SHA-256 -> MANIFEST.tsv), MANIFEST.tsv of
+  the package checked by SHA-256, no Google Drive.
 
 ## 0.1.0 - 2026-10-04 (local)
 

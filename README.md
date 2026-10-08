@@ -54,7 +54,7 @@ bits: 1 decode error, 4 bounded wait expired, 8 window outside an assembly). The
 
 ## How the GPU path works
 
-The queue kernel (from aceapex `research/refrel/refrel3_gpu.cu`): one warp per refrel3 block a window touches; lane
+The queue kernel (from aceapex [`research/refrel/refrel3_gpu.cu`](https://github.com/yasha1971-coder/aceapex/tree/panvram-1.0-sources/research/refrel/refrel3_gpu.cu)): one warp per refrel3 block a window touches; lane
 0 decodes the block's rANS stream (`r3_decode_stream`, the code the CPU path runs), literals straight into the block
 buffer in shared memory and copies into a ring of 64 ops; lanes 1..31 execute the copies as they arrive (reference,
 reverse complement, in-block); the warp writes the window's part. Shared memory per warp: Q + 768 B. Then two small
@@ -73,9 +73,10 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
   the same windows cut from the FASTA the CPU decoder rebuilds (every block XXH3 and the FASTA XXH3 == the source's;
   `PANVRAM_SOURCES` also compares with the source files) byte for byte, and == the CPU decoder's own windows; fetch at
   1000 random coordinates (contig by length, length 1 .. 2^20) == the FASTA. `PANVRAM_COHORT=dir pytest -s tests/test_gate.py`.
-- `notebooks/quickstart_558.ipynb` - public quickstart: downloads the package, T2T (md5) and the archives listed in
-  MANIFEST.tsv (SHA-256 checked), then the 558-assembly run of `scripts/cohort558.py` per resident form (dataset location:
-  placeholder until published).
+- `notebooks/quickstart_558.ipynb` - public quickstart: downloads the package (MANIFEST.tsv SHA-256 checked), T2T (md5)
+  and the dataset tar as its 500 MiB parts from the Zenodo record (every part against `PARTS.sha256`, the joined tar against
+  `cohort558_<dataset>.tar.sha256`, every archive against MANIFEST.tsv), then the 558-assembly run of `scripts/cohort558.py`
+  per resident form.
 - `run_colab_panvram.sh` - CUDA build, both tests and the gate for q4k and q16k on four HPRC haplotypes, throughput
   (`scripts/bench.py`). From Drive: the tarball (`MyDrive/panvram/panvram.tar.gz`, `git archive`) and the eight
   archives of MANIFEST.tsv (`MyDrive/panvram/cohort/*.rr3` + `SHA256SUMS`, checked); without them it encodes on the VM.
@@ -113,7 +114,7 @@ bytes can differ while decoding to the same FASTA - compare archives by decoding
 
 ## Provenance
 
-Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47 (tag `refrel3-v1`: https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1; tag `refrel3-v1` = one orphan commit whose tree is exactly `research/refrel` of aceapex 5b6d5ce (tree c96b8f0167c54ae6645aa18d7c30c697a18178a0); check: `git rev-parse refrel3-v1^{tree}` == `c96b8f0167c54ae6645aa18d7c30c697a18178a0` == `git rev-parse 5b6d5ce:research/refrel` in the aceapex history):
+Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47 (https://github.com/yasha1971-coder/aceapex/tree/panvram-1.0-sources/research/refrel; tag `panvram-1.0-sources` of aceapex = one orphan commit whose tree holds exactly three subtrees of the aceapex history: `research/refrel` = `5b6d5ce:research/refrel` (tree c96b8f0167c54ae6645aa18d7c30c697a18178a0), `research/cleanroom` = `927a9dd:research/cleanroom` (tree 1208ed2af9b373779cefc05edb94cd5f7c5554d7), `research/bench2610` = `927a9dd:research/bench2610` (tree 3649681f1517406bf752e8bbdc8e727887a2143f); check in an aceapex clone: `git rev-parse panvram-1.0-sources:research/refrel panvram-1.0-sources:research/cleanroom panvram-1.0-sources:research/bench2610` == `git rev-parse 5b6d5ce:research/refrel 927a9dd:research/cleanroom 927a9dd:research/bench2610`):
 
 | panvram | source |
 |---|---|
@@ -121,7 +122,7 @@ Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47
 | `csrc/xxhash.h` | aceapex `src/xxhash.h` (xxHash 0.8, BSD-2-Clause) verbatim |
 | `csrc/pv_v1.h` | `open_v1`, `block_v1`, `full_v1` of `refrel3v1.cpp`; `build_tab` of `refrel3.cpp`; `exec_fast` of `refrel.cpp`; FASTA parsing of `refrel_io.h` - exceptions instead of exit, arrays in pooled memory |
 | `csrc/pv_cuda.cu` | `r3q_kernel` of `refrel3_gpu.cu` - runtime Q, many assemblies resident, window = (assembly, start); new: case / RC / token kernels |
-| `FORMAT.md` | `research/refrel/FORMAT.md` (format unchanged) |
+| `FORMAT.md` | [`research/refrel/FORMAT.md`](https://github.com/yasha1971-coder/aceapex/tree/panvram-1.0-sources/research/refrel/FORMAT.md) (format unchanged) |
 
 ## Limitations
 
@@ -140,7 +141,7 @@ Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47
 - **GPU: CUDA only, sm_80 or newer.** Other devices use the CPU path. The GPU path does not check block XXH3 (the CPU
   `fasta` and `windows(..., verify)` do).
 - One block size per cohort; reference under 2^32 bases; an assembly's payload under 4 GiB.
-- Encoding is not part of panvram (aceapex `research/refrel/refrel3v1.cpp encode`, https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1).
+- Encoding is not part of panvram (aceapex `refrel3v1 encode`: https://github.com/yasha1971-coder/aceapex/tree/panvram-1.0-sources/research/refrel/refrel3v1.cpp).
 
 ## Data use (HPRC)
 

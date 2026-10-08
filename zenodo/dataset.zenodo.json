@@ -32,6 +32,12 @@
       "relation": "requires",
       "scheme": "url",
       "resource_type": "dataset"
+    },
+    {
+      "identifier": "https://github.com/yasha1971-coder/panvram",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
     }
   ]
 }

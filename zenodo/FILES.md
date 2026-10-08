@@ -63,4 +63,4 @@ size and md5 (40/40 parts, 8/8 small files, no extra files).
 Not included: the reference (T2T-CHM13v2.0, NCBI GCA_009914755.4; md5 in DATASET.md), the source FASTA (HPRC indexes,
 URL and hash per row of MANIFEST.tsv), the software (its own record, `.zenodo.json`).
 Tars: archives at the tar root, deterministic (`--sort=name --owner=0 --group=0 --numeric-owner --mtime='2026-10-04 00:00Z'`).
-Upload log and parts table (name, bytes, sha256, md5, server md5, seconds): ace-core `~/outgoing/zenodo500/` (part00 of q4k: 85 s).
+Upload log and parts table (name, bytes, sha256, md5, server md5, seconds): retained by the author (part00 of q4k: 85 s).
