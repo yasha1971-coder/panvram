@@ -8,7 +8,7 @@ T2T-CHM13v2.0, NCBI GCA_009914755.4: `https://ftp.ncbi.nlm.nih.gov/genomes/all/G
 
 ## How the archives were made
 
-1. Sources: the HPRC year-1 index (`Year1_assemblies_v2_genbank.index`, sha256 per file) and the release 2 index (`assemblies_release2_v1.0.index.csv`, md5 per file); CHM13 v1.1 and GRCh38 rows excluded. Every source downloaded from the URL below and checked against the index hash before use (aceapex `research/refrel/cohort_pipeline*.sh`, https://github.com/yasha1971-coder/aceapex/tree/panvram-1.0-evidence).
+1. Sources: the HPRC year-1 index (`Year1_assemblies_v2_genbank.index`, sha256 per file) and the release 2 index (`assemblies_release2_v1.0.index.csv`, md5 per file); CHM13 v1.1 and GRCh38 rows excluded. Every source downloaded from the URL below and checked against the index hash before use (aceapex `research/refrel/cohort_pipeline*.sh`, https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1).
 2. Encoding: aceapex `research/refrel/refrel3v1.cpp` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47, `refrel3v1 recode` (the FASTA rebuilt in memory from the cohort's earlier refrel3 archives, each of which had been decoded back == the source), 16 threads; every v1 archive written, read back, opened with every check, decoded in full and compared with the source FASTA's XXH3 before its manifest row was written (`fasta_xxh3` column).
 3. Build of the encoder: g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0, `-std=c++17 -O3 -march=native -funroll-loops` on AMD EPYC 4344P; the same bytes from `-O3 -march=x86-64-v3 -funroll-loops` (checked on two archives). The encoder scores copies in double precision: without FMA contraction (`-march=x86-64-v2`, `-ffp-contract=off`) or with another compiler version (gcc 13.3.0 reported) the archive bytes differ while decoding to the same FASTA (FORMAT.md section 7).
 
@@ -587,10 +587,10 @@ Checksums: `SHA256SUMS.q4k`, `SHA256SUMS.q16k` (archive names `<name>.<dataset>.
 ## The archives as published (Zenodo record 10.5281/zenodo.23232317)
 
 The 558 archives of each dataset are shipped as one tar (archives at the tar root, `SHA256SUMS` inside), cut into
-parts of 2 000 MiB (2 097 152 000 B) for the upload limits; the whole tar is never uploaded. Sizes: the sum of the
+parts of 500 MiB (524 288 000 B) for the upload limits; the whole tar is never uploaded. Sizes: the sum of the
 archives is 12 330 370 123 B (q4k) and 8 097 986 851 B (q16k); the tars are 12 330 864 640 B and 8 098 467 840 B
-(tar headers and the SHA256SUMS member). Files of the record: `cohort558_q4k.tar.part00..05`,
-`cohort558_q16k.tar.part00..03`, `PARTS.sha256` (SHA-256 of every part), `cohort558_q4k.tar.sha256` and
+(tar headers and the SHA256SUMS member). Files of the record: `cohort558_q4k.tar.part00..23`,
+`cohort558_q16k.tar.part00..15` (500 MiB = 524 288 000 B each, the last one shorter), `PARTS.sha256` (SHA-256 of every part), `cohort558_q4k.tar.sha256` and
 `cohort558_q16k.tar.sha256` (SHA-256 of the whole tars), `MANIFEST.tsv`, `SHA256SUMS.q4k`, `SHA256SUMS.q16k`,
 `DATASET.md`, `FORMAT.md`.
 
@@ -598,9 +598,8 @@ archives is 12 330 370 123 B (q4k) and 8 097 986 851 B (q16k); the tars are 12 3
 
 ```
 sha256sum -c PARTS.sha256                                  # every part
-cat cohort558_q4k.tar.part00 cohort558_q4k.tar.part01 cohort558_q4k.tar.part02 \
-    cohort558_q4k.tar.part03 cohort558_q4k.tar.part04 cohort558_q4k.tar.part05 > cohort558_q4k.tar
+cat cohort558_q4k.tar.part?? > cohort558_q4k.tar                   # 24 parts in name order (16 for q16k)
 sha256sum -c cohort558_q4k.tar.sha256                      # the whole tar (d0a4a0ba... for q4k, 3b8c497e... for q16k)
 tar -xf cohort558_q4k.tar && sha256sum -c SHA256SUMS       # every archive == MANIFEST.tsv
 ```
-The parts are plain byte ranges (`split -b 2000m`); `cat` in name order reproduces the tar byte for byte.
+The parts are plain byte ranges (`split -b 500m`); `cat` in name order reproduces the tar byte for byte.

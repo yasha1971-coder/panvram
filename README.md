@@ -113,7 +113,7 @@ bytes can differ while decoding to the same FASTA - compare archives by decoding
 
 ## Provenance
 
-Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47 (tag `refrel3-v1`: https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1):
+Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47 (tag `refrel3-v1`: https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1; tag `refrel3-v1` = one orphan commit whose tree is exactly `research/refrel` of aceapex 5b6d5ce (tree c96b8f0167c54ae6645aa18d7c30c697a18178a0); check: `git rev-parse refrel3-v1^{tree}` == `c96b8f0167c54ae6645aa18d7c30c697a18178a0` == `git rev-parse 5b6d5ce:research/refrel` in the aceapex history):
 
 | panvram | source |
 |---|---|
