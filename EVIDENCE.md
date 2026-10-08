@@ -27,9 +27,10 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | statement | t(W) = c0 + (W + Q - 1) / D_Q within ±20 %, model B, W = 1 outside the verdict |
 | D_Q inputs (log) | one-thread full decode, HPRC N = 4, ace-core: refrel3 q4k 0.876 GB/s, q16k 0.915 GB/s (3 warm-ups + 9 runs, 48/48 == source) |
 | commit / log | hw-apex PR #63 `review/axis3/results/ace-core-2026-10-05-407088c-dq/SUMMARY.md` (sha256 b34333a8...); protocol v1.1 = `review/axis3/PROTOCOL_AXIS3.md` at 6f573bb (f0bb442a...) |
-| verdict | **NO LOG HERE** for a model-B verdict (c0, ±20 %) of refrel3 on ace-core. The only window-law check on record is the user's Colab Blackwell run (aceapex `research/refrel/RESULTS.md` section 3c: error -16 ... +7 % at 262 144 windows per batch; saturation model; log not in the repository) |
+| verdict (log) | hw-apex B job (`tools.verdict_refrel3`, protocol v1.1 4a0027fe..., harness 0ace54d) on ace-core 2026-10-08, HPRC N = 4, one thread, 10 000 requests per W, D_Q 3 + 9: refrel3 **q4k PASS** (Q 4 096, D_Q 2.068 GB/s canonical, c0 7.25 us; errors at 1 / 8 / 64 KiB +1.5 / +1.3 / +3.2 %) and **q16k PASS** (Q 16 384, D_Q 2.085 GB/s, c0 6.79 us; -0.1 / -2.7 / +3.2 %); BGZF default PASS (-1.2 / -10.0 / +1.8 %), BGZF matched-g PASS (-9.5 / -0.1 / +3.2 %); zstd seekable, LZ4 4 MiB, OZSEG x4: FAIL (c0 < 0); AGC FAILED (no canonical-granule evidence). verify: VERDICT_EVIDENCE_PASS |
+| verdict commit / log | aceapex da5dbd5 `research/bench2610/verdictB/RESULTS_WINDOW_LAW_B.md`, `hprc4/results.json`, `hprc4/table.md` (full evidence tar on Drive ACEAPEX-OVH/outgoing, sha256 3fb7aa62...) |
 | other formats | 4 or more other formats: after S2 native integration (not done) |
-| limitation | our format: D_Q measured; the verdict row needs the window run under protocol v1.1. |
+| limitation | N = 4 cohort, one host, one thread; four foreign families carry valid data but only BGZF passes model B (the others fail on c0 < 0 by the protocol's rule); AGC not measured (no granule evidence). |
 
 ## 3. Archive bytes independent of threads and CPU, given the build recipe
 
