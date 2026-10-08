@@ -10,8 +10,9 @@ import urllib.request, urllib.error
 
 BASE = os.environ.get("ZENODO_BASE", "https://zenodo.org")
 TOKEN = Path("~/.zenodo_token").expanduser().read_text().strip()
-FILES = ["cohort558_q4k.tar.sha256", "cohort558_q16k.tar.sha256", "MANIFEST.tsv", "SHA256SUMS.q4k", "SHA256SUMS.q16k",
-         "DATASET.md", "FORMAT.md", "cohort558_q16k.tar", "cohort558_q4k.tar"]        # small files first, largest last
+FILES = ["cohort558_q4k.tar.sha256", "cohort558_q16k.tar.sha256", "PARTS.sha256", "MANIFEST.tsv", "SHA256SUMS.q4k", "SHA256SUMS.q16k",
+         "FORMAT.md", "DATASET.md"] + [f"cohort558_q16k.tar.part{i:02d}" for i in range(4)] + [f"cohort558_q4k.tar.part{i:02d}" for i in range(6)]
+FILES = os.environ["ZENODO_FILES"].split(",") if os.environ.get("ZENODO_FILES") else FILES   # small files first, then the parts
 
 
 def api(method, url, data=None, ctype="application/json", stream=None, length=None):

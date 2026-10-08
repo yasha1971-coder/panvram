@@ -4,7 +4,7 @@ A pangenome cohort resident on the GPU: every assembly stored as refrel3 v1 (edi
 T2T-CHM13v2.0 for HPRC; [FORMAT.md](FORMAT.md)), random training windows and coordinate slices decoded on the card by
 a queue kernel, straight into a PyTorch tensor. A CPU decoder serves the same API without a GPU.
 
-Version 1.0.0 (prepared locally, not published). Numbers below come only from the logs named next to them.
+Version 1.0.0. Numbers below come only from the logs named next to them.
 
 ```python
 import torch, panvram
@@ -91,7 +91,8 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
 | region fetch against samtools 1.24 on the source FASTA, 8 assemblies x 1 000 requests, [start0, end0) | 8000 / 8000 q4k, 8000 / 8000 q16k | `logs/samtools-truth-2026-10-07/RESULT.txt` |
 | CPU container, `--network none`, base image pinned by digest, wheels by hash | 8 assemblies x q4k / q16k: check_full and full decode == source SHA-256, 16 / 16 | `logs/r2-gate-2026-10-07.log` |
 | independent implementation from the specification (Python, clean-room round 2: no sources, the specification package only) | full decodes 26 / 26, fetches 1 300 / 1 300, refusals 9 / 9 at the expected stage, test vectors 372 / 372 | `logs/cleanroom-round2-2026-10-07/RESULTS_R2.md` |
-| AGC 3.2.4 vs cohort size N (M6): random windows of 4 096, one thread | AGC 868 / 38 / 28 / 26 requests per s at N = 50 / 100 / 200 / 558, refrel3 q4k 200 884 -> 145 222 /s; whole samples flat. **Caveat: AGC's N dependence is a per-request metadata-batch reload under random sample order; requests sorted by sample cost the same at every N** | `logs/m6-curves-timing-2026-10-07.csv`; aceapex `research/bench2610/m6/RESULTS_M6.md` (counters) |
+| AGC 3.2.4 vs cohort size N (M6): random windows of 4 096, one thread | AGC 868 / 38 / 28 / 26 requests per s at N = 50 / 100 / 200 / 558, refrel3 q4k 200 884 -> 145 222 /s; whole samples flat. **Caveat: AGC's N dependence is a per-request metadata-batch reload under random sample order; requests sorted by sample cost the same at every N** | `logs/m6-curves-timing-2026-10-07.csv`, `logs/m6-2026-10-07/RESULTS_M6.md` (counters) |
+| window law, protocol v1.1 verdict (hw-apex B job, HPRC N = 4, ace-core, one thread) | refrel3 q4k and q16k PASS: model B errors +1.5 / +1.3 / +3.2 % and -0.1 / -2.7 / +3.2 % at 1 / 8 / 64 KiB (c0 7.25 / 6.79 us, D_Q 2.068 / 2.085 GB/s canonical); BGZF default and matched-g PASS; zstd seekable, LZ4, OZSEG: model B conservative (c0 < 0), see model A | `logs/window-law-B-2026-10-08/table.md`, `MODEL_A_LARGE_GRANULE.md` |
 | archive sizes, 558 assemblies | q4k 16.22 MB, q16k 13.04 MB per assembly without block hashes; AGC 3.2.4 (one create, T2T inside, T2T alone subtracted) 5.40 MB | `logs/sizes-558-2026-10-06.txt` |
 
 Statement by statement, with commits, SHA-256 of every artifact, reproduction commands and one limitation each:
@@ -112,8 +113,7 @@ bytes can differ while decoding to the same FASTA - compare archives by decoding
 
 ## Provenance
 
-Ported from aceapex (github.com/yasha1971-coder/aceapex, branch `refrel`) `research/refrel` @
-5b6d5cec0f5962a561ac48822a1b5c48793a5b47:
+Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47 (tag `refrel3-v1`: https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1):
 
 | panvram | source |
 |---|---|
@@ -140,7 +140,7 @@ Ported from aceapex (github.com/yasha1971-coder/aceapex, branch `refrel`) `resea
 - **GPU: CUDA only, sm_80 or newer.** Other devices use the CPU path. The GPU path does not check block XXH3 (the CPU
   `fasta` and `windows(..., verify)` do).
 - One block size per cohort; reference under 2^32 bases; an assembly's payload under 4 GiB.
-- Encoding is not part of panvram (aceapex `refrel3v1 encode`).
+- Encoding is not part of panvram (aceapex `research/refrel/refrel3v1.cpp encode`, https://github.com/yasha1971-coder/aceapex/tree/refrel3-v1).
 
 ## Data use (HPRC)
 

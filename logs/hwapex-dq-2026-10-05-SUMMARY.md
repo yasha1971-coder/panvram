@@ -1,0 +1,18 @@
+# Axis 3 window-law D_Q - ace-core, HPRC N=4 (HG00438.1/.2, HG00621.1/.2), hw-apex-bench 407088c, run 2 (one silence gate, 17:18 UTC)
+
+Same corpus for every format: the 4 assemblies' FASTA (12 139 733 805 B, SHA-256 in source_fasta.sha256, .fa.gz == manifest / HPRC year-1 index). One decode thread (taskset -c 3), full sequential decode of the 4 archives in order, in process; 3 warm-ups + 9 timed runs; SHA-256 of every decoded output == source after every run (warm-ups included). D_Q = output bytes / median run time. Q = output bytes / number of independently decodable units counted in the archives themselves.
+
+| format | build / level | median, s | min, s | max, s | 9 timed runs, s | D_Q, GB/s | Q, mean bytes (units) | LZ window | archive bytes (4) | ratio | SHA-256 |
+|---|---|---:|---:|---:|---|---:|---|---|---:|---:|---|
+| ACEAPEX-refrel3 q4k | refrel3v1 @ 5b6d5ce, RR_BS 4096, block XXH3 section; against T2T | 13.865 | 13.857 | 14.005 | 13.983, 13.968, 14.005, 13.861, 13.857, 13.861, 13.862, 13.865, 13.867 | 0.876 | 4147.2 FASTA B = 4096.0 bases (2927207 blocks) | copies from any position of the resident T2T (3 117 292 070 bases, not in archive bytes) + in-block self copies <= 4096 bases | 85132416 | 142.60 | 48/48 == source |
+| ACEAPEX-refrel3 q16k | refrel3v1 @ 5b6d5ce, RR_BS 16384, block XXH3 section; against T2T | 13.262 | 13.217 | 13.334 | 13.217, 13.262, 13.280, 13.334, 13.281, 13.222, 13.262, 13.245, 13.238 | 0.915 | 16588.8 FASTA B = 16384.0 bases (731803 blocks) | T2T (as above) + in-block <= 16384 bases | 55100542 | 220.32 | 48/48 == source |
+| BGZF (htslib) | bgzip 1.24 -l 6 -@ 1 -i (libdeflate 1.19), .gzi counted; decode bgzf_read, no bgzf_mt | 13.860 | 13.856 | 13.862 | 13.856, 13.862, 13.860, 13.862, 13.862, 13.858, 13.857, 13.860, 13.862 | 0.876 | 65204.6 (186179 blocks) | deflate 32 KiB, inside one block (<= 65280 B) | 3142688994 | 3.86 | 48/48 == source |
+| zstd seekable | zstd 1.5.7 seekable_compression, level 3, frame 16384 B, frame checksums; decode ZSTD_seekable_decompress | 15.020 | 15.017 | 15.027 | 15.017, 15.020, 15.020, 15.020, 15.025, 15.020, 15.018, 15.023, 15.027 | 0.808 | 16383.9 (740953 frames) | inside one 16 KiB frame (level-3 window larger than the frame) | 3937230812 | 3.08 | 48/48 == source |
+| lz4 frame | lz4 1.10.0 -1 -B7 (4 MiB) -BI (independent blocks) --content-size --frame-crc; decode LZ4F_decompress | 6.305 | 6.261 | 6.447 | 6.261, 6.266, 6.269, 6.305, 6.300, 6.397, 6.427, 6.416, 6.447 | 1.925 | 4191897.0 (2896 blocks) | 64 KiB, inside one block (independent blocks) | 6581261497 | 1.84 | 48/48 == source |
+| OpenZL v0.3.0 l1_w64k | openzl 32246b4, level 1, frame v27 | FAILED | - | - | - | - | whole frame (no public partial-decode API) | 64 KiB (windowLog 16) | build FAILED: input limit ~1.5 GiB | - | - |
+| OpenZL v0.3.0 l1_w1m | openzl 32246b4, level 1, frame v27 | FAILED | - | - | - | - | whole frame (no public partial-decode API) | 1 MiB (windowLog 20) | build FAILED: input limit ~1.5 GiB | - | - |
+| OpenZL v0.3.0 l3_w64k | openzl 32246b4, level 3, frame v27 | FAILED | - | - | - | - | whole frame (no public partial-decode API) | 64 KiB (windowLog 16) | build FAILED: input limit ~1.5 GiB | - | - |
+| OpenZL v0.3.0 l3_w1m | openzl 32246b4, level 3, frame v27 | FAILED | - | - | - | - | whole frame (no public partial-decode API) | 1 MiB (windowLog 20) | build FAILED: input limit ~1.5 GiB | - | - |
+| CRAM | - | skipped | - | - | - | - | - | - | - | - | - |
+
+CRAM skipped: it is a format for read alignments against a reference, not applicable to assembly FASTA. Run 1 (17:00 UTC, refrel3 only, own gate): dq_refrel3_q4k_run1.log 0.928 GB/s, dq_refrel3_q16k_run1.log 0.948 GB/s.
