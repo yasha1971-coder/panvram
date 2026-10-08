@@ -91,6 +91,7 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
 | region fetch against samtools 1.24 on the source FASTA, 8 assemblies x 1 000 requests, [start0, end0) | 8000 / 8000 q4k, 8000 / 8000 q16k | `logs/samtools-truth-2026-10-07/RESULT.txt` |
 | CPU container, `--network none`, base image pinned by digest, wheels by hash | 8 assemblies x q4k / q16k: check_full and full decode == source SHA-256, 16 / 16 | `logs/r2-gate-2026-10-07.log` |
 | independent implementation from the specification (Python, clean-room round 2: no sources, the specification package only) | full decodes 26 / 26, fetches 1 300 / 1 300, refusals 9 / 9 at the expected stage, test vectors 372 / 372 | `logs/cleanroom-round2-2026-10-07/RESULTS_R2.md` |
+| AGC 3.2.4 vs cohort size N (M6): random windows of 4 096, one thread | AGC 868 / 38 / 28 / 26 requests per s at N = 50 / 100 / 200 / 558, refrel3 q4k 200 884 -> 145 222 /s; whole samples flat. **Caveat: AGC's N dependence is a per-request metadata-batch reload under random sample order; requests sorted by sample cost the same at every N** | `logs/m6-curves-timing-2026-10-07.csv`; aceapex `research/bench2610/m6/RESULTS_M6.md` (counters) |
 | archive sizes, 558 assemblies | q4k 16.22 MB, q16k 13.04 MB per assembly without block hashes; AGC 3.2.4 (one create, T2T inside, T2T alone subtracted) 5.40 MB | `logs/sizes-558-2026-10-06.txt` |
 
 Statement by statement, with commits, SHA-256 of every artifact, reproduction commands and one limitation each:

@@ -27,10 +27,10 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | statement | t(W) = c0 + (W + Q - 1) / D_Q within ±20 %, model B, W = 1 outside the verdict |
 | D_Q inputs (log) | one-thread full decode, HPRC N = 4, ace-core: refrel3 q4k 0.876 GB/s, q16k 0.915 GB/s (3 warm-ups + 9 runs, 48/48 == source) |
 | commit / log | hw-apex PR #63 `review/axis3/results/ace-core-2026-10-05-407088c-dq/SUMMARY.md` (sha256 b34333a8...); protocol v1.1 = `review/axis3/PROTOCOL_AXIS3.md` at 6f573bb (f0bb442a...) |
-| verdict (log) | hw-apex B job (`tools.verdict_refrel3`, protocol v1.1 4a0027fe..., harness 0ace54d) on ace-core 2026-10-08, HPRC N = 4, one thread, 10 000 requests per W, D_Q 3 + 9: refrel3 **q4k PASS** (Q 4 096, D_Q 2.068 GB/s canonical, c0 7.25 us; errors at 1 / 8 / 64 KiB +1.5 / +1.3 / +3.2 %) and **q16k PASS** (Q 16 384, D_Q 2.085 GB/s, c0 6.79 us; -0.1 / -2.7 / +3.2 %); BGZF default PASS (-1.2 / -10.0 / +1.8 %), BGZF matched-g PASS (-9.5 / -0.1 / +3.2 %); zstd seekable, LZ4 4 MiB, OZSEG x4: FAIL (c0 < 0); AGC FAILED (no canonical-granule evidence). verify: VERDICT_EVIDENCE_PASS |
+| verdict (log) | hw-apex B job (`tools.verdict_refrel3`, protocol v1.1 4a0027fe..., harness 0ace54d) on ace-core 2026-10-08, HPRC N = 4, one thread, 10 000 requests per W, D_Q 3 + 9: **the window law is confirmed on refrel3 and BGZF** - refrel3 q4k PASS (Q 4 096, D_Q 2.068 GB/s canonical, c0 7.25 us; errors at 1 / 8 / 64 KiB +1.5 / +1.3 / +3.2 %), q16k PASS (Q 16 384, D_Q 2.085 GB/s, c0 6.79 us; -0.1 / -2.7 / +3.2 %), BGZF default PASS (-1.2 / -10.0 / +1.8 %), BGZF matched-g PASS (-9.5 / -0.1 / +3.2 %). **For the large-granule formats model B is conservative (c0 < 0 -> FAIL by the rule): see model A** - zstd seekable 16 KiB frames, LZ4 4 MiB blocks, OZSEG 64 KiB / 1 MiB (B predictions within 2.4 % for LZ4 and 12 % for OZSEG, -43 / -41 % for zstd at 8 / 64 KiB; model A overestimates by 14-66 %); table: aceapex `research/bench2610/verdictB/MODEL_A_LARGE_GRANULE.md`. AGC FAILED (no canonical-granule evidence). verify: VERDICT_EVIDENCE_PASS |
 | verdict commit / log | aceapex da5dbd5 `research/bench2610/verdictB/RESULTS_WINDOW_LAW_B.md`, `hprc4/results.json`, `hprc4/table.md` (full evidence tar on Drive ACEAPEX-OVH/outgoing, sha256 3fb7aa62...) |
 | other formats | 4 or more other formats: after S2 native integration (not done) |
-| limitation | N = 4 cohort, one host, one thread; four foreign families carry valid data but only BGZF passes model B (the others fail on c0 < 0 by the protocol's rule); AGC not measured (no granule evidence). |
+| limitation | N = 4 cohort, one host, one thread. The law is confirmed on refrel3 and BGZF; for formats whose granule is >= the window (LZ4 4 MiB, OZSEG 1 MiB) or whose sequential D_Q includes output materialization, c0 comes out negative and model B is conservative - model A is then the upper bound. AGC not measured (no granule evidence). |
 
 ## 3. Archive bytes independent of threads and CPU, given the build recipe
 
@@ -73,3 +73,13 @@ as of 2026-10-07; aceapex paths are on branch `refrel` of aceapex (local commits
 | commit / log | panvram af2ec56 `logs/r2-gate-2026-10-07.log` (sha256 f2a43dd7...), Dockerfile, requirements.lock |
 | reproduce | `docker build -t panvram-cpu .` then the `docker run --network none ...` line in the log |
 | limitation | apt packages inside the image are not pinned by version (only the base image and the Python wheels); the gate ran with reader af2ec56, before the two checks of 087c638. |
+
+## M6. AGC against the cohort size N (request order matters)
+
+| | |
+|---|---|
+| number (log) | AGC 3.2.4 random windows of 4 096 bases, one thread: 868 / 38 / 28 / 26 requests per s at N = 50 / 100 / 200 / 558 (16 threads 3 331 / 139 / 109 / 97); refrel3 q4k 200 884 / 178 591 / 186 487 / 145 222 (one thread); 1 Mb regions AGC 294 -> 26 /s; whole samples flat (AGC 7.6 s, refrel3 1.3 s per sample). Every answer == truth |
+| caveat | **the AGC numbers hold for requests in random sample order.** Counters on the same 1 000 windows: in random order every window at N >= 100 reloads one metadata batch (3.8 MB zstd in -> 15.6 MB out, 105 MB of allocations); **sorted by sample** the same windows cost the same at every N (0 batch loads, 17 KB -> 15 KB). A workload that groups requests by sample does not see the N dependence; a workload that does not, does. refrel3 has no such order effect (counters not taken on refrel3). |
+| commit / log | aceapex 78709b5 `research/bench2610/m6/RESULTS_M6.md`, `curves_counters.csv`; copy of the timing curves: `logs/m6-curves-timing-2026-10-07.csv` |
+| reproduce | `research/bench2610/m6/run_all.sh` (PROTOCOL_M6 v1.1) |
+| limitation | one AGC build and create setting (-b 50 batch, -s 60000); the N effect is the metadata batch of the archive layout, measured, not a statement about AGC with other settings. |
