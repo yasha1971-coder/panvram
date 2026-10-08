@@ -54,7 +54,7 @@ mkdir -p "$OUT"
 TMP=$(mktemp -d); WT_MADE=0
 cleanup() { if [ "$WT_MADE" = 1 ] && [ -d "$WT" ]; then git -C "$PANVRAM" worktree remove --force "$WT" >/dev/null 2>&1 || true; git -C "$PANVRAM" worktree prune || true; fi; rm -rf "$TMP"; }
 trap cleanup EXIT
-mask() { sed -E 's/[A-Za-z0-9]{60}/<token>/g'; }
+mask() { sed -E 's/(^|[^A-Za-z0-9])[A-Za-z0-9]{60}([^A-Za-z0-9]|$)/\1<token>\2/g'; }   # a 60-character alphanumeric run (the token); 64-hex hashes untouched
 
 # ------------------------------------------------------------------ check helpers (never abort the run)
 P=0; F=0; N=0; STEP_F=0; SUMMARY=()
@@ -66,7 +66,8 @@ chk()  { local d=$1; shift; if "$@" >/dev/null 2>&1; then ok "$d"; else bad "$d"
 eq()   { if [ "$2" = "$3" ]; then ok "$1: $2"; else bad "$1: '$2' != '$3'"; fi; }
 # eq_or_pend <desc> <have> <want>: in a dry run a mismatch is PEND (the external action it waits for was not done)
 eq_or_pend() { if [ "$2" = "$3" ]; then ok "$1: $2"; elif [ $MODE = dry ]; then pend "$1: '$2' (expected '$3' after the external action)"; else bad "$1: '$2' != '$3'"; fi; }
-pycheck() { local out; out=$("$@" 2>&1 | mask) || true; echo "$out"
+PYOUT=""
+pycheck() { local out; out=$("$@" 2>&1 | mask) || true; echo "$out"; PYOUT=$out
   P=$((P + $(grep -c '^  PASS' <<<"$out" || true))); N=$((N + $(grep -c '^  PEND' <<<"$out" || true)))
   local f; f=$(grep -c '^  FAIL' <<<"$out" || true); F=$((F + f)); STEP_F=$((STEP_F + f)); }
 begin() { STEP=$1; STEP_F=0; P0=$P; F0=$F; N0=$N; echo; echo "================ STEP $1: $2 ($MODE, $(date -u +%FT%TZ))"; }
@@ -82,7 +83,8 @@ external() { local name=$1; shift
 want() { [ -z "$ONLY" ] || [ "$ONLY" = "$1" ]; }
 
 # secret / identity scan of a text stream on stdin: prints "<pattern>: <count>" (counts only, never the matches)
-SCAN_PATTERNS=('gmail' 'yasha1971@' 'ghp_[A-Za-z0-9]{20}' 'github_pat_' 'gh[osur]_[A-Za-z0-9]{20}' 'AKIA[0-9A-Z]{16}' 'PRIVATE KEY' 'api[_-]?key *[:=]' 'password *[:=]' 'token *= *["'"'"'][A-Za-z0-9]{16}' '/home/aeterna')
+# (patterns match values, not their own text: a scan of this file finds nothing but the local-path NOTE)
+SCAN_PATTERNS=('[A-Za-z0-9._%+-]+@gmail\.com' 'yasha1971@gmai[l]' 'ghp_[A-Za-z0-9]{20}' 'github_pat_[A-Za-z0-9_]{20}' 'gh[osur]_[A-Za-z0-9]{20}' 'AKIA[0-9A-Z]{16}' '-----BEGIN [A-Z ]*PRIVATE KEY' 'api[_-]?key *[:=] *["'"'"'][A-Za-z0-9]' 'password *[:=] *["'"'"'][^"'"'"' ]' 'token *= *["'"'"'][A-Za-z0-9]{16}' '/home/aeterna')
 scan_stream() { local f=$TMP/scan.txt; cat > "$f"
   for p in "${SCAN_PATTERNS[@]}"; do echo "$p: $(grep -c -E -e "$p" "$f" || true)"; done
   echo "zenodo token (exact): $(grep -c -F -f <(tr -d '\n\r ' < "$TOKFILE") "$f" || true)"
@@ -250,8 +252,9 @@ step3() {
     eq "origin main == $TAG commit" "$(git -C "$PANVRAM" ls-remote origin refs/heads/main | awk '{print $1}')" "$C"
     eq "origin $TAG^{} == $TAG commit" "$(git -C "$PANVRAM" ls-remote --tags origin "refs/tags/$TAG^{}" | awk '{print $1}')" "$C"
   else
-    eq_or_pend "local tag $TAG" "absent" "present"; C=$(git -C "$PANVRAM" rev-parse HEAD)
-    note "CI below is checked on HEAD $C (the tag commit does not exist yet)"
+    eq_or_pend "local tag $TAG" "absent" "present"; eq_or_pend "CI on the tag commit" "no tag commit yet" "completed/success"
+    C=$(git -C "$PANVRAM" ls-remote origin refs/heads/main | awk '{print $1}')
+    note "the tag commit does not exist yet: CI and the GitHub-archive comparison below run on origin/main $C (the pushed commit) to exercise the checks"
   fi
   runs=$(gh api "repos/$GH/commits/$C/check-runs" --jq '.check_runs[] | "\(.name)=\(.status)/\(.conclusion)"' 2>/dev/null | sort | tr '\n' ' ' || true)
   if [ -n "$runs" ] && ! grep -qv 'completed/success' <<<"$(tr ' ' '\n' <<<"$runs" | sed '/^$/d')"; then ok "CI on $C: $runs"; else bad "CI on $C: '${runs:-no check runs}'"; fi
@@ -334,18 +337,39 @@ if cmd == "before":
     want = json.loads(Path(meta_json).read_text())
     for k in ("title", "version", "license", "upload_type", "keywords", "notes"):
         res(m.get(k) == want.get(k), f"metadata {k} == dataset.zenodo.json")
-    norm = lambda s: re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", s or ""))).strip()
-    res(norm(m.get("description")) == norm(want.get("description")), "metadata description == dataset.zenodo.json (HTML tags and whitespace normalised)")
+    # the description is HTML on the server: compare its text (outer <p> removed, entities decoded) with the local text
+    have = html.unescape(re.sub(r"^<p>|</p>$", "", (m.get("description") or "").strip())); exp = want["description"]
+    if have == exp: res(True, "metadata description == dataset.zenodo.json (as text)")
+    else:
+        i = next((k for k, (x, y) in enumerate(zip(have, exp)) if x != y), min(len(have), len(exp)))
+        res(False, f"metadata description != dataset.zenodo.json at char {i}: server ...{have[max(0, i - 40):i + 40]!r}... local ...{exp[max(0, i - 40):i + 40]!r}... "
+                   "(Zenodo sanitises the HTML description: a literal <word> is dropped; fix = zenodo-metadata action with < > escaped)")
+        print("  NOTE  METADATA_FIX_NEEDED description")
     cr = lambda L: [(c.get("name"), c.get("orcid")) for c in L]
     res(cr(m.get("creators", [])) == cr(want["creators"]), f"metadata creators == dataset.zenodo.json {cr(want['creators'])}")
     ri = lambda L: sorted((r["identifier"], r["relation"], r.get("scheme"), r.get("resource_type")) for r in L)
     res(ri(m.get("related_identifiers", [])) == ri(want["related_identifiers"]), f"metadata related_identifiers == dataset.zenodo.json ({len(want['related_identifiers'])})")
     res(m.get("access_right") == "open", f"access_right {m.get('access_right')}")
-    print(f"  NOTE  publication_date on the draft: {m.get('publication_date')} (kept as is by publish; edit before publishing if the release day differs)")
+    print(f"  NOTE  publication_date on the draft: {m.get('publication_date')} (publish keeps it; release date {os.environ.get('RELEASE_DATE')})")
+    if m.get("publication_date") != os.environ.get("RELEASE_DATE"): print("  NOTE  METADATA_FIX_NEEDED publication_date")
     gh = [r["identifier"] for r in want["related_identifiers"] if r["identifier"].startswith("https://github.com/")]
     for u in gh:
         st, _ = call("GET", u, auth=False)
         res(st == 200, f"anonymous GET {u}: HTTP {st} (public after step 3)", pend=True)
+elif cmd == "fix-metadata":
+    # PUT the server metadata updated from dataset.zenodo.json (description with < > & escaped as HTML entities) and
+    # publication_date = the release date; the reserved DOI and everything else of the draft kept
+    st, body = call("GET", DEP)
+    if st != 200: print(f"  GET deposition: HTTP {st}"); sys.exit(1)
+    m = json.loads(body)["metadata"]; want = json.loads(Path(meta_json).read_text())
+    for k in ("title", "upload_type", "version", "license", "creators", "keywords", "notes", "related_identifiers"): m[k] = want[k]
+    m["description"] = html.escape(want["description"], quote=False); m["publication_date"] = os.environ["RELEASE_DATE"]
+    r = urllib.request.Request(DEP, method="PUT", data=json.dumps({"metadata": m}).encode())
+    r.add_header("Authorization", "Bearer " + TOK); r.add_header("Content-Type", "application/json")
+    try:
+        with urllib.request.urlopen(r, timeout=180) as f: st = f.status
+    except urllib.error.HTTPError as e: st = e.code; print("  " + mask(e.read()[:500].decode(errors="replace")))
+    print(f"  metadata PUT: HTTP {st}"); sys.exit(0 if st == 200 else 1)
 elif cmd == "publish":
     st, body = call("POST", DEP + "/actions/publish")
     print(f"  publish: HTTP {st}")
@@ -372,7 +396,15 @@ PY
 step4() {
   begin 4 "Zenodo: publish draft $RECID (DOI $DOI) - the LAST external action"
   chk "token file $TOKFILE present (mode $(stat -c %a "$TOKFILE" 2>/dev/null))" test -s "$TOKFILE"
+  export RELEASE_DATE=$DATE; local sf0=$STEP_F
   pycheck zenodo_py before "$RECID" "$DOI" "$PANVRAM/zenodo/FILES.md" "$PANVRAM/zenodo/dataset.zenodo.json" "$MODE"
+  if grep -q METADATA_FIX_NEEDED <<<"$PYOUT"; then
+    # the metadata action itself may run with the description mismatch it repairs; any other FAIL still blocks it
+    local nd; nd=$(grep -c '^  FAIL  metadata description' <<<"$PYOUT" || true); STEP_F=$((STEP_F - nd))
+    external zenodo-metadata zenodo_py fix-metadata "$RECID" "$DOI" - "$PANVRAM/zenodo/dataset.zenodo.json" "$MODE"
+    STEP_F=$((STEP_F + nd))
+    if [ $MODE = exec ]; then echo "  checks before, again after the metadata update:"; STEP_F=$sf0; pycheck zenodo_py before "$RECID" "$DOI" "$PANVRAM/zenodo/FILES.md" "$PANVRAM/zenodo/dataset.zenodo.json" "$MODE"; fi
+  fi
   if [ $MODE = exec ]; then
     eq "aceapex $SRC_TAG on origin" "$(git -C "$ACEAPEX" ls-remote --tags origin "refs/tags/$SRC_TAG" "refs/tags/$SRC_TAG^{}" | awk '{print $1}' | tail -1)" "$SRC_COMMIT"
     eq "GitHub release $TAG exists" "$(gh release view "$TAG" -R "$GH" --json tagName --jq .tagName 2>/dev/null || echo absent)" "$TAG"
