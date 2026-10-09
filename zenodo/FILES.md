@@ -1,4 +1,4 @@
-# Zenodo dataset record - files (draft 23232317, DOI 10.5281/zenodo.23232317 reserved, NOT published)
+# Zenodo dataset record - files (record 23232317, DOI 10.5281/zenodo.23232317)
 
 Metadata: `zenodo/dataset.zenodo.json`. 48 files  20 429 771 699 B on the server (limit 50 GB per record). The two tars were built
 2026-10-07 on ace-core (`scripts/make_dataset_tars.sh`; every member read back: 558/558 SHA-256 == MANIFEST.tsv; a second build of

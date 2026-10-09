@@ -71,9 +71,9 @@ POST https://zenodo.org/api/deposit/depositions/23232317/actions/publish
 
 ## Decisions and findings of the dry run (before --execute)
 
-1. `notebooks/gate558_colab.ipynb` still holds the placeholder `10.5281/zenodo.XXXXXXX` / `DATASET_RECORD = "XXXXXXX"` and
-   expects files the record does not have (`cohort558_q4k.tar`, `manifest_v1.tsv`, `panvram-1.0.0.tar.gz`); doi_patch.py
-   does not touch it. Step 2 FAILs on it until it is updated or removed (user's decision).
+1. (resolved 2026-10-09, commit 8607e7d) `notebooks/gate558_colab.ipynb` was removed before the release: it expected
+   files the record does not have (`cohort558_q4k.tar`, `manifest_v1.tsv`, `panvram-1.0.0.tar.gz`) and carried record
+   placeholders; the public quickstart covers the gate.
 2. Zenodo sanitises the HTML description: `cohort558_<dataset>.tar.sha256` of dataset.zenodo.json is stored on the draft
    as `cohort558_.tar.sha256`. Step 4 offers `zenodo-metadata` (PUT with `<` `>` escaped as entities, publication_date =
    `--date`); the checks are repeated after it. Without it the published description reads `cohort558_.tar.sha256`.
@@ -86,8 +86,7 @@ POST https://zenodo.org/api/deposit/depositions/23232317/actions/publish
    (`EXPECTED_ARCHIVE_SHA256` can pin it). A notebook cannot carry the SHA-256 of a tarball that contains it.
 5. GitHub-Zenodo integration (a software DOI from `.zenodo.json` on each release): not enabled by the script; if wanted,
    switch the repository on in Zenodo -> GitHub before `gh-release` (that is what triggers it).
-6. `RELEASE_CHECKLIST.md` becomes public as it is ("prepared locally, not pushed, not public", an open item about
-   placeholders and links to branch refrel).
+6. (resolved 2026-10-09, commit 8607e7d) the local RELEASE_CHECKLIST.md was removed before the release.
 7. The aceapex sources tree has 202 lines with `/home/aeterna` (paths in research logs; not secrets); with the tag they
    are reachable from panvram links. panvram history: 0 hits for gmail addresses, tokens (exact Zenodo and gh token,
    ghp_/github_pat_/gh*_ forms), AKIA keys, private keys; `/home/aeterna` only in RELEASE_CHECKLIST.md and this script.
