@@ -20,10 +20,16 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "10.5281/zenodo.XXXXXXX",
+      "identifier": "10.5281/zenodo.23232317",
       "relation": "isSupplementedBy",
       "scheme": "doi",
       "resource_type": "dataset"
+    },
+    {
+      "identifier": "https://github.com/yasha1971-coder/panvram",
+      "relation": "isSupplementTo",
+      "scheme": "url",
+      "resource_type": "software"
     }
   ],
   "notes": "Contact: Yakiv Shavidze, aceapex.contour@outlook.com (the Zenodo creator schema has no e-mail field)."

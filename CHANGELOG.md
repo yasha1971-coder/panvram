@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 - (date set at release)
+## 1.0.0 - 2026-10-09
 
 - Version 1.0.0 of the API of 0.1.0 (`Cohort.open`, `sample`, `fetch`, `windows`, `decode`, `check_full`, `fasta`),
   format refrel3 v1 unchanged (FORMAT.md).

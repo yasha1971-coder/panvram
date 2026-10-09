@@ -4,7 +4,8 @@ A pangenome cohort resident on the GPU: every assembly stored as refrel3 v1 (edi
 T2T-CHM13v2.0 for HPRC; [FORMAT.md](FORMAT.md)), random training windows and coordinate slices decoded on the card by
 a queue kernel, straight into a PyTorch tensor. A CPU decoder serves the same API without a GPU.
 
-Version 1.0.0. Numbers below come only from the logs named next to them.
+Version 1.0.0. Repository: https://github.com/yasha1971-coder/panvram. Dataset (the 558 refrel3 v1 archives, q4k and q16k): DOI 10.5281/zenodo.23232317.
+Numbers below come only from the logs named next to them.
 
 ```python
 import torch, panvram
