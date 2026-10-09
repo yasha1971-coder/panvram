@@ -1,0 +1,564 @@
+{
+ "conceptdoi": "10.5281/zenodo.23232316",
+ "conceptrecid": "23232316",
+ "created": "2026-10-09T02:23:54.069512+00:00",
+ "doi": "10.5281/zenodo.23232317",
+ "doi_url": "https://doi.org/10.5281/zenodo.23232317",
+ "files": [
+  {
+   "checksum": "md5:c6ec80f60b96028c78be583ac4566af4",
+   "id": "b44d3ccb-0f28-48f8-99bd-295e29fd6c28",
+   "key": "DATASET.md",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/DATASET.md/content"
+   },
+   "size": 119412
+  },
+  {
+   "checksum": "md5:243c567202d10f2fcbfbf418ef50d443",
+   "id": "f5b5649c-7c4c-4bcb-be9f-0f0fba1b2986",
+   "key": "cohort558_q4k.tar.part01",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part01/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:e37259a001ea0e4282da1532594139e5",
+   "id": "642315af-ad54-4ccb-ab49-f1dc8e1461ac",
+   "key": "cohort558_q4k.tar.part00",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part00/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:8807c0f9ea8773aa9b254364198699de",
+   "id": "b41fcb32-18f8-4955-a069-dd1ddf307023",
+   "key": "cohort558_q4k.tar.part02",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part02/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:01021840ddb7d2aaa0a211ff1b97b88e",
+   "id": "e71e1ce2-3a14-448c-9b3c-ecc3bd59103a",
+   "key": "cohort558_q4k.tar.part03",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part03/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:4eea96f1e27110d5351396421995bc9f",
+   "id": "6ef40371-2584-43c1-80f2-ca54a3fbc331",
+   "key": "cohort558_q4k.tar.part04",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part04/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:48ebfb277edd1bb8ea11a5c5e7dae448",
+   "id": "45b86d9e-4caf-4dc9-b317-d7761770e1aa",
+   "key": "cohort558_q4k.tar.part05",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part05/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:8a8094a3355198b3a9e4dadc7798345e",
+   "id": "af0f909b-772b-4d87-b53f-66dbf73fd91f",
+   "key": "cohort558_q4k.tar.part06",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part06/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:d4127af95fb7c0f98bc6d1fbe3c748c0",
+   "id": "db9c21db-54b0-4c17-82b6-5d7aa58028f7",
+   "key": "cohort558_q4k.tar.part21",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part21/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:6ad5a37874d797c4b66ccfaf09f78519",
+   "id": "f7c9338f-94c6-4738-b645-2112ea4352ca",
+   "key": "cohort558_q4k.tar.part07",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part07/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:021c299b08a16409a4cad4c868bcd935",
+   "id": "f79378f3-7628-4f8d-a340-63abf7b11ca4",
+   "key": "cohort558_q4k.tar.part09",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part09/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:ef7839b6010343d582f9de41bced6b55",
+   "id": "ef20b79e-4fdd-4141-b1b6-4764089437f9",
+   "key": "cohort558_q4k.tar.part08",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part08/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:aa3161090f8ecd1b62d798af9d2d0f39",
+   "id": "57138c7f-419c-4539-8da7-45371eaf2400",
+   "key": "cohort558_q4k.tar.part10",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part10/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:f1374f86830c398788989972f2f6158c",
+   "id": "caf54239-091f-4867-a730-1fffc0bef655",
+   "key": "cohort558_q4k.tar.part11",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part11/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:be4b9ee5269341e5d827660a2a4c9bb6",
+   "id": "e858d95c-0794-4056-a2d2-c47479f1a580",
+   "key": "cohort558_q4k.tar.part12",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part12/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:df4882a44f20c1719dd85f7c8d6d1d71",
+   "id": "33ecff62-a8ed-41b6-b282-1d9066d0c0e1",
+   "key": "cohort558_q4k.tar.part13",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part13/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:861c11ed79484ccede32b0fa61696420",
+   "id": "1bc11b06-152f-4a92-b07a-d9a9b7025b6b",
+   "key": "cohort558_q4k.tar.part14",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part14/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:ef2a434eaa50e07ef8e03fb3ea425574",
+   "id": "cd48659d-5f24-48ef-a6ed-61dc99c7ef70",
+   "key": "cohort558_q4k.tar.part15",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part15/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:77e343b03da47e157759a15b63f70ae1",
+   "id": "0972ce99-a3b5-4c75-80ad-5b0e073334b6",
+   "key": "cohort558_q4k.tar.part22",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part22/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:9a330a2351c3de4e46700089e5921736",
+   "id": "95589a1b-bc5b-4824-881d-7175da8a4dde",
+   "key": "cohort558_q4k.tar.part16",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part16/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:f8b2b9faa9ef497d4b54b94ec53e7817",
+   "id": "1fb2e547-a971-4f1c-ace0-d988f13ceca0",
+   "key": "cohort558_q4k.tar.part17",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part17/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:97b624a8b28cc407df99ac107954277b",
+   "id": "712f3c3f-aa71-4d97-8bc7-fea79df6b575",
+   "key": "cohort558_q4k.tar.part18",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part18/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:f89970c739d1dcbbb49761d2b2e8158f",
+   "id": "e8ed0df7-b2ca-4e3a-867a-677a89718a19",
+   "key": "cohort558_q4k.tar.part19",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part19/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:a7698318a62b38006a6f06e3325bcbe8",
+   "id": "ce0152a2-2aa1-4211-bb10-90a2ced8d5f0",
+   "key": "cohort558_q4k.tar.part20",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part20/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:bd79a3f5d6aaec0ca9b6ef730e901bd1",
+   "id": "072c18ed-9a2c-4137-9fdd-62fbff82679a",
+   "key": "cohort558_q4k.tar.part23",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.part23/content"
+   },
+   "size": 272240640
+  },
+  {
+   "checksum": "md5:968fc286820fdc6fa0349e24a4c9242c",
+   "id": "3c96c249-8a63-46cf-a51d-386365c3b4a9",
+   "key": "cohort558_q16k.tar.part01",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part01/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:63df5c98968d8aa7310d9b4045deedae",
+   "id": "ef2c351a-cf37-47c1-a819-adb4df8b99aa",
+   "key": "cohort558_q16k.tar.part00",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part00/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:782e6106099a3cc352273ed347093a23",
+   "id": "082407e0-de24-49f8-aa71-3b9d6aea2582",
+   "key": "cohort558_q16k.tar.part02",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part02/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:1f7b2402a3201cf686e27985c83d1254",
+   "id": "63186a25-7b8c-4041-8ece-d18bbe6525d0",
+   "key": "cohort558_q16k.tar.part03",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part03/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:460ff6bee50337121c47ec8ccb522688",
+   "id": "8d0ab540-5043-41bb-9a7b-2415aeda5c0f",
+   "key": "cohort558_q16k.tar.part04",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part04/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:2f8d0bb31dc347aa421bec59d09e063d",
+   "id": "1e4507f8-8778-4f7d-bf81-ba1cfe553c7c",
+   "key": "cohort558_q16k.tar.part05",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part05/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:263fd12d75ead91ead8c69e86dc17249",
+   "id": "f9bbcc81-8940-4fcf-8923-beac5126fa37",
+   "key": "cohort558_q16k.tar.part06",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part06/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:380159954439945a70d7b0ab52b50d79",
+   "id": "d534df76-240c-4e29-b3fc-de9e64ae6b2f",
+   "key": "cohort558_q16k.tar.part07",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part07/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:e5a508b4f6b40ca3a970e8236abd9e82",
+   "id": "8d82be07-45e8-4773-b0d1-25ad6d8319c2",
+   "key": "cohort558_q16k.tar.part08",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part08/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:7993a6cb30ca0fddfd9ed8f0b7a39263",
+   "id": "56282a8a-5bd0-442e-8d37-e64e4c1036fa",
+   "key": "cohort558_q16k.tar.part09",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part09/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:931d0f591e3a75daf20ce42f99429d73",
+   "id": "0107bde4-a041-48f6-9a73-0d0260c06a02",
+   "key": "cohort558_q16k.tar.part15",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part15/content"
+   },
+   "size": 234147840
+  },
+  {
+   "checksum": "md5:b2ea86b13d00b729a681b26e2967f665",
+   "id": "7c424925-546c-4441-9c20-5c5218237a38",
+   "key": "cohort558_q16k.tar.part10",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part10/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:d1d31c28d0250b7eb99962a31027b5df",
+   "id": "b1e493a0-c968-4bfb-860f-e237070e899a",
+   "key": "cohort558_q16k.tar.part11",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part11/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:0207be37a9a8d49168a7396cd103f787",
+   "id": "07425673-1e8b-4a9c-83c5-a64f829192d1",
+   "key": "cohort558_q16k.tar.part12",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part12/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:abce6be10a3a033b446c2cd8d32a521f",
+   "id": "de37a117-7987-402d-876a-3c9c74963a1a",
+   "key": "cohort558_q16k.tar.part13",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part13/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:c5020c746ccc28da60bdf5308941c5ef",
+   "id": "3a7be0a0-81c7-4cc0-970d-c93890f633ee",
+   "key": "cohort558_q16k.tar.part14",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.part14/content"
+   },
+   "size": 524288000
+  },
+  {
+   "checksum": "md5:8e21933a459d037ea7556a9113bde614",
+   "id": "17981f2f-c920-497d-b97a-c99159972c60",
+   "key": "PARTS.sha256",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/PARTS.sha256/content"
+   },
+   "size": 3656
+  },
+  {
+   "checksum": "md5:79554e0c3d2ac9f3d94f81947cbf8f1f",
+   "id": "f2b121a9-e92b-4a30-a5c9-842b65336d6a",
+   "key": "SHA256SUMS.q16k",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/SHA256SUMS.q16k/content"
+   },
+   "size": 57141
+  },
+  {
+   "checksum": "md5:79eab17605a968f65c7e83f511491fd0",
+   "id": "82727f0c-ccce-4a94-aa97-78d6606116a0",
+   "key": "MANIFEST.tsv",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/MANIFEST.tsv/content"
+   },
+   "size": 196949
+  },
+  {
+   "checksum": "md5:5c8855ee12acf495e5b6cd67f3490830",
+   "id": "004b0e1c-f0b8-4fff-b4d6-bd39643d9d82",
+   "key": "cohort558_q16k.tar.sha256",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q16k.tar.sha256/content"
+   },
+   "size": 85
+  },
+  {
+   "checksum": "md5:0cc2750ef1f82437ba9bea99afd467aa",
+   "id": "bf1bb977-8f73-4b1d-a80b-093ed1276c8f",
+   "key": "FORMAT.md",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/FORMAT.md/content"
+   },
+   "size": 5309
+  },
+  {
+   "checksum": "md5:0c0c26dbc512e975e62da12d8eacc52a",
+   "id": "47b6e306-7106-46ec-b2ad-f268bbba05cb",
+   "key": "SHA256SUMS.q4k",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/SHA256SUMS.q4k/content"
+   },
+   "size": 56583
+  },
+  {
+   "checksum": "md5:e1efef6f2867eee5070d8b0e910e6d50",
+   "id": "37fcf439-5c4a-4da2-8731-15d7c5ebfcc8",
+   "key": "cohort558_q4k.tar.sha256",
+   "links": {
+    "self": "https://zenodo.org/api/records/23232317/files/cohort558_q4k.tar.sha256/content"
+   },
+   "size": 84
+  }
+ ],
+ "id": 23232317,
+ "links": {
+  "access": "https://zenodo.org/api/records/23232317/access",
+  "access_grants": "https://zenodo.org/api/records/23232317/access/grants",
+  "access_links": "https://zenodo.org/api/records/23232317/access/links",
+  "access_request": "https://zenodo.org/api/records/23232317/access/request",
+  "access_users": "https://zenodo.org/api/records/23232317/access/users",
+  "archive": "https://zenodo.org/api/records/23232317/files-archive",
+  "archive_media": "https://zenodo.org/api/records/23232317/media-files-archive",
+  "communities": "https://zenodo.org/api/records/23232317/communities",
+  "communities-suggestions": "https://zenodo.org/api/records/23232317/communities-suggestions",
+  "doi": "https://doi.org/10.5281/zenodo.23232317",
+  "draft": "https://zenodo.org/api/records/23232317/draft",
+  "file_modification": "https://zenodo.org/api/records/23232317/file-modification",
+  "files": "https://zenodo.org/api/records/23232317/files",
+  "latest": "https://zenodo.org/api/records/23232317/versions/latest",
+  "latest_html": "https://zenodo.org/records/23232317/latest",
+  "media_files": "https://zenodo.org/api/records/23232317/media-files",
+  "parent": "https://zenodo.org/api/records/23232316",
+  "parent_doi": "https://doi.org/10.5281/zenodo.23232316",
+  "parent_doi_html": "https://zenodo.org/doi/10.5281/zenodo.23232316",
+  "parent_html": "https://zenodo.org/records/23232316",
+  "preview_html": "https://zenodo.org/records/23232317?preview=1",
+  "quota_increase": "https://zenodo.org/api/records/23232317/quota-increase",
+  "request_deletion": "https://zenodo.org/api/records/23232317/request-deletion",
+  "requests": "https://zenodo.org/api/records/23232317/requests",
+  "reserve_doi": "https://zenodo.org/api/records/23232317/draft/pids/doi",
+  "self": "https://zenodo.org/api/records/23232317",
+  "self_doi": "https://doi.org/10.5281/zenodo.23232317",
+  "self_doi_html": "https://zenodo.org/doi/10.5281/zenodo.23232317",
+  "self_html": "https://zenodo.org/records/23232317",
+  "self_iiif_manifest": "https://zenodo.org/api/iiif/record:23232317/manifest",
+  "self_iiif_sequence": "https://zenodo.org/api/iiif/record:23232317/sequence/default",
+  "versions": "https://zenodo.org/api/records/23232317/versions"
+ },
+ "metadata": {
+  "access_right": "open",
+  "creators": [
+   {
+    "affiliation": null,
+    "name": "Shavidze, Yakiv",
+    "orcid": "0009-0008-3622-3448"
+   }
+  ],
+  "description": "The 558 haplotype assemblies of the Human Pangenome Reference Consortium (year-1 94, release 2 464) re-encoded as refrel3 v1 archives against the decoded T2T-CHM13v2.0 reference, in two block sizes: q4k (Q = 4096, 12 330 370 123 B) and q16k (Q = 16384, 8 097 986 851 B), both with per-block XXH3. One tar per dataset (archives at the tar root, SHA256SUMS inside), shipped as parts of 500 MiB (cohort558_q4k.tar.part00..23, cohort558_q16k.tar.part00..15; PARTS.sha256 = SHA-256 of every part, cohort558_q4k.tar.sha256 / cohort558_q16k.tar.sha256 = SHA-256 of the whole tar; cat the parts in name order to rebuild the tar); MANIFEST.tsv gives for every assembly the source URL and hash of the HPRC indexes, the FASTA XXH3 and the SHA-256 of both archives; every archive decodes back to its source FASTA (XXH3 == source). Reader and format: panvram (FORMAT.md). The reference is not included (NCBI GCA_009914755.4, md5 of the FASTA in DATASET.md).",
+  "doi": "10.5281/zenodo.23232317",
+  "keywords": [
+   "genomics",
+   "pangenome",
+   "HPRC",
+   "T2T-CHM13",
+   "compression",
+   "random access",
+   "GPU"
+  ],
+  "license": {
+   "id": "cc-zero"
+  },
+  "notes": "Data use (HPRC, https://humanpangenome.org/data-use/): the data are in the public domain (CC0 on the AWS Registry of Open Data). HPRC expects users not to sell all or part of the Pangenome Reference on any media, not to seek intellectual property protection that would block access to or use of any element of it, and not to take any action that could reasonably be expected to result in participant re-identification, including contacting or communicating with participants. Acknowledgement for publications: \"We would like to acknowledge the Human Pangenome Reference Consortium (BioProject ID: PRJNA730823) and its funder, the National Human Genome Research Institute (NHGRI).\" Contact: Yakiv Shavidze, aceapex.contour@outlook.com.",
+  "publication_date": "2026-10-09",
+  "related_identifiers": [
+   {
+    "identifier": "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA730823",
+    "relation": "isDerivedFrom",
+    "resource_type": "dataset",
+    "scheme": "url"
+   },
+   {
+    "identifier": "https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_009914755.4/",
+    "relation": "requires",
+    "resource_type": "dataset",
+    "scheme": "url"
+   },
+   {
+    "identifier": "https://github.com/yasha1971-coder/panvram",
+    "relation": "isSupplementTo",
+    "resource_type": "software",
+    "scheme": "url"
+   }
+  ],
+  "relations": {
+   "version": [
+    {
+     "index": 0,
+     "is_last": true,
+     "parent": {
+      "pid_type": "recid",
+      "pid_value": "23232316"
+     }
+    }
+   ]
+  },
+  "resource_type": {
+   "title": "Dataset",
+   "type": "dataset"
+  },
+  "title": "HPRC cohort (558 haplotype assemblies) as refrel3 v1 archives against T2T-CHM13v2.0 (q4k and q16k)",
+  "version": "1.0.0"
+ },
+ "modified": "2026-10-09T02:23:56.617231+00:00",
+ "owners": [
+  {
+   "id": "1666845"
+  }
+ ],
+ "recid": "23232317",
+ "revision": 4,
+ "state": "done",
+ "stats": {
+  "downloads": 0,
+  "unique_downloads": 0,
+  "unique_views": 0,
+  "version_downloads": 0,
+  "version_unique_downloads": 0,
+  "version_unique_views": 0,
+  "version_views": 0,
+  "views": 0
+ },
+ "status": "published",
+ "submitted": true,
+ "swh": {},
+ "title": "HPRC cohort (558 haplotype assemblies) as refrel3 v1 archives against T2T-CHM13v2.0 (q4k and q16k)",
+ "updated": "2026-10-09T02:23:56.617231+00:00"
+}
