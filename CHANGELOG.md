@@ -20,6 +20,8 @@
 - EVIDENCE.md: five statements with numbers, commits, logs, SHA-256, reproduction and limitations.
 - CPU container: Dockerfile with the base image pinned by digest, requirements.lock with wheel SHA-256.
 - LICENSE: full MIT text, copyright Yakiv Shavidze.
+- Removed before release: `notebooks/gate558_colab.ipynb` (per-archive download with record placeholders; the public
+  quickstart covers the gate) and the local RELEASE_CHECKLIST.md.
 - Dataset: the 558 refrel3 v1 archives (q4k, q16k) as one tar per dataset shipped in 500 MiB parts on Zenodo,
   DOI 10.5281/zenodo.23232317 (`zenodo/FILES.md`: 48 files, every part with its SHA-256 in `PARTS.sha256`, the whole tar
   with `cohort558_<dataset>.tar.sha256`; DATASET.md: how to rebuild the tar from its parts).
