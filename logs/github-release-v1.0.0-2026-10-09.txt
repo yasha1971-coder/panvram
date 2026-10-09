@@ -1,0 +1,7 @@
+# panvram v1.0.0 - anonymous check of the GitHub release and tag (2026-10-09T03:21:56Z, ace-core, curl without token)
+tag v1.0.0 -> 8dca1c9206cfa63880d52816d6f86f4d6043b532
+releases/download/v1.0.0/panvram-1.0.0.tar.gz  1368682 B  sha256 75351b0eec32441c00b31be685dd46d3244ce1e3a5d3a21ad8ffe286d7c6d2c1  root panvram-1.0.0/  tar-commit 8dca1c9206cfa63880d52816d6f86f4d6043b532  MANIFEST.tsv sha256 3b6941efeccb00a7b092573b0482281711f249e62465f771325704d9334d31d0
+archive/refs/tags/v1.0.0.tar.gz  1368682 B  sha256 75351b0eec32441c00b31be685dd46d3244ce1e3a5d3a21ad8ffe286d7c6d2c1  root panvram-1.0.0/  tar-commit 8dca1c9206cfa63880d52816d6f86f4d6043b532  MANIFEST.tsv sha256 3b6941efeccb00a7b092573b0482281711f249e62465f771325704d9334d31d0
+release asset .sha256: 75351b0eec32441c00b31be685dd46d3244ce1e3a5d3a21ad8ffe286d7c6d2c1  panvram-1.0.0.tar.gz
+repository visibility: public private=false
+dataset DOI 10.5281/zenodo.23232317 -> https://zenodo.org/records/23232317 HTTP 200
