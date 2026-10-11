@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>panvram — 558 human genomes live on one GPU</title>
+<meta name="description" content="panvram 1.0: 558 HPRC human genome assemblies (1.68 Tbp) resident in 16.6 GB on one A100 GPU, with exact random access. Open source, reproducible.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="panvram — 558 human genomes live on one GPU">
+<meta property="og:description" content="1.68 trillion bases in 16.6 GB of A100 memory. 743,271 exact random reads per second. Open source + Zenodo dataset.">
+<meta property="og:url" content="https://yasha1971-coder.github.io/panvram/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="panvram — 558 human genomes live on one GPU">
+<meta name="twitter:description" content="1.68 trillion bases in 16.6 GB of A100 memory. 743,271 exact random reads per second.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070C1A;--card:#101a30;--card2:#0d1628;--line:#1f2b47;--ink:#F4F7FB;--mut:#93A3BD;--cy:#22D3EE;--or:#FB923C;--gr:#34D399;--vi:#A78BFA}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(1200px 700px at 90% -10%,#12305a 0%,rgba(7,12,26,0) 60%),radial-gradient(900px 600px at -10% 40%,#0f3b3a55 0%,rgba(7,12,26,0) 60%),var(--bg);background-color:var(--bg);color:var(--ink);font-family:Poppins,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--cy);text-decoration:none}a:hover{text-decoration:underline}
+.w{max-width:1120px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+.logo{font-weight:700;font-size:20px;letter-spacing:.02em}.logo span{color:var(--cy)}
+nav .l{display:flex;gap:22px;font-size:15px}nav .l a{color:var(--mut)}
+.hero{padding:48px 0 36px}
+.tag{display:inline-flex;gap:10px;align-items:center;font-weight:500;font-size:13px;letter-spacing:.14em;color:var(--cy);text-transform:uppercase}
+.tag b{background:var(--cy);color:#04121a;padding:3px 10px;border-radius:6px}
+h1{font-weight:700;font-size:clamp(38px,6.4vw,72px);line-height:1.04;margin:18px 0 16px;letter-spacing:-.015em}
+h1 em{font-style:normal;background:linear-gradient(90deg,#22D3EE,#34D399);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(18px,2.2vw,22px);color:var(--mut);max-width:780px}.lead b{color:var(--ink);font-weight:500}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:500;font-size:16px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.btn.p{background:var(--cy);color:#04121a;border-color:var(--cy)}
+.btn:hover{text-decoration:none;filter:brightness(1.08)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:40px 0}
+.s{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;position:relative;overflow:hidden}
+.s:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.s .n{font-weight:700;font-size:40px;line-height:1.05;color:var(--c);letter-spacing:-.02em}
+.s .n small{font-size:20px;color:var(--ink);font-weight:500;margin-left:4px}
+.s .t{font-weight:500;font-size:17px;margin-top:8px;line-height:1.25}
+.s .d{font-size:13.5px;color:var(--mut);margin-top:6px;line-height:1.4}
+section{padding:34px 0}
+h2{font-size:clamp(24px,3vw,32px);font-weight:700;margin-bottom:10px;letter-spacing:-.01em}
+h2+p{color:var(--mut);max-width:800px;margin-bottom:22px}
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.st{flex:1 1 170px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.st .a{font-size:12px;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.st .b{font-size:17px;font-weight:500;margin-top:2px}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.92em;color:var(--cy)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
+.pt{font-weight:500;font-size:18px}.pn{font-size:13.5px;color:var(--mut);margin:2px 0 16px}
+.bar{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:12px;margin:12px 0}
+.bar .lb{font-size:15px;font-weight:500}
+.track{position:relative;height:30px}
+.fill{height:100%;border-radius:6px;background:var(--c)}
+.fill.h{background:repeating-linear-gradient(45deg,#34D399 0 5px,#0f2a24 5px 10px);border:2px solid #34D399}
+.val{position:absolute;top:50%;transform:translateY(-50%);font-weight:700;font-size:16px;color:var(--c);white-space:nowrap;padding-left:10px}
+.axis{display:flex;justify-content:space-between;margin-left:132px;font-size:12px;color:var(--mut)}
+.note{font-size:13.5px;color:var(--mut);margin-top:12px}
+.vram{display:flex;height:34px;border-radius:8px;overflow:hidden;margin:6px 0 10px}
+.vram div{height:100%}
+.leg{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--mut)}
+.leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:500;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+td:first-child{font-weight:500;white-space:nowrap}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:6px 10px}
+pre{background:#050913;border:1px solid var(--line);border-radius:14px;padding:16px 18px;overflow-x:auto;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13.5px;color:#cfe8f3;line-height:1.6}
+ol.steps{counter-reset:s;list-style:none;display:grid;gap:12px}
+ol.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 56px;position:relative}
+ol.steps li:before{content:counter(s);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:8px;background:var(--cy);color:#04121a;font-weight:700;display:grid;place-items:center;font-size:15px}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:26px 0 40px;color:var(--mut);font-size:14px}
+footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media (max-width:900px){.stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}nav .l{display:none}}
+@media (max-width:480px){.stats{grid-template-columns:1fr}.bar{grid-template-columns:96px 1fr}.axis{margin-left:108px}.s .n{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="w">
+<nav><div class="logo">pan<span>vram</span></div><div class="l"><a href="#how">How it works</a><a href="#numbers">Numbers</a><a href="#method">Method</a><a href="#reproduce">Reproduce</a><a href="https://github.com/yasha1971-coder/panvram">GitHub</a></div></nav>
+
+<header class="hero">
+ <div class="tag"><b>Open source</b> panvram 1.0 · refrel3 v1</div>
+ <h1>558 human genomes,<br><em>live on one GPU.</em></h1>
+ <p class="lead"><b>1.68 trillion bases</b> from the Human Pangenome Reference Consortium, held in <b>16.6 GB</b> of A100 memory. Ask for any window of any genome and get the exact bases back — <b>743,271 times a second</b>.</p>
+ <div class="cta">
+  <a class="btn p" href="https://github.com/yasha1971-coder/panvram">Code on GitHub</a>
+  <a class="btn" href="https://doi.org/10.5281/zenodo.23232317">Dataset · Zenodo DOI</a>
+  <a class="btn" href="https://colab.research.google.com/github/yasha1971-coder/panvram/blob/v1.0.0/notebooks/quickstart_558.ipynb">Run it on Colab</a>
+ </div>
+ <div class="stats">
+  <div class="s" style="--c:var(--cy)"><div class="n">743,271</div><div class="t">random reads / second</div><div class="d">8 KiB windows at random coordinates across all 558, one A100-80GB</div></div>
+  <div class="s" style="--c:var(--gr)"><div class="n">100×</div><div class="t">smaller than raw sequence</div><div class="d">1.68 Tbp at 1 byte/base → 16.6 GB resident, still randomly readable</div></div>
+  <div class="s" style="--c:var(--vi)"><div class="n">558<small>/ 558</small></div><div class="t">genomes rebuilt exactly</div><div class="d">every window identical to the CPU decoder; each rebuilt FASTA matches its source hash</div></div>
+  <div class="s" style="--c:var(--or)"><div class="n">2.5<small>min</small></div><div class="t">to decode all 558 on GPU</div><div class="d">11 Gbp/s decode + copy; ~10.5 min end to end with CPU-side hashing</div></div>
+ </div>
+</header>
+
+<section id="how">
+ <h2>How it works</h2>
+ <p>Each assembly is stored as a refrel3 archive: blocks coded against a shared reference, with a table that maps any coordinate to its block. The whole cohort is loaded into GPU memory once; after that a query never touches disk.</p>
+ <div class="flow">
+  <div class="st"><div class="a">Input</div><div class="b">558 HPRC assemblies</div></div>
+  <div class="st"><div class="a">Encode</div><div class="b">refrel3 v1 archives</div></div>
+  <div class="st"><div class="a">Resident</div><div class="b">16.6 GB on one GPU</div></div>
+  <div class="st" style="flex-basis:250px"><div class="a">Query</div><div class="b"><code>(genome, contig, start, len)</code></div></div>
+  <div class="st"><div class="a">Answer</div><div class="b">exact source bases</div></div>
+ </div>
+ <p class="note" style="margin-top:14px">Coordinates are 0-based, end-exclusive, within one contig. The answer is the source bases with case and IUPAC codes preserved, without headers or line breaks.</p>
+</section>
+
+<section id="numbers">
+ <h2>The numbers</h2>
+ <p>Same 558 assemblies for every tool. Conditions for each number are below and in the README; raw logs and SHA-256 hashes are in the repository.</p>
+ <div class="two">
+  <div class="panel">
+   <div class="pt">Random 4 KiB reads per second</div>
+   <div class="pn">CPU, 1 thread · queries shuffled across samples · log scale</div>
+   <div class="bar" style="--c:var(--or)"><div class="lb">AGC 3.2.4</div><div class="track"><div class="fill" style="width:23.6%"></div><span class="val" style="left:23.6%">26 / s</span></div></div>
+   <div class="bar" style="--c:var(--cy)"><div class="lb">refrel3 v1</div><div class="track"><div class="fill" style="width:86%"></div><span class="val" style="left:auto;right:14%;color:#04121a;padding-right:10px">145,222 / s</span></div></div>
+   <div class="axis"><span>1</span><span>100</span><span>10k</span><span>1M</span></div>
+   <p class="note">With 16 threads: AGC 97/s, refrel3 v1 1,306,848/s. In our profiling, shuffled sample order made AGC reload a metadata batch for each window; when queries are grouped by sample those reloads drop to zero. This is a workload result, not a general claim about AGC.</p>
+  </div>
+  <div class="panel">
+   <div class="pt">Size, MB per assembly <span style="color:var(--mut);font-weight:400">(lower is better)</span></div>
+   <div class="pn">T2T reference and block hashes not counted for either tool</div>
+   <div class="bar" style="--c:var(--cy)"><div class="lb">refrel3 v1</div><div class="track"><div class="fill" style="width:80%"></div><span class="val" style="left:80%">13.04</span></div></div>
+   <div class="bar" style="--c:var(--or)"><div class="lb">AGC 3.2.4</div><div class="track"><div class="fill" style="width:33.1%"></div><span class="val" style="left:33.1%">5.40</span></div></div>
+   <p class="note">AGC is built for size and is smaller than v1.</p>
+  </div>
+ </div>
+ <div class="panel" style="margin-top:18px">
+  <div class="pt">What fills the 16.6 GB</div>
+  <div class="pn">decimal GB, default form · output buffer and kernel scratch not included</div>
+  <div class="vram"><div style="width:18.7%;background:var(--vi)"></div><div style="width:50.8%;background:var(--cy)"></div><div style="width:29.6%;background:var(--or)"></div><div style="width:.9%;background:var(--gr)"></div></div>
+  <div class="leg"><span><i style="background:var(--vi)"></i>reference 3.117</span><span><i style="background:var(--cy)"></i>compressed payload 8.448</span><span><i style="background:var(--or)"></i>block table 4.923</span><span><i style="background:var(--gr)"></i>model tables 0.154</span></div>
+  <p class="note">Compact form (2-bit reference, two-level block table): 11.6 GB resident, 736,762 random 8 KiB windows/s.</p>
+ </div>
+</section>
+
+<section id="method">
+ <h2>How the numbers are measured</h2>
+ <p>Summary — the full table, logs and commands are in the repository README.</p>
+ <div class="tw"><table>
+  <tr><th>Item</th><th>Conditions</th></tr>
+  <tr><td>GPU</td><td>NVIDIA A100-SXM4-80GB, driver 580.82.07, CUDA 13.0</td></tr>
+  <tr><td>Random windows</td><td>1,024 × 8 KiB per call, data already resident, median of 5 calls (1.38 ms per call); cohort open time excluded; every window compared with the CPU decoder</td></tr>
+  <tr><td>Single fetch</td><td>synchronous call, median 0.28 ms, max 1.7 ms</td></tr>
+  <tr><td>Correctness</td><td>archives: SHA-256 equal to the manifest; full decode rebuilds each FASTA (headers, line wrapping) and matches the source file's XXH3-64 — 558/558</td></tr>
+  <tr><td>CPU vs AGC</td><td>AGC 3.2.4 (e67e3fc, -O3 -march=native), AMD EPYC 4344P, warm cache, 3 warm-ups + 9 runs, median; in-process harness, archive opened once; 4,096-base windows inside contigs; answers checked by SHA-256</td></tr>
+  <tr><td>Data</td><td>Human Pangenome Reference Consortium, BioProject PRJNA730823</td></tr>
+ </table></div>
+</section>
+
+<section id="reproduce">
+ <h2>Reproduce it</h2>
+ <p>The public notebook runs the full 558/558 gate from the published dataset. No account or token needed.</p>
+ <ol class="steps">
+  <li>Open the notebook on Colab with a GPU runtime: <a href="https://colab.research.google.com/github/yasha1971-coder/panvram/blob/v1.0.0/notebooks/quickstart_558.ipynb">quickstart_558.ipynb</a></li>
+  <li>It downloads the 500 MiB dataset parts from Zenodo and checks each SHA-256.</li>
+  <li>It loads all 558 archives on the GPU, samples random windows, and decodes every assembly in full, checking each against the manifest.</li>
+ </ol>
+ <p class="note">Local install and the CPU-only quick start are in the <a href="https://github.com/yasha1971-coder/panvram#readme">README</a>.</p>
+ <p class="note">Found a mismatch or a failed run? Please open an issue with the log and your hardware details.</p>
+</section>
+
+<section>
+ <h2>Cite</h2>
+ <p>Please cite the Zenodo record: <a href="https://doi.org/10.5281/zenodo.23232317">doi.org/10.5281/zenodo.23232317</a>. A ready citation is in <a href="https://github.com/yasha1971-coder/panvram/blob/main/CITATION.cff">CITATION.cff</a>.</p>
+</section>
+
+<footer><div class="row">
+ <div>panvram · MIT license · Yakiv Shavidze (ORCID <a href="https://orcid.org/0009-0008-3622-3448">0009-0008-3622-3448</a>)</div>
+ <div><a href="https://github.com/yasha1971-coder/panvram">GitHub</a> · <a href="https://doi.org/10.5281/zenodo.23232317">Zenodo</a></div>
+</div>
+<p style="margin-top:10px">Assembly data from the Human Pangenome Reference Consortium (BioProject PRJNA730823). This project is independent and not endorsed by the HPRC.</p>
+</footer>
+</div>
+</body></html>
