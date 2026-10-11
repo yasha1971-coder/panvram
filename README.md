@@ -82,6 +82,21 @@ starts, searchsorted over the contig table) runs on the device; no host round tr
   (`scripts/bench.py`). From Drive: the tarball (`MyDrive/panvram/panvram.tar.gz`, `git archive`) and the eight
   archives of MANIFEST.tsv (`MyDrive/panvram/cohort/*.rr3` + `SHA256SUMS`, checked); without them it encodes on the VM.
 
+## How the numbers are measured
+
+The 558-assembly GPU figures come from one Colab run (`logs/colab-c1-558-forms-A100-2026-10-07.log`):
+
+- GPU NVIDIA A100-SXM4-80GB (81 920 MiB, sm_80), driver 580.82.07, CUDA 13.0 (nvcc V13.0.88), torch 2.11.0+cu130;
+  panvram 56c32dc; archives q4k (Q = 4 096), the 558 manifest archives checked by SHA-256 before the run.
+- Windows: `sample` of 1 024 windows x 8 192 bases per call; the reported value is the median of 5 calls on archives
+  that are already resident on the GPU (opening the cohort is a separate step, e.g. 28.3 s for the default form, and
+  is not included); every window == the CPU decoder.
+- Fetch: 1 000 coordinates, one synchronous call each; median 0.28 ms, max 1.7 ms (default form); every result ==
+  the CPU decoder.
+- Resident memory, default form: 16.642 GB = reference 3.117 + payload 8.448 + block table 4.923 + model tables
+  0.154 GB (case runs 0.000); the other three forms are in the same log.
+- Full decode of each of the 558 assemblies: FASTA XXH3 == manifest (same log).
+
 ## Measured (each number from a file in `logs/`)
 
 | what | number | log |
