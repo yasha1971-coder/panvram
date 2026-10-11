@@ -1,0 +1,14 @@
+# Output of notebooks/quickstart_558.ipynb (tag v1.0.0) on Google Colab, NVIDIA A100-SXM4-80GB, 2026-10-09.
+# Copied verbatim by the author from the notebook output (the public notebook does not write a log file).
+C558 form	packed_reference 0	compact_blocks 0
+C558 open	558 assemblies (0 of the manifest missing)	q4k Q 4096	27.7 s	resident 16.642 GB (reference 3.117, payload 8.448, block table 4.923, model tables 0.154, case runs 0.000)	torch allocated 16.646 GB	nvidia-smi used 0 -> 16310 MiB
+C558 sample	1024 x 8192	median 1.38 ms per call (741,931 windows/s, 6.08 GB/s), 5 calls	474 assemblies hit	== CPU decoder
+C558 fetch	1000 coordinates	median 0.28 ms, max 1.7 ms per call (sync)	1000 == CPU decoder, 0 differ
+C558 full total	558 assemblies, 1.680 T bases decoded on the GPU	558 == manifest, 0 differ	10.1 min (median per assembly 1.11 s; of it GPU decode + copy to host 0.27 s, sum 2.5 min; 11.05 G bases/s)
+C558 RESULT	PASS
+C558 form	packed_reference 1	compact_blocks 1
+C558 open	558 assemblies (0 of the manifest missing)	q4k Q 4096	54.6 s	resident 11.634 GB (reference 0.779, payload 8.448, block table 2.253, model tables 0.154, case runs 0.000)	torch allocated 11.638 GB	nvidia-smi used 0 -> 11534 MiB
+C558 sample	1024 x 8192	median 1.50 ms per call (680,760 windows/s, 5.58 GB/s), 5 calls	474 assemblies hit	== CPU decoder
+C558 fetch	1000 coordinates	median 0.32 ms, max 1.7 ms per call (sync)	1000 == CPU decoder, 0 differ
+C558 full total	558 assemblies, 1.680 T bases decoded on the GPU	558 == manifest, 0 differ	10.2 min (median per assembly 1.11 s; of it GPU decode + copy to host 0.27 s, sum 2.5 min; 11.01 G bases/s)
+C558 RESULT	PASS

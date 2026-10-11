@@ -75,7 +75,7 @@ ol.steps li{counter-increment:s;background:var(--card);border:1px solid var(--li
 ol.steps li:before{content:counter(s);position:absolute;left:16px;top:13px;width:28px;height:28px;border-radius:8px;background:var(--cy);color:#04121a;font-weight:700;display:grid;place-items:center;font-size:15px}
 footer{border-top:1px solid var(--line);margin-top:30px;padding:26px 0 40px;color:var(--mut);font-size:14px}
 footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-@media (max-width:900px){.stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}nav .l{display:none}}
+@media (max-width:900px){.stats{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}nav .l{display:none}#use .stats{grid-template-columns:1fr!important}}
 @media (max-width:480px){.stats{grid-template-columns:1fr}.bar{grid-template-columns:96px 1fr}.axis{margin-left:108px}.s .n{font-size:36px}}
 </style>
 </head>
@@ -99,6 +99,21 @@ footer .row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   <div class="s" style="--c:var(--or)"><div class="n">2.5<small>min</small></div><div class="t">to decode all 558 on GPU</div><div class="d">11 Gbp/s decode + copy; ~10.5 min end to end with CPU-side hashing</div></div>
  </div>
 </header>
+
+<section id="use">
+ <h2>Use cases in 3 lines</h2>
+ <p>What the notebook does on a single Colab A100, once the dataset parts are downloaded.</p>
+ <div class="stats" style="grid-template-columns:repeat(3,1fr);margin:0 0 22px">
+  <div class="s" style="--c:var(--cy)"><div class="n">28<small>s</small></div><div class="t">Load the cohort</div><div class="d">Open all 558 assemblies into GPU memory, ready for queries.</div></div>
+  <div class="s" style="--c:var(--gr)"><div class="n">0.28<small>ms</small></div><div class="t">Look up any region</div><div class="d"><code>(genome, contig, start, len)</code> → exact source bases, one synchronous call.</div></div>
+  <div class="s" style="--c:var(--vi)"><div class="n">~740k<small>/s</small></div><div class="t">Stream random windows</div><div class="d">8 KiB windows across the whole cohort, e.g. to feed model training or sampling pipelines.</div></div>
+ </div>
+ <figure style="margin:0">
+  <img src="colab_run.png" alt="Terminal output of the public quickstart notebook on Colab A100: 558 assemblies opened in 27.7 s, 16.642 GB resident, 741,931 random 8 KiB windows per second identical to the CPU decoder, 1000 fetches with 0 differences, 558 assemblies decoded and matching the manifest, result PASS; compact form 11.634 GB, 680,760 windows per second, PASS." style="width:100%;height:auto;border-radius:16px;border:1px solid var(--line)" loading="lazy">
+  <figcaption class="note">Real output of the public notebook (Colab, A100-SXM4-80GB, 2026-10-09), copied verbatim; text in <a href="https://github.com/yasha1971-coder/panvram/blob/main/logs/colab-public-quickstart-2026-10-09.txt">logs/</a>. Throughput varies between runs: the reference C1 run in the README logged 743,271 windows/s (default) and 736,762 (compact).</figcaption>
+ </figure>
+ <p class="note">The <code>Run it on Colab</code> button above opens this notebook. Downloading the dataset from Zenodo takes most of the time; the GPU part is minutes.</p>
+</section>
 
 <section id="how">
  <h2>How it works</h2>
