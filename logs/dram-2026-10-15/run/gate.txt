@@ -1,0 +1,4 @@
+load1=0.01
+sampling_seconds=1.110000
+load1_after_cpu_sample=0.01
+MemAvailable_bytes=124665872384

@@ -1,0 +1,8 @@
+# started on Fri Oct  9 20:51:46 2026
+
+73384109698,,cycles:u,18086626303,83.34,,
+38808867166,,L1-dcache-loads,18090700988,83.34,,
+774566127,,L1-dcache-load-misses,18089306272,83.34,2.00,of all L1-dcache accesses
+17719633,,l2_cache_misses_from_dc_misses:u,18090535380,83.34,,
+214532305,,l2_pf_miss_l2_l3:u,18087850481,83.33,,
+53043246,,ls_any_fills_from_sys.mem_io_local:u,18085316451,83.32,,

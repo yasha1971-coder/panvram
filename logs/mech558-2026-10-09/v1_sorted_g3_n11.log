@@ -1,0 +1,12 @@
+OPEN	v1_sorted_g3_n11	reference + 558 archives (q16k)	20.118 s
+RUN	v1_sorted_g3_n11	0	timed	0.364223	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	1	timed	0.366816	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	2	timed	0.366187	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	3	timed	0.361130	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	4	timed	0.361830	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	5	timed	0.360975	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	6	timed	0.364525	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	7	timed	0.362719	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	8	timed	0.362122	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	9	timed	0.362873	10000 items	655360000 bytes	sha256 10000/10000
+RUN	v1_sorted_g3_n11	10	timed	0.363090	10000 items	655360000 bytes	sha256 10000/10000

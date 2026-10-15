@@ -1,0 +1,2 @@
+OPEN	v1_sorted_g3_n1	reference + 558 archives (q16k)	20.099 s
+RUN	v1_sorted_g3_n1	0	timed	0.363403	10000 items	655360000 bytes	sha256 10000/10000

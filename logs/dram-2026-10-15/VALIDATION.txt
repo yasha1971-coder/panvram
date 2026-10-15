@@ -1,0 +1,12 @@
+Package validation (not an AMD EPYC 4344P result):
+gcc -O2 -std=c11 -Wall -Wextra -Werror: PASS.
+bash -n run.sh: PASS.
+dram_lat --self-test: PASS, 200 single-cycle tests (10 sizes x 20 seeds), chase counts checked.
+Smoke: 32 KiB through 1 MiB, six sizes; 3 warmups + 9 measurements;
+TSV medians independently recomputed: PASS; timed major page faults: zero.
+Invalid CLI: bad size, zero accesses, negative seed, CPU out of bounds, unknown option: refused.
+CPU gate's actual awk expression: 9% accepted, 10% and 100% refused;
+own runner and its busy child excluded.
+Live run.sh preflight: load1 0.75 refused, exit 1, STATUS FAIL; no benchmark started in that attempt.
+objdump: the -O2 chase hot loop retains eight serial dependent pointer loads.
+No numbers here are measurements of the user's Linux server.

@@ -1,0 +1,9 @@
+# started on Fri Oct  9 20:49:56 2026
+
+73360020074,,cycles:u,18217268663,83.33,,
+21734332,,ls_l1_d_tlb_miss.all:u,18219833466,83.34,,
+18089491,,l2_dtlb_misses:u,18220912750,83.34,,
+58348316,,ls_tablewalker.dside:u,18221618993,83.34,,
+17864156,,ls_l1_d_tlb_miss.tlb_reload_4k_l2_miss:u,18219348552,83.33,,
+22908,,ls_l1_d_tlb_miss.tlb_reload_2m_l2_miss:u,18216844586,83.32,,
+5080512,,page-faults:u,21863091617,100.00,,

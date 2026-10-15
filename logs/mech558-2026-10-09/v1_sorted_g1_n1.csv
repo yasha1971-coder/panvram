@@ -1,0 +1,8 @@
+# started on Fri Oct  9 20:47:36 2026
+
+73467645210,,cycles:u,18106613062,83.34,,
+208780380083,,instructions:u,18107413362,83.34,2.84,insn per cycle
+81386590,,ls_dmnd_fills_from_sys.lcl_l2:u,18105319394,83.33,,
+2027880,,ls_dmnd_fills_from_sys.int_cache:u,18105482566,83.33,,
+27134189,,ls_dmnd_fills_from_sys.mem_io_local:u,18107386843,83.34,,
+0,,ls_dmnd_fills_from_sys.ext_cache_local:u,18103657673,83.32,,
