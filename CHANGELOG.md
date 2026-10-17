@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- `logs/window-law-B-2026-10-08/RESULTS_WINDOW_LAW_B.md` line 13: typo corrected, canonical bases of the N = 4 set
+  12 009 829 249 -> 11 989 829 249 B (the sum of the four assemblies in `results.json`, the numerator of `D_Q_exact`);
+  no other byte changed, verdicts unchanged.
+- `tools/rr3bench/`: sources and build of the refrel3 v1 benchmark of M6 and mech558; rebuilt binary byte-identical to
+  the logged one (SHA-256 f2f84fe9...), N = 50 re-run within 5 % of the published medians.
+- `logs/verdict-n4/RUNBOOK_DIFF.md`: differences between the later runbook and the 2026-10-08 N = 4 verdict run.
+- `tools/window_cost/` and `logs/verdict-n558-v1/`: public window-cost harness and the N = 558 v1 verdict.
+
 ## 1.0.0 - 2026-10-09
 
 - Version 1.0.0 of the API of 0.1.0 (`Cohort.open`, `sample`, `fetch`, `windows`, `decode`, `check_full`, `fasta`),
