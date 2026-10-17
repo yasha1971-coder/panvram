@@ -1,0 +1,7 @@
+# silence gate old_n50 2026-10-17T12:26:34Z
+loadavg: 0.38 0.64 0.29 1/703 1496044
+    PID USER      NI %CPU %MEM COMMAND
+2310730 aeterna    0  1.5  0.3 2.1.284
+1222959 aeterna    0  0.3  0.1 2.1.284
+2343617 aeterna    0  0.3  0.1 2.1.284
+ 554052 aeterna    0  0.2  0.0 claude

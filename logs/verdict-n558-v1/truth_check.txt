@@ -1,0 +1,2 @@
+truth558 new: 703.12 s, 6129296 KiB peak
+TRUTH558 IDENTICAL to the earlier table
