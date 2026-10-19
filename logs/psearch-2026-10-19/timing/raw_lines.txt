@@ -1,0 +1,10 @@
+PASS	v1	wall 476.4 s	threads 16	cpu-s: input 5.2	token decode 319.6	copy exec 320.8	resolve+scan 0.0	scan 6587.5	transfer+sort 0.0	reference scan wall 0.0 s (0 occurrences, 0.00 GB)	hits 3445753630	pe
+PASS	parse	wall 156.5 s	threads 16	cpu-s: input 12.9	token decode 515.1	copy exec 464.1	resolve+scan 0.0	scan 658.1	transfer+sort 513.9	reference scan wall 0.9 s (6824052 occurrences, 0.11 GB)	hits 34
+PASS	parse2	wall 1472.3 s	threads 16	cpu-s: input 8.6	token decode 294.3	copy exec 0.0	resolve+scan 19760.1	scan 65.3	transfer+sort 391.4	reference scan wall 0.9 s (6824052 occurrences, 0.11 GB)	hits 
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 35:15.01
+	Maximum resident set size (kbytes): 7384096
+PASS	origin	wall 159.9 s	threads 16	cpu-s: input 8.3	token decode 503.9	copy exec 457.9	resolve+scan 0.0	scan 732.7	transfer+sort 505.6	reference scan wall 0.9 s (6824052 occurrences, 0.11 GB)	hits 34
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:14.48
+	Maximum resident set size (kbytes): 14455236
+PASS	v1	wall 2456.6 s	threads 16	cpu-s: input 4.6	token decode 327.4	copy exec 255.7	scan 37764.3	transfer+sort 0.0	reference scan wall 0.0 s (0 sites, 0.00 GB)	sites 7593128089	peak RSS 8.4 GB
+PASS	parse	wall 268.7 s	threads 16	cpu-s: input 9.3	token decode 516.3	copy exec 471.6	scan 1660.1	transfer+sort 890.1	reference scan wall 4.6 s (14852254 sites, 0.24 GB)	sites 7593128089	peak RSS 9.6

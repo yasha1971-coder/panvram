@@ -1,0 +1,10 @@
+# silence gate n558 2026-10-19T06:01:19Z
+loadavg: 0.40 2.94 1.99 1/690 1717060
+Mem:             125           8          10           0         106         115
+/dev/md3        878G  812G   22G  98% /
+    PID USER      NI %CPU COMMAND
+2310730 aeterna    0  1.5 2.1.284
+1222959 aeterna    0  0.3 2.1.284
+2343617 aeterna    0  0.3 2.1.284
+ 554052 aeterna    0  0.2 claude
+3277404 root       0  0.2 cloudflared

@@ -1,0 +1,12 @@
+# 03_shifted_self_copy_source
+# what is broken: exact 23-mers, a self copy resolves its source one base off
+# env PSEARCH_BREAK_SELF=1; tool psearch; modes v1,parse2; patterns patterns.tsv; 5 assemblies; expected FAIL
+
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 391870	pid 798 (ref)	strand -
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 391871	pid 2433 (self)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 391872	pid 798 (ref)	strand -
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 391873	pid 2433 (self)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 434976	pid 2416 (self)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 499790	pid 2433 (self)	strand +
+COMPARE	v1 vs parse2	assemblies differing 5 of 5	FAIL
+TOTAL	wall 32.6 s	peak RSS 5.8 GB	FAIL

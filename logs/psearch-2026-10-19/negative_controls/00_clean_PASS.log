@@ -1,0 +1,4 @@
+# control 0: clean run, no break (expected PASS)
+COMPARE	v1 vs parse	assemblies differing 0 of 5	PASS
+COMPARE	v1 vs parse2	assemblies differing 0 of 5	PASS
+TOTAL	wall 26.7 s	peak RSS 5.8 GB	PASS

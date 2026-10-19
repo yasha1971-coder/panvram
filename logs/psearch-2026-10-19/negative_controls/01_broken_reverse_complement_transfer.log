@@ -1,0 +1,12 @@
+# 01_broken_reverse_complement_transfer
+# what is broken: exact 23-mers, transfer of a reverse-complement run keeps the strand
+# env PSEARCH_BREAK_RC=1; tool psearch; modes v1,parse; patterns patterns.tsv; 5 assemblies; expected FAIL
+
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 125120	pid 399 (ref)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 337327	pid 2808 (block_edge)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 386875	pid 2496 (self)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 386877	pid 2496 (self)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 386879	pid 2496 (self)	strand +
+DIFF	v1 only	y1_HG00438.1	contig 0	pos 386881	pid 2496 (self)	strand +
+COMPARE	v1 vs parse	assemblies differing 5 of 5	FAIL
+TOTAL	wall 30.6 s	peak RSS 5.8 GB	FAIL

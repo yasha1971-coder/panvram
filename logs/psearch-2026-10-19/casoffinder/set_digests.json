@@ -1,0 +1,20 @@
+{
+ "50_assemblies": {
+  "identical": true,
+  "sha256_sorted_set_cas_offinder": "db6352e200ca6172c3b8a2f512c025bb6d6cc7516efd7c6ae26902f1f6366601",
+  "sha256_sorted_set_ours": "db6352e200ca6172c3b8a2f512c025bb6d6cc7516efd7c6ae26902f1f6366601",
+  "sites": 5916825
+ },
+ "5_assemblies": {
+  "identical": true,
+  "sha256_sorted_set_cas_offinder": "69bfcf4501ff599bb209e160b014d95c515c0d26414cc4f97516d2b8d73ab0e1",
+  "sha256_sorted_set_ours": "69bfcf4501ff599bb209e160b014d95c515c0d26414cc4f97516d2b8d73ab0e1",
+  "sites": 587044
+ },
+ "T2T_reference": {
+  "identical": true,
+  "sha256_sorted_set_cas_offinder": "a8bc09fdef6484a2601370c98c70c515052adb0c20acb4c9a5c8efc15e5aab3c",
+  "sha256_sorted_set_ours": "a8bc09fdef6484a2601370c98c70c515052adb0c20acb4c9a5c8efc15e5aab3c",
+  "sites": 121079
+ }
+}

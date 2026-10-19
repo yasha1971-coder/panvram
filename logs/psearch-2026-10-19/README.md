@@ -23,8 +23,10 @@ The decomposition was checked against searches that do not use it:
 | transfer + residual vs Cas-OFFinder 3.0.0 | 50 assemblies, 4 guides, ≤6 substitutions | identical sets, 5 916 825 sites |
 
 Cas-OFFinder (github.com/snugel/cas-offinder @0a9ac005, built against the Khronos ICD loader and pocl on CPU) folds
-case the same way. Three negative controls were also run and each was detected: a broken reverse-complement transfer,
-a shifted context at a block boundary, and a shifted self-copy source.
+case the same way; see `casoffinder/`. Four deliberate errors were also introduced one at a time and each was caught:
+a broken reverse-complement transfer, a shifted context at a block boundary, a shifted self-copy source, and a shifted
+substitution count on a carried site; see `negative_controls/`. Per-assembly digests of every comparison are in
+`correctness/`, times and memory in `timing/`, and the binaries behind each number in `REPRODUCIBILITY.md`.
 
 Wall time at 50 assemblies, same guides and threshold: 23.7 s for the decomposition against 929 s of search plus 581 s
 of decompression for Cas-OFFinder, which reads uncompressed FASTA. The two tools do different amounts of I/O and this
@@ -52,6 +54,14 @@ guides that duplicate EMX1 and VEGFA site 1. The full spacer list is in that pap
   substitutions, occurrences, how many assemblies carry it, repeat class with its two measures, and one example
   location (assembly, contig, position, strand).
 - `summary.json` — the cohort totals quoted below.
+- `correctness/` — per-assembly SHA-256 of the sorted hit lists for every mode, at 50 and 558 assemblies, exact and
+  CRISPR, plus the patterns and the rechecks with the committed build.
+- `casoffinder/` — the outside baseline: version and commit, how the OpenCL stack was assembled, the input files, the
+  driver script, per-assembly times and the digests of the compared site sets.
+- `timing/` — stages, wall time and peak memory at 558 assemblies, with the host description.
+- `negative_controls/` — the four deliberate errors and the clean run.
+- `REPRODUCIBILITY.md` — which binary produced which log, and the digest rechecks that tie them to the committed source.
+- `../../tools/psearch/` — the two tools, the build script and the commands that produce everything here.
 
 Positions are zero-based offsets inside the named contig of the named assembly. A sequence is reported in canonical
 form, the lesser of the window and its reverse complement, so the two strands are one entry.

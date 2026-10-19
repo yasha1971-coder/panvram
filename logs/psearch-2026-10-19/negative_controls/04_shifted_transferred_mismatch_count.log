@@ -1,0 +1,12 @@
+# 04_shifted_transferred_mismatch_count
+# what is broken: CRISPR sites, a transferred site with 3 substitutions is reported as 4
+# env CRISPR_BREAK_MM=1; tool crispr; modes v1,parse; guides guides.tsv (120); 5 assemblies; expected FAIL
+
+DIFF	mismatch count	y1_HG00438.1	pos 7291
+DIFF	mismatch count	y1_HG00438.1	pos 7331
+DIFF	mismatch count	y1_HG00438.1	pos 7367
+DIFF	mismatch count	y1_HG00438.1	pos 15779
+DIFF	mismatch count	y1_HG00438.1	pos 20133
+DIFF	mismatch count	y1_HG00438.1	pos 20158
+COMPARE	v1 vs parse	assemblies differing 5 of 5	FAIL
+TOTAL	wall 93.1 s	peak RSS 5.8 GB	FAIL
