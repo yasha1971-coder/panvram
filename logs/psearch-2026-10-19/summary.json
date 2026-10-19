@@ -1,0 +1,11 @@
+{
+ "absent_from_T2T": 96616,
+ "absent_le2": 23,
+ "absent_le2_unique": 9,
+ "absent_simple_repeat": 38583,
+ "absent_unique_sequence": 58033,
+ "guides_with_absent_le2": 8,
+ "guides_with_absent_le2_unique": 7,
+ "present_elsewhere": 21516,
+ "unique_residual_23mers": 118132
+}
