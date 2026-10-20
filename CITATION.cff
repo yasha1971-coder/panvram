@@ -21,3 +21,6 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.23232317"
     description: "The HPRC cohort dataset (refrel3 v1 archives, q4k and q16k) this software reads"
+  - type: other
+    value: "arXiv:2610.25149"
+    description: "Paper: panvram: GPU-resident random access to a human pangenome cohort, https://arxiv.org/abs/2610.25149"

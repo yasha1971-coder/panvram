@@ -5,6 +5,7 @@ T2T-CHM13v2.0 for HPRC; [FORMAT.md](FORMAT.md)), random training windows and coo
 a queue kernel, straight into a PyTorch tensor. A CPU decoder serves the same API without a GPU.
 
 Version 1.0.0. Repository: https://github.com/yasha1971-coder/panvram. Dataset (the 558 refrel3 v1 archives, q4k and q16k): DOI 10.5281/zenodo.23232317.
+Paper: "panvram: GPU-resident random access to a human pangenome cohort", [arXiv:2610.25149](https://arxiv.org/abs/2610.25149).
 Numbers below come only from the logs named next to them.
 
 ```python

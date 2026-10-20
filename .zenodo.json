@@ -30,6 +30,12 @@
       "relation": "isSupplementTo",
       "scheme": "url",
       "resource_type": "software"
+    },
+    {
+      "identifier": "arXiv:2610.25149",
+      "relation": "isDocumentedBy",
+      "scheme": "arxiv",
+      "resource_type": "publication-preprint"
     }
   ],
   "notes": "Contact: Yakiv Shavidze, aceapex.contour@outlook.com (the Zenodo creator schema has no e-mail field)."
