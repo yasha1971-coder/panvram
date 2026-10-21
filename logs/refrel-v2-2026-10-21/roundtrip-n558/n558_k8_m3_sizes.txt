@@ -1,0 +1,1 @@
+SIZES	n558_k8_m3	N 558	pass 558	anchors 8: 116291305 B	non-anchors 550: 2856573432 B	total 2972864737 B	MB per sample = total / N / 1e6 = 5.3277 (T2T not counted)

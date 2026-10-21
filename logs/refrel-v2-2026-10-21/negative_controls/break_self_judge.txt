@@ -1,0 +1,34 @@
+anchor r2_HG00597_mat_hprc_r2_v1.0.1: 3051568197 bases, 4614044 lift entries
+anchor r2_HG03540_pat_hprc_r2_v1.0.1: 3060546927 bases, 5598701 lift entries
+anchor r2_HG03521_hap2_hprc_r2_v1.0.1: 3097164776 bases, 5672951 lift entries
+anchor r2_HG01943_mat_hprc_r2_v1.0.1: 3063349020 bases, 4496285 lift entries
+anchor y1_HG02055.1: 2950246117 bases, 5326582 lift entries
+anchor r2_HG00128_hap1_hprc_r2_v1.0.1: 3056461595 bases, 4373459 lift entries
+anchor y1_NA18906.2: 3055692855 bases, 5544590 lift entries
+anchor r2_NA19443_hap1_hprc_r2_v1.0.1: 2958934336 bases, 5414075 lift entries
+JUDGE_TOTAL	pass 0	fail 5	counted 22752605 B	4.5505 MB per sample
+Command exited with non-zero status 4
+	Command being timed: "/tmp/claude-1002/sub5/controls2/bin/rv2dec_break_self judge /home/aeterna/golden/genome/t2t.fa /home/aeterna/pubrepo/.wk/hprc_cohort/v1 r2_HG00597_mat_hprc_r2_v1.0.1,r2_HG03540_pat_hprc_r2_v1.0.1,r2_HG03521_hap2_hprc_r2_v1.0.1,r2_HG01943_mat_hprc_r2_v1.0.1,y1_HG02055.1,r2_HG00128_hap1_hprc_r2_v1.0.1,y1_NA18906.2,r2_NA19443_hap1_hprc_r2_v1.0.1 /tmp/claude-1002/sub5/rv2 /home/aeterna/pubrepo/.wk/panvram-v2pub/MANIFEST.tsv /tmp/claude-1002/sub5/names5.txt 16"
+	User time (seconds): 57.23
+	System time (seconds): 18.50
+	Percent of CPU this job got: 195%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:38.67
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 34047156
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 10
+	Minor (reclaiming a frame) page faults: 14611383
+	Voluntary context switches: 12713
+	Involuntary context switches: 1154
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 32
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 4
+JUDGE_TOTAL	pass 0	fail 5	counted 22752605 B	4.5505 MB per sample

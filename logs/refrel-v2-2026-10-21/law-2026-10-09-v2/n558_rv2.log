@@ -1,0 +1,52 @@
+# n558_rv2 start 2026-10-09T15:44:01Z loadavg 0.49 0.90 1.00 1/749 244732
+anchor r2_HG00597_mat_hprc_r2_v1.0.1: 3051568197 bases, 4614044 lift entries
+anchor r2_HG03540_pat_hprc_r2_v1.0.1: 3060546927 bases, 5598701 lift entries
+anchor r2_HG03521_hap2_hprc_r2_v1.0.1: 3097164776 bases, 5672951 lift entries
+anchor r2_HG01943_mat_hprc_r2_v1.0.1: 3063349020 bases, 4496285 lift entries
+anchor y1_HG02055.1: 2950246117 bases, 5326582 lift entries
+anchor r2_HG00128_hap1_hprc_r2_v1.0.1: 3056461595 bases, 4373459 lift entries
+anchor y1_NA18906.2: 3055692855 bases, 5544590 lift entries
+anchor r2_NA19443_hap1_hprc_r2_v1.0.1: 2958934336 bases, 5414075 lift entries
+LAW	variant rv2	anchors 8	assemblies 558	canonical bases 1680437743110	open 41.2 s
+DQ	0	warmup	491064169014 ns	all 558 XXH3 ok
+DQ	1	warmup	490813515827 ns	all 558 XXH3 ok
+DQ	2	warmup	490658045563 ns	all 558 XXH3 ok
+DQ	3	measured	490837126105 ns	all 558 XXH3 ok
+DQ	4	measured	490735514391 ns	all 558 XXH3 ok
+DQ	5	measured	490804056350 ns	all 558 XXH3 ok
+DQ	6	measured	491007201044 ns	all 558 XXH3 ok
+DQ	7	measured	490703579357 ns	all 558 XXH3 ok
+DQ	8	measured	490865997510 ns	all 558 XXH3 ok
+DQ	9	measured	491025722639 ns	all 558 XXH3 ok
+DQ	10	measured	491023657616 ns	all 558 XXH3 ok
+DQ	11	measured	491000194964 ns	all 558 XXH3 ok
+DQ_RESULT	median 490865997510 ns	min 490703579357	max 491025722639	D_Q 3.423414 Gbases/s
+WIN	W 1	verified 10000	bad 0	p50 7.945 us	p95 29.906	p99 67.276	pred 7.945 us	error +0.00 %	c0-probe
+WIN	W 1024	verified 10000	bad 0	p50 7.795 us	p95 29.926	p99 68.419	pred 8.244 us	error -5.44 %	PASS
+WIN	W 8192	verified 10000	bad 0	p50 10.119 us	p95 40.486	p99 87.955	pred 10.338 us	error -2.11 %	PASS
+WIN	W 65536	verified 10000	bad 0	p50 32.111 us	p95 98.014	p99 228.910	pred 27.088 us	error +18.54 %	PASS
+LAW_RESULT	variant rv2	Q 16384	D_Q 3.423414 Gbases/s	c0 3.159 us	verdict PASS
+	Command being timed: "taskset -c 3 /home/aeterna/pubrepo/.wk/rv2b/bin/rv2 law rv2 /home/aeterna/golden/genome/t2t.fa /home/aeterna/pubrepo/.wk/hprc_cohort/v1 r2_HG00597_mat_hprc_r2_v1.0.1,r2_HG03540_pat_hprc_r2_v1.0.1,r2_HG03521_hap2_hprc_r2_v1.0.1,r2_HG01943_mat_hprc_r2_v1.0.1,y1_HG02055.1,r2_HG00128_hap1_hprc_r2_v1.0.1,y1_NA18906.2,r2_NA19443_hap1_hprc_r2_v1.0.1 /home/aeterna/pubrepo/.wk/rv2b/n558_k8 /home/aeterna/pubrepo/.wk/rv2b/names558.txt /home/aeterna/pubrepo/.wk/rv2b/law/req558.tsv /home/aeterna/pubrepo/.wk/rv2b/law/truth558.tsv"
+	User time (seconds): 6452.28
+	System time (seconds): 16.51
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:47:49
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 36725228
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 13130753
+	Voluntary context switches: 157
+	Involuntary context switches: 36763
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1304
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+# end 2026-10-09T17:31:50Z loadavg 1.14 1.12 1.09 1/759 281956

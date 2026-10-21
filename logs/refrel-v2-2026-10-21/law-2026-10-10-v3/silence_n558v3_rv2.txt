@@ -1,0 +1,13 @@
+# silence gate n558v3_rv2 2026-10-10T01:08:25Z
+loadavg: 0.28 0.46 0.42 1/752 485956
+df: 8.7G free of 878G
+mem: 116 GB available of 125
+top processes by CPU:
+    PID USER      NI %CPU %MEM COMMAND
+2310730 aeterna    0  1.8  0.4 2.1.284
+2343617 aeterna    0  0.3  0.1 2.1.284
+ 554052 aeterna    0  0.2  0.0 claude
+3277404 root       0  0.2  0.0 cloudflared
+      1 root       0  0.0  0.0 systemd
+      2 root       0  0.0  0.0 kthreadd
+      3 root     -20  0.0  0.0 rcu_gp

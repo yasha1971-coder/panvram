@@ -125,6 +125,11 @@ The 558-assembly GPU figures come from one Colab run (`logs/colab-c1-558-forms-A
 Statement by statement, with commits, SHA-256 of every artifact, reproduction commands and one limitation each:
 [EVIDENCE.md](EVIDENCE.md).
 
+A research prototype that stores each assembly against the reference **and eight cohort assemblies** ("anchors"), with
+its decoder, logs and negative controls, is in [`research/refrel_v2/`](research/refrel_v2/RESULTS_V2.md): at N = 558 it
+holds the window law that v1 fails at 64 KiB, at 2.4 times the resident memory. Its container is not frozen and its
+encoder is not published.
+
 ## MANIFEST.tsv
 
 The 558 HPRC haplotype assemblies (year-1 94, release 2 464; CHM13 v1.1 and GRCh38 rows of the indexes excluded):

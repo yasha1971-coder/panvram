@@ -1,0 +1,6 @@
+clean	judge exit 0	pass 5	fail 0	law exit 0	law verdict PASS	bad answers 0
+break_lift	judge exit 4	pass 0	fail 5	law exit 4	law verdict none	bad answers 0
+break_abs	judge exit 4	pass 0	fail 5	law exit 4	law verdict none	bad answers 0
+break_bt3	judge exit 4	pass 0	fail 5	law exit 2	law verdict none	bad answers 0
+break_ref	judge exit 4	pass 0	fail 5	law exit 4	law verdict none	bad answers 0
+break_self	judge exit 4	pass 0	fail 5	law exit 4	law verdict none	bad answers 0
