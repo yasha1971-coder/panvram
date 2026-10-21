@@ -42,11 +42,18 @@ the upper-case bases == the truth of the AGC comparison. Wall 5 768 s, peak RSS 
 - `SHA256SUMS.rv2` - the 550 v2 archives of the run (2.86 GB in total). Not in this repository either; five of them
   are a release asset, see below.
 
+The five-archive asset:
+[`refrel-v2-subset5.tar`](https://github.com/yasha1971-coder/panvram/releases/download/refrel-v2-prototype-subset5/refrel-v2-subset5.tar)
+of release `refrel-v2-prototype-subset5`, 22 763 520 B, SHA-256
+`ea7f58efb7003f6ceb92ee3e8f8cc046c3825024b5baf1eee5167d5e86e76168`; `tar -xf` gives the five files of
+`subset5/SHA256SUMS`.
+
 ## `subset5/` - the five assemblies the controls run on
 
 `names5.txt` (five year-1 assemblies), `SHA256SUMS` (their five v2 archives, 22 752 605 B in total),
-`req5.tsv.gz` and `truth5.tsv.gz`. The requests come from the frozen generator of the hw-apex job
-(`tools/window_cost/window_requests.py`, seed 20261003, 10 000 per W); the truth comes from
+`req5.tsv.gz` and `truth5.tsv.gz`; the archives themselves are the release asset named above. The requests come
+from the frozen generator of the hw-apex job (`tools/window_cost/window_requests.py`, seed 20261003, 10 000 per W);
+the truth comes from
 `tools/window_cost window_cost truth`, that is from the **v1** archives with every v1 check - it does not use any v2
 code, so it is an independent oracle for the v2 decoder.
 

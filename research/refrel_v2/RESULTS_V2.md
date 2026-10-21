@@ -123,6 +123,10 @@ Further open points of the prototype:
 bash research/refrel_v2/build.sh <aceapex checkout at e902934> /tmp/rv2     # prints the SHA-256, see build.sh
 ```
 Inputs: T2T (DATASET.md), the 8 anchors and the v1 archives as q16k files of the Zenodo dataset (DATASET.md, "Rebuilding
-a tar from its parts"; check `L/archives/SHA256SUMS.anchors`), the v2 archives (5 of them as a release asset of this
-repository, `L/subset5/`; all 550 listed in `L/archives/SHA256SUMS.rv2`). Commands and expected outputs:
-`logs/refrel-v2-2026-10-21/README.md`.
+a tar from its parts"; check `L/archives/SHA256SUMS.anchors`), the v2 archives (5 of them as the release asset
+`refrel-v2-prototype-subset5`, tar SHA-256 `ea7f58ef...`, see `L/archives/`; all 550 listed in
+`L/archives/SHA256SUMS.rv2`). Commands and expected outputs: `logs/refrel-v2-2026-10-21/README.md`.
+
+End-to-end check of the published package (2026-10-21): a fresh clone of this repository and of aceapex at e902934,
+`build.sh` reproduces `6e1f91b7...`, the asset downloads to the tar SHA-256 above, its five archives match
+`L/subset5/SHA256SUMS`, and `rv2dec judge` on them is 5 / 5 PASS (46 s, peak RSS 37.0 GB).
