@@ -1,0 +1,30 @@
+assemblies ['y1_HG00438.1', 'y1_HG00438.2', 'y1_HG00621.1', 'y1_HG00621.2']
+windows 1,463,063; with a reference interval 1,457,730 (99.635 %); of those, hull within 10 % of W 1,354,262 (92.90 %)
+
+--- random split by sample: train ['y1_HG00438.1', 'y1_HG00621.1'], test ['y1_HG00438.2', 'y1_HG00621.2']
+random by sample
+  train   669,173 windows   test   685,089 windows   merged train intervals   3,287   train covers 2,881,136,020 reference bases (92.4 % of T2T)
+  test windows overlapping a train window by >= 50 %:  99.305 %
+  test windows overlapping a train window by >= 90 %:  98.954 %
+  median overlap 100.00 %, zero overlap 0.429 %
+
+--- both haplotypes of one individual in train: ['y1_HG00438.1', 'y1_HG00438.2']
+by individual
+  train   685,157 windows   test   669,105 windows   merged train intervals   3,021   train covers 2,862,211,777 reference bases (91.8 % of T2T)
+  test windows overlapping a train window by >= 50 %:  98.966 %
+  test windows overlapping a train window by >= 90 %:  98.651 %
+  median overlap 100.00 %, zero overlap 0.804 %
+
+--- split by locus: T2T cut into 10 Mb chunks, 156 of 312 to train
+by locus (10 Mb)
+  train   674,871 windows   test   679,391 windows   merged train intervals   1,615   train covers 1,447,581,189 reference bases (46.4 % of T2T)
+  test windows overlapping a train window by >= 50 %:   0.024 %
+  test windows overlapping a train window by >= 90 %:   0.002 %
+  median overlap 0.00 %, zero overlap 99.937 %
+
+--- split by locus: T2T cut into 1 Mb chunks, 1544 of 3089 to train
+by locus (1 Mb)
+  train   681,023 windows   test   673,239 windows   merged train intervals   2,128   train covers 1,466,533,959 reference bases (47.0 % of T2T)
+  test windows overlapping a train window by >= 50 %:   0.219 %
+  test windows overlapping a train window by >= 90 %:   0.014 %
+  median overlap 0.00 %, zero overlap 99.401 %

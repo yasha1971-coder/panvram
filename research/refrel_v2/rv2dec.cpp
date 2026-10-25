@@ -16,6 +16,7 @@
 // Build: research/refrel_v2/build.sh
 #include "refrel3v1_nomain.cpp"
 #include "rv2.h"
+#include "rv2_acc.h"
 #include "bench_common.h"
 #include <memory>
 #include <sys/stat.h>
@@ -30,37 +31,63 @@ static int bt3_target(const std::vector<uint64_t>& base, const std::vector<uint6
     const int NT = (int)base.size(); if (x < 0) return NT; for (int t = NT - 1; t >= 0; t--) if ((uint64_t)x >= base[t]) return (uint64_t)x < base[t] + len[t] ? t : NT; return NT; }
 
 // ---------------------------------------------------------------- cohort: T2T + anchors (decoded from v1) + lift tables
-struct Cohort { Ref ref; std::vector<uint8_t> G; Space S; std::vector<std::string> an; std::vector<uint64_t> axxh; };
+struct Cohort { Ref ref; Space S; std::vector<std::string> an; std::vector<uint64_t> axxh;
+    std::vector<uint32_t> pw; std::vector<uint64_t> pes, pel; std::vector<uint8_t> peb; AccSpace A; };
 static std::vector<std::string> split_c(const std::string& s) { std::vector<std::string> v; if (s == "-" || s.empty()) return v; size_t p = 0; for (;;) { size_t c = s.find(',', p); v.push_back(s.substr(p, c - p)); if (c == std::string::npos) break; p = c + 1; } return v; }
 static std::string v1path(const std::string& dir, const std::string& nm) { return dir + "/" + nm + ".q16k.rr3"; }
-// T2T + every anchor decoded from its v1 archive (all v1 open checks, block XXH3 checked) into one buffer; lift tables
-// = each anchor's reference copies in stream order (+ index sorted by (p, a))
+// T2T stays one byte per base (it is the source of every v1 stream and carries no non-ACGT base); every anchor is
+// decoded from its v1 archive with all v1 checks and packed two bits per base as its blocks come out, so the decoded
+// bytes of an anchor are never all resident. Lift tables = each anchor's reference copies in stream order (+ index
+// sorted by (p, a)). The anchor's XXH3 is then computed by reading the packed form back, which is also the check that
+// the packing is exact: open_v2 refuses an archive whose anchor table does not match it.
 static void load_cohort(Cohort& C, const char* t2t, const std::string& v1dir, const std::vector<std::string>& an, int T) {
     C.ref = load_ref(t2t, 1, false); C.an = an; const uint64_t Rn = C.ref.R.size();
-    std::vector<std::vector<uint8_t>> files(an.size()); uint64_t total = Rn;
-    for (size_t k = 0; k < an.size(); k++) { files[k] = slurp(v1path(v1dir, an[k])); total += rd64(&files[k][64]); }
-    C.G.reserve(total); C.G.assign(C.ref.R.begin(), C.ref.R.end()); std::vector<uint8_t>().swap(C.ref.R);
+    std::vector<std::vector<uint8_t>> files(an.size()); uint64_t packed = 0;
+    for (size_t k = 0; k < an.size(); k++) { files[k] = slurp(v1path(v1dir, an[k])); packed += (rd64(&files[k][64]) + 15) / 16 * 16; }   // each anchor starts on a word boundary
     C.S.t.resize(1 + an.size()); C.S.t[0].base = 0; C.S.t[0].len = Rn;
-    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; if (!an.empty()) view.R.assign(C.G.begin(), C.G.begin() + Rn);   // open_v1 checks size + SHA against a Ref
+    C.pw.assign((packed + 15) / 16, 0u);
+    C.A.ref = C.ref.R.data(); C.A.rn = Rn; C.A.w = C.pw.data(); C.A.wn = packed;
+    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name;
+    if (!an.empty()) view.R.swap(C.ref.R);                 // open_v1 reads only .sha and .R.size(): lend the bytes, no copy
+    uint64_t pbase = 0, gbase = 0;                         // packed offset (16-aligned) and global offset (contiguous)
     for (size_t k = 0; k < an.size(); k++) {
         V1 X; std::string why; if (open_v1(files[k].data(), files[k].size(), view, X, why)) { fprintf(stderr, "anchor %s refused: %s\n", an[k].c_str(), why.c_str()); exit(2); }
-        const uint64_t base = C.G.size(); C.G.resize(base + X.nbases); Tgt& tg = C.S.t[1 + k]; tg.base = base; tg.len = X.nbases;
+        Tgt& tg = C.S.t[1 + k]; tg.base = Rn + gbase; tg.len = X.nbases;   // global: contiguous, as the encoder wrote it
+        C.A.gb[k] = tg.base; C.A.gl[k] = X.nbases; C.A.ps[k] = pbase; C.A.nt = (int)(k + 1);   // packed: 16-aligned
         std::vector<std::vector<LiftE>> le(X.nb); std::atomic<uint64_t> next{0}; std::atomic<int> err{0}; std::vector<std::thread> th;
-        for (int t = 0; t < T; t++) th.emplace_back([&] { std::vector<RrOp> ops(RR_MAXOPS); std::vector<uint8_t> lit(X.Q);
+        std::vector<std::vector<uint64_t>> res(T), rel(T); std::vector<std::vector<uint8_t>> reb(T);
+        const uint8_t* refb = view.R.data();               // T2T bytes, the only source an anchor's v1 stream can use
+        for (int t = 0; t < T; t++) th.emplace_back([&, t] { std::vector<RrOp> ops(RR_MAXOPS); std::vector<uint8_t> lit(X.Q), out(X.Q);
             for (;;) { const uint64_t b = next.fetch_add(1); if (b >= X.nb) break; const uint32_t blen = (uint32_t)std::min<uint64_t>(X.Q, X.nbases - b * X.Q);
-                const int n = r3_decode_block(X.P + X.off[b], (uint32_t)(X.off[b + 1] - X.off[b]), X.T, C.G.data(), Rn, blen, X.st[b], ops.data(), (uint32_t)ops.size(), lit.data(), (uint32_t)lit.size());
-                if (n < 0) { err++; continue; } uint8_t* out = &C.G[base + b * X.Q]; exec_fast(ops.data(), n, lit.data(), C.G.data(), out);
-                if (X.hashes && XXH3_64bits(out, blen) != rd64(X.hashes + 8 * b)) err++;
+                const int n = r3_decode_block(X.P + X.off[b], (uint32_t)(X.off[b + 1] - X.off[b]), X.T, refb, Rn, blen, X.st[b], ops.data(), (uint32_t)ops.size(), lit.data(), (uint32_t)lit.size());
+                if (n < 0) { err++; continue; } exec_fast(ops.data(), n, lit.data(), refb, out.data());
+                if (X.hashes && XXH3_64bits(out.data(), blen) != rd64(X.hashes + 8 * b)) err++;
+                acc_pack_block(C.pw.data(), pbase + b * X.Q, out.data(), blen, res[t], rel[t], reb[t]);
                 for (int j = 0; j < n; j++) if (ops[j].kind == 1 || ops[j].kind == 3) le[b].push_back({ops[j].src, b * X.Q + ops[j].dst, ops[j].len, ops[j].kind == 3 ? 1u : 0u}); } });
         for (auto& x : th) x.join(); if (err) { fprintf(stderr, "anchor %s: %d blocks failed\n", an[k].c_str(), (int)err); exit(3); }
+        size_t nrun = 0;
+        for (int t = 0; t < T; t++) { for (size_t i = 0; i < res[t].size(); i++) { C.pes.push_back(tg.base + (res[t][i] - pbase)); C.pel.push_back(rel[t][i]); C.peb.push_back(reb[t][i]); } nrun += res[t].size(); }
         size_t ne = 0; for (auto& v : le) ne += v.size(); tg.byA.reserve(ne); for (auto& v : le) { tg.byA.insert(tg.byA.end(), v.begin(), v.end()); std::vector<LiftE>().swap(v); }
         tg.byP.resize(ne); for (size_t i = 0; i < ne; i++) tg.byP[i] = (uint32_t)i;
         std::sort(tg.byP.begin(), tg.byP.end(), [&](uint32_t x, uint32_t y) { const LiftE &a = tg.byA[x], &b = tg.byA[y]; return a.p != b.p ? a.p < b.p : a.a < b.a; });
-        C.axxh.push_back(XXH3_64bits(&C.G[base], X.nbases));
-        fprintf(stderr, "anchor %s: %llu bases, %zu lift entries\n", an[k].c_str(), (unsigned long long)X.nbases, ne);
+        pbase += (X.nbases + 15) / 16 * 16; gbase += X.nbases;   // pad the storage, never the coordinates
+        fprintf(stderr, "anchor %s: %llu bases, %zu lift entries, %zu non-ACGT runs\n", an[k].c_str(), (unsigned long long)X.nbases, ne, nrun);
     }
-    std::vector<uint8_t>().swap(view.R);
-    C.S.G = C.G.data(); C.S.Gn = C.G.size();
+    acc_merge_runs(C.pes, C.pel, C.peb);
+    C.A.es = C.pes.data(); C.A.el = C.pel.data(); C.A.eb = C.peb.data(); C.A.ne = (int64_t)C.pes.size();
+    if (!an.empty()) view.R.swap(C.ref.R);                 // take the bytes back
+    C.A.ref = C.ref.R.data();
+    C.S.G = C.ref.R.data(); C.S.Gn = Rn + gbase;           // S.G is target 0 only; the space is read through C.A
+    {   // the anchors' digests, read back out of the packed form: this is the check that the packing is exact
+        std::vector<uint8_t> buf(1 << 20);
+        for (size_t k = 0; k < an.size(); k++) { const Tgt& tg = C.S.t[1 + k];
+            XXH3_state_t* st = XXH3_createState(); XXH3_64bits_reset(st);
+            for (uint64_t off = 0; off < tg.len;) { const uint32_t take = (uint32_t)std::min<uint64_t>(buf.size(), tg.len - off);
+                C.A.copy(tg.base + off, take, buf.data()); XXH3_64bits_update(st, buf.data(), take); off += take; }
+            C.axxh.push_back(XXH3_64bits_digest(st)); XXH3_freeState(st); }
+    }
+    fprintf(stderr, "cohort: target space %llu bases, anchors packed %llu words (%.2f GB), %zu non-ACGT runs (%zu B)\n",
+            (unsigned long long)C.S.Gn, (unsigned long long)C.pw.size(), C.pw.size() * 4.0 / 1e9, C.pes.size(), C.pes.size() * 17);
 }
 
 static void build_tab4(R4Tab& T) { for (int c = 0; c < R4_NCTX; c++) { uint32_t a = 0; for (int s = 0; s < R3_AB; s++) { T.cum[c][s] = (uint16_t)a; for (uint32_t k = 0; k < T.freq[c][s]; k++) T.sym[c][a + k] = (uint8_t)s; a += T.freq[c][s]; } T.cum[c][R3_AB] = (uint16_t)a; } }
@@ -133,9 +160,9 @@ static int open_v2(const uint8_t* a, size_t n, const Cohort& C, V2& X, std::stri
 }
 static inline int block_v2(const V2& X, const Cohort& C, uint64_t b, uint8_t* out, std::vector<RrOp>& ops, std::vector<uint8_t>& lit) {
     const uint32_t blen = (uint32_t)std::min<uint64_t>(X.Q, X.nbases - b * X.Q);
-    const int k = r4_decode_block(X.P + X.off[b], (uint32_t)(X.off[b + 1] - X.off[b]), X.T, C.S, blen, X.st[b], ops.data(), (uint32_t)ops.size(), lit.data(), (uint32_t)lit.size());
+    const int k = r4_decode_block_acc(X.P + X.off[b], (uint32_t)(X.off[b + 1] - X.off[b]), X.T, C.S, C.A, blen, X.st[b], ops.data(), (uint32_t)ops.size(), lit.data(), (uint32_t)lit.size());
     if (k < 0) return 1;
-    exec_fast(ops.data(), k, lit.data(), C.S.G, out); return 0;
+    exec_fast_acc(ops.data(), k, lit.data(), C.A, out); return 0;
 }
 static int full_v2(const V2& X, const Cohort& C, std::string& fa, int T) {
     std::vector<uint8_t> A(X.nbases + 64); std::atomic<uint64_t> next{0}; std::atomic<int> err{0};
@@ -155,7 +182,7 @@ static int rv2_cmd_judge(char** argv) {
     std::map<std::string, std::pair<uint64_t, uint64_t>> man;                               // name -> FASTA bytes, FASTA XXH3
     { auto rows = read_tsv(argv[6]); for (size_t r = 1; r < rows.size(); r++) man[rows[r][0]] = {strtoull(rows[r][4].c_str(), 0, 10), strtoull(rows[r][5].c_str(), 0, 16)}; }
     Cohort C; load_cohort(C, argv[2], v1dir, an, T);
-    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.assign(C.G.begin(), C.G.begin() + C.S.t[0].len);
+    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.swap(C.ref.R);   // lent, swapped back below
     // optional (env RV2_TRUTH = truth.tsv with SAMPLE <set name> <bases> <SHA-256 of the upper-case bases>, env AVR_NAMES =
     // manifest name <tab> set name): the SHA-256 of the decoded upper-case bases must equal the truth as well
     std::map<std::string, std::string> tsha, set_of; if (getenv("RV2_TRUTH")) { for (auto& r : read_tsv(getenv("RV2_TRUTH"))) if (r[0] == "SAMPLE") tsha[r[1]] = r[3]; }
@@ -199,14 +226,14 @@ static int rv2_cmd_bench(int argc, char** argv) {
     std::vector<std::string> names; for (auto& kv : tr.bases) names.push_back(kv.first);
     std::map<std::string, size_t> idx; std::vector<std::vector<uint8_t>> bytes(names.size()); std::vector<std::unique_ptr<V1>> X1(names.size()); std::vector<std::unique_ptr<V2>> X2(names.size());
     std::vector<std::map<std::string, uint64_t>> boff(names.size()); std::vector<uint32_t> Qs(names.size());
-    { view.R.assign(C.G.begin(), C.G.begin() + C.S.t[0].len);
+    { view.R.swap(C.ref.R);
       std::map<std::string, std::string> man; if (getenv("AVR_NAMES")) for (auto& v : read_tsv(getenv("AVR_NAMES"))) man[v[1]] = v[0];
       for (size_t i = 0; i < names.size(); i++) { idx[names[i]] = i; const std::string nm = man.count(names[i]) ? man[names[i]] : "y1_" + names[i]; std::string why; const bool isa = std::find(an.begin(), an.end(), nm) != an.end();
         const std::vector<Rec>* rec;
         if (isa) { bytes[i] = slurp(v1path(v1dir, nm)); X1[i].reset(new V1()); if (open_v1(bytes[i].data(), bytes[i].size(), view, *X1[i], why)) { fprintf(stderr, "%s refused: %s\n", nm.c_str(), why.c_str()); return 2; } rec = &X1[i]->rec; Qs[i] = X1[i]->Q; }
         else { bytes[i] = slurp(dir + "/" + nm + ".rv2"); X2[i].reset(new V2()); if (open_v2(bytes[i].data(), bytes[i].size(), C, *X2[i], why)) { fprintf(stderr, "%s refused: %s\n", nm.c_str(), why.c_str()); return 2; } rec = &X2[i]->rec; Qs[i] = X2[i]->Q; }
         for (auto& r : *rec) boff[i][r.hdr.substr(0, r.hdr.find_first_of(" \t"))] = r.boff; }
-      std::vector<uint8_t>().swap(view.R); }
+      view.R.swap(C.ref.R); C.A.ref = C.ref.R.data(); }     // give the bytes back: the accessor reads target 0 from them
     const uint8_t* G = C.S.G; const uint64_t Rn = C.S.t[0].len;
     auto blk = [&](size_t i, uint64_t b, uint8_t* out, std::vector<RrOp>& ops, std::vector<uint8_t>& lit) -> int {
         if (X1[i]) { const V1& V = *X1[i]; const uint32_t blen = (uint32_t)std::min<uint64_t>(V.Q, V.nbases - b * V.Q);
@@ -296,7 +323,7 @@ static int rv2_cmd_ledger(char** argv) {
     const std::string v1dir = argv[3], dir = argv[5]; const std::vector<std::string> an = split_c(argv[4]); const std::vector<std::string> names = read_names(argv[6]);
     const bool v2 = !strcmp(argv[7], "v2"); const int T = atoi(argv[8]);
     Cohort C; load_cohort(C, argv[2], v1dir, v2 ? an : std::vector<std::string>(), T);
-    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.assign(C.G.begin(), C.G.begin() + C.S.t[0].len);
+    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.swap(C.ref.R);   // lent, swapped back below
     // T2T-only space for the v1 archives (anchor offsets beyond T2T are never reached by v1 streams)
     Space S1; S1.G = C.S.G; S1.Gn = C.S.t[0].len; S1.t.resize(1); S1.t[0] = Tgt(); S1.t[0].base = 0; S1.t[0].len = C.S.t[0].len;
     struct Row { std::string name, role; uint64_t file = 0, hash = 0, counted = 0, header = 0, meta = 0, meta_raw = 0, payload = 0, nb = 0; uint64_t raw_ctg = 0, raw_case = 0, raw_model = 0, raw_blocks = 0; Led L; };
@@ -405,7 +432,7 @@ static int rv2_cmd_law(char** argv) {
     std::map<std::string, std::pair<uint64_t, uint64_t>> ts; std::map<std::pair<int, std::string>, std::string> tr;
     for (auto& r : read_tsv(argv[9])) { if (r[0] == "SAMPLE") ts[r[1]] = {strtoull(r[2].c_str(), 0, 10), strtoull(r[3].c_str(), 0, 16)}; else if (r[0] == "REQ") tr[{atoi(r[1].c_str()), r[2]}] = r[3]; }
     const double t0 = now_s(); Cohort C; load_cohort(C, argv[3], v1dir, an, 16);
-    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.assign(C.G.begin(), C.G.begin() + C.S.t[0].len);
+    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.swap(C.ref.R);   // lent, swapped back below
     const size_t N = names.size(); std::vector<std::vector<uint8_t>> bytes(N); std::vector<std::unique_ptr<V1>> X1(N); std::vector<std::unique_ptr<V2>> X2(N);
     std::vector<std::vector<std::string>> rn(N); std::vector<const std::vector<Rec>*> rec(N); std::map<std::string, size_t> idx; uint64_t total = 0, maxb = 0;
     for (size_t i = 0; i < N; i++) { const std::string& nm = names[i]; idx[nm] = i; std::string why;
@@ -414,7 +441,7 @@ static int rv2_cmd_law(char** argv) {
         for (auto& r : *rec[i]) rn[i].push_back(r.hdr.substr(0, r.hdr.find_first_of(" \t")));
         const uint64_t nb = X1[i] ? X1[i]->nbases : X2[i]->nbases; total += nb; maxb = std::max(maxb, nb);
         if (!ts.count(nm) || ts[nm].first != nb) { fprintf(stderr, "%s: no truth / size differs\n", nm.c_str()); return 2; } }
-    std::vector<uint8_t>().swap(view.R);
+    view.R.swap(C.ref.R); C.A.ref = C.ref.R.data();        // give the bytes back
     const uint8_t* G = C.S.G; const uint64_t Rn = C.S.t[0].len; const uint32_t Q = 16384;
     std::vector<RrOp> ops(RR_MAXOPS); std::vector<uint8_t> lit(Q), blk(Q);
     auto block = [&](size_t i, uint64_t b, uint8_t* out) -> int {
@@ -457,6 +484,58 @@ static int rv2_cmd_law(char** argv) {
     if (getenv("LAW_RAW")) spit(getenv("LAW_RAW"), raw.data(), raw.size());
     return fails ? 5 : 0;
 }
+// accself <t2t.fa> <v1 dir> <anchors> <tests> <seed> - the accessor against the byte path: for random (anchor,
+// offset, length) the packed read must equal the bases a fresh v1 block decode produces, including unaligned starts,
+// reverse-complement reads and ranges that cover a non-ACGT run.
+static int rv2_cmd_accself(char** argv) {
+    const std::vector<std::string> an = split_c(argv[4]); Cohort C; load_cohort(C, argv[2], argv[3], an, 16);
+    const uint64_t NT_ = strtoull(argv[5], 0, 10); const uint64_t seed = strtoull(argv[6], 0, 10);
+    Ref view; memcpy(view.sha, C.ref.sha, 32); view.name = C.ref.name; view.R.swap(C.ref.R); C.A.ref = view.R.data();
+    std::mt19937_64 g(seed);
+    uint64_t bad_at = 0, bad_cp = 0, bad_rc = 0, checked = 0, exc_hit = 0, unaligned = 0;
+    std::vector<RrOp> ops(RR_MAXOPS); std::vector<uint8_t> lit(16384), blk(16384), got(1 << 16);
+    for (size_t k = 0; k < an.size(); k++) {
+        const std::vector<uint8_t> f = slurp(v1path(std::string(argv[3]), an[k])); V1 X; std::string why;
+        if (open_v1(f.data(), f.size(), view, X, why)) { fprintf(stderr, "anchor refused: %s\n", why.c_str()); return 2; }
+        const Tgt& tg = C.S.t[1 + k];
+        // which recorded non-ACGT runs belong to this anchor, so half the ranges can be aimed at them
+        std::vector<size_t> mine;
+        for (size_t e = 0; e < C.pes.size(); e++) if (C.pes[e] >= tg.base && C.pes[e] < tg.base + tg.len) mine.push_back(e);
+        for (uint64_t t = 0; t < NT_ / an.size(); t++) {
+            uint64_t b; bool aimed = false;
+            if (!mine.empty() && (t & 1)) {                       // aim at a run: pick one and take its block
+                const size_t e = mine[g() % mine.size()];
+                const uint64_t loc = C.pes[e] - tg.base;          // position inside the anchor
+                b = loc / X.Q; aimed = true;
+            } else b = g() % X.nb;
+            const uint32_t blen = (uint32_t)std::min<uint64_t>(X.Q, X.nbases - b * X.Q);
+            if (block_v1(X, view, b, blk.data(), ops, lit, true)) { fprintf(stderr, "block_v1 failed\n"); return 3; }
+            uint32_t off;   // the block is decoded first: the aimed branch looks for the run inside it
+            if (aimed) {                                          // start a little before the run, so the range covers it
+                uint32_t first = blen;
+                for (uint32_t i = 0; i < blen; i++) { const uint8_t c = blk[i]; if (c != 'A' && c != 'C' && c != 'G' && c != 'T') { first = i; break; } }
+                off = first >= 64 ? first - 64 : 0;
+                if (off >= blen) off = 0;
+            } else off = (uint32_t)(g() % blen);
+            const uint32_t len = (uint32_t)std::min<uint64_t>(1 + g() % 4096, blen - off);
+            if (off % 16) unaligned++;
+            const uint64_t x = tg.base + b * X.Q + off;
+            for (uint32_t i = 0; i < len; i += 97) if (C.A.at(x + i) != blk[off + i]) bad_at++;
+            C.A.copy(x, len, got.data());
+            if (memcmp(got.data(), blk.data() + off, len)) bad_cp++;
+            C.A.copy_rc(x, len, got.data());
+            for (uint32_t j = 0; j < len; j++) if (got[j] != COMP[blk[off + len - 1 - j]]) { bad_rc++; break; }
+            for (uint32_t i = 0; i < len; i++) { const uint8_t c = blk[off + i]; if (c != 'A' && c != 'C' && c != 'G' && c != 'T') { exc_hit++; break; } }
+            checked++;
+        }
+    }
+    view.R.swap(C.ref.R); C.A.ref = C.ref.R.data();
+    printf("ACCSELF\tranges %llu\tunaligned starts %llu\tranges covering a non-ACGT run %llu\n",
+           (unsigned long long)checked, (unsigned long long)unaligned, (unsigned long long)exc_hit);
+    printf("ACCSELF\tat() differs %llu\tcopy() differs %llu\tcopy_rc() differs %llu\n",
+           (unsigned long long)bad_at, (unsigned long long)bad_cp, (unsigned long long)bad_rc);
+    return (bad_at || bad_cp || bad_rc) ? 4 : 0;
+}
 int main(int argc, char** argv) {
     for (int c = 0; c < 256; c++) COMP[c] = rr_comp((uint8_t)c);
     if (argc >= 7 && !strcmp(argv[1], "absstudy")) return rv2_cmd_absstudy(argv);
@@ -464,6 +543,7 @@ int main(int argc, char** argv) {
     if (argc >= 9 && !strcmp(argv[1], "ledger")) return rv2_cmd_ledger(argv);
     if (argc >= 6 && !strcmp(argv[1], "lawtruth")) return rv2_cmd_lawtruth(argv);
     if (argc >= 10 && !strcmp(argv[1], "law")) return rv2_cmd_law(argv);
+    if (argc >= 7 && !strcmp(argv[1], "accself")) return rv2_cmd_accself(argv);
     if (argc >= 9 && !strcmp(argv[1], "judge")) return rv2_cmd_judge(argv);
     if (argc >= 3 && !strcmp(argv[1], "info")) return rv2_cmd_info(argv);
     if (argc >= 3 && !strcmp(argv[1], "bench")) return rv2_cmd_bench(argc, argv);

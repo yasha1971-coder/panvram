@@ -1,0 +1,29 @@
+LAW_DONE seen, starting the leakage runs
+=== accessor self-test aimed at non-ACGT runs
+ACCSELF	ranges 1200	unaligned starts 1122	ranges covering a non-ACGT run 0
+ACCSELF	at() differs 0	copy() differs 0	copy_rc() differs 0
+=== W 8192 mode people
+LEAK	mode people	individuals 234	train individuals 117	train assemblies 272 of 558
+LEAK	train merged intervals 3421	reference bases covered 3080967593 (98.8 % of T2T)
+LEAK	W 8192	windows seen 205093303	usable 188825831	skipped: span 15199486, literal end 1067986
+LEAK	test windows 96774185	>=50% overlap 96769841 (99.9955 %)	>=90% overlap 96764579 (99.9901 %)	zero overlap 1830 (0.0019 %)	mean overlap 99.9946 %
+LEAK	wall 48.5 s	windows/s 4225174	threads 16
+=== W 8192 mode locus
+LEAK	mode locus	chunk 10 Mb	chunks 312	train chunks 149
+LEAK	train merged intervals 1029	reference bases covered 1477368745 (47.4 % of T2T)
+LEAK	W 8192	windows seen 410186606	usable 377651662	skipped: span 30398972, literal end 2135972
+LEAK	test windows 100029548	>=50% overlap 41433 (0.0414 %)	>=90% overlap 8456 (0.0085 %)	zero overlap 99947255 (99.9177 %)	mean overlap 0.0414 %
+LEAK	wall 85.0 s	windows/s 4825105	threads 16
+=== W 32768 mode people
+LEAK	mode people	individuals 234	train individuals 117	train assemblies 272 of 558
+LEAK	train merged intervals 1042	reference bases covered 3064682015 (98.3 % of T2T)
+LEAK	W 32768	windows seen 51243747	usable 46837808	skipped: span 4078603, literal end 327336
+LEAK	test windows 24004831	>=50% overlap 24003207 (99.9932 %)	>=90% overlap 24001894 (99.9878 %)	zero overlap 826 (0.0034 %)	mean overlap 99.9926 %
+LEAK	wall 15.5 s	windows/s 3302973	threads 16
+=== W 32768 mode locus
+LEAK	mode locus	chunk 10 Mb	chunks 312	train chunks 149
+LEAK	train merged intervals 410	reference bases covered 1475974765 (47.3 % of T2T)
+LEAK	W 32768	windows seen 102487494	usable 93675616	skipped: span 8157206, literal end 654672
+LEAK	test windows 24816467	>=50% overlap 40560 (0.1634 %)	>=90% overlap 8197 (0.0330 %)	zero overlap 24735092 (99.6721 %)	mean overlap 0.1638 %
+LEAK	wall 30.6 s	windows/s 3353057	threads 16
+LEAK558_DONE

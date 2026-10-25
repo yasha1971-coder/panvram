@@ -83,9 +83,25 @@ static inline bool rv2_lift(const Space& S, R3Diag g, uint32_t o, int tt, R3Diag
 }
 
 // ---------------------------------------------------------------- block decode (the r3_decode_stream of v1 + target ids + LIFT)
-template <class Sink>
-static inline int r4_decode_stream(const uint8_t* src, uint32_t n, const R4Tab* T, const Space& S, uint32_t blen, R3Diag start, Sink& sk) {
-    const uint8_t* ref = S.G; const uint64_t ref_n = S.Gn; const int NT = (int)S.t.size();
+// The space is reached through `Acc`: either `ByteAcc` below (S.G, one byte per base, the original path) or
+// `AccSpace` of rv2_acc.h (the anchors two bits per base). Only the literal context reads the space here; everything
+// else in this function is coordinates.
+struct ByteAcc {
+    const uint8_t* g = nullptr;
+    inline uint8_t at(uint64_t x) const { return g[x]; }
+};
+RR_HD static inline int r3_refbase_byteacc(const ByteAcc& A, uint64_t ref_n, R3Diag g, uint32_t o) {
+    const int64_t q = g.dir ? (int64_t)g.c - (int64_t)o : (int64_t)g.c + (int64_t)o;
+    if (q < 0 || (uint64_t)q >= ref_n) return 4;
+    const uint8_t b = g.dir ? rr_comp(A.at((uint64_t)q)) : A.at((uint64_t)q);
+    const int k = r3_b2(b);
+    return k < 4 ? k : 4;
+}
+static inline int rv2_refbase(const ByteAcc& A, uint64_t ref_n, R3Diag g, uint32_t o) { return r3_refbase_byteacc(A, ref_n, g, o); }
+
+template <class Sink, class Acc>
+static inline int r4_decode_stream_acc(const uint8_t* src, uint32_t n, const R4Tab* T, const Space& S, const Acc& A, uint32_t blen, R3Diag start, Sink& sk) {
+    const uint64_t ref_n = S.Gn; const int NT = (int)S.t.size();
     R3Dec d; r3_dinit(&d, src, n); if (d.bad) return -1;
     R3Diag cache[4]; int nc = 1; cache[0] = start; int prevk = -1; uint32_t o = 0, k = 0, li = 0;
     const uint8_t B[6] = {'A', 'C', 'G', 'T', 'N', 0};
@@ -96,7 +112,7 @@ static inline int r4_decode_stream(const uint8_t* src, uint32_t n, const R4Tab* 
             uint32_t p1 = 16, p2 = 16;
             for (uint32_t j = 0; j < ll; j++) {
                 int c;
-                if (ll <= 8) c = R4_LITR + r3_refbase(ref, ref_n, cache[0], o + j) * 2 + (j == 0 ? 1 : 0);
+                if (ll <= 8) c = R4_LITR + rv2_refbase(A, ref_n, cache[0], o + j) * 2 + (j == 0 ? 1 : 0);
                 else c = R4_LIT2 + (p1 == 16 ? 16 : (int)(p2 == 16 ? p1 : p2 * 4 + p1) % 16);
                 const uint32_t s = r4_dsym(&d, T, c);
                 if (!sk.lit(o + j, li + j, s < 5 ? B[s] : (uint8_t)r3_draw(&d, 8))) return -1;
@@ -143,7 +159,17 @@ static inline int r4_decode_stream(const uint8_t* src, uint32_t n, const R4Tab* 
     if (d.x != R3_L || d.p != d.e) return -1;
     return (int)k;
 }
+template <class Sink>
+static inline int r4_decode_stream(const uint8_t* src, uint32_t n, const R4Tab* T, const Space& S, uint32_t blen, R3Diag start, Sink& sk) {
+    ByteAcc A; A.g = S.G;
+    return r4_decode_stream_acc(src, n, T, S, A, blen, start, sk);
+}
 static inline int r4_decode_block(const uint8_t* src, uint32_t n, const R4Tab* T, const Space& S, uint32_t blen, R3Diag start, RrOp* ops, uint32_t maxops, uint8_t* lit, uint32_t litcap) {
     R3ArraySink sk; sk.ops = ops; sk.maxops = maxops; sk.k = 0; sk.lbuf = lit; sk.litcap = litcap;
     return r4_decode_stream(src, n, T, S, blen, start, sk);
+}
+template <class Acc>
+static inline int r4_decode_block_acc(const uint8_t* src, uint32_t n, const R4Tab* T, const Space& S, const Acc& A, uint32_t blen, R3Diag start, RrOp* ops, uint32_t maxops, uint8_t* lit, uint32_t litcap) {
+    R3ArraySink sk; sk.ops = ops; sk.maxops = maxops; sk.k = 0; sk.lbuf = lit; sk.litcap = litcap;
+    return r4_decode_stream_acc(src, n, T, S, A, blen, start, sk);
 }
