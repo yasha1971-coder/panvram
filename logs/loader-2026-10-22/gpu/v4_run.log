@@ -1,0 +1,21 @@
+# panvram_loader_A100_v4.ipynb, Colab, 2026-10-25, NVIDIA A100-SXM4-40GB, N_ASM = 558, q16k
+# Reported by the runner; this file is the output as received, not a re-run.
+OPEN	558 assemblies	24.472 s
+allocated 11.567 GB; peak 11.567 GB; nvidia-smi 11466 MiB
+Q = 16384; blocks launched per window (csrc/pv_cuda.cu: bpw = (W + Q - 1) / Q + 1): {8192: 2, 32768: 3}
+clocks before ramp: 1110 MHz, 1215 MHz, 32, 0x0000000000000000
+clocks after ramp:  1410 MHz, 1215 MHz, 34, 0x0000000000000000
+rep 0 W  32768    2.534 ms/batch      404102 windows/s  13.242 GB/s   blocks   3072   0.825 us per block  alloc    14.8 us ( 0.6 %)
+rep 0 W   8192    3.689 ms/batch      277549 windows/s   2.274 GB/s   blocks   1544   2.390 us per block  alloc    14.7 us ( 0.4 %)
+rep 1 W  32768    2.549 ms/batch      401661 windows/s  13.162 GB/s   blocks   3072   0.830 us per block  alloc    14.1 us ( 0.6 %)
+rep 1 W   8192    3.725 ms/batch      274894 windows/s   2.252 GB/s   blocks   1544   2.413 us per block  alloc    21.2 us ( 0.6 %)
+rep 2 W   8192    3.652 ms/batch      280423 windows/s   2.297 GB/s   blocks   1544   2.365 us per block  alloc    14.1 us ( 0.4 %)
+rep 2 W  32768    2.530 ms/batch      404773 windows/s  13.264 GB/s   blocks   3072   0.824 us per block  alloc    13.9 us ( 0.6 %)
+W order per repeat: [[32768, 8192], [32768, 8192], [8192, 32768]]
+      W  median ms   windows/s    GB/s  us/block  spread over repeats
+   8192      3.689      277549   2.274     2.389                 2.0 %
+  32768      2.534      404102  13.242     0.826                 0.8 %
+CHECK	W 8192	windows 256	identical 256	differ 0
+# Clocks were 1410 MHz in every row, the sweep order was shuffled and the spread over three repeats is 2.0 % and
+# 0.8 %. The cold-card hypothesis of the v3 run is therefore REFUTED: the 8 KiB row still costs 2.389 us per decoded
+# block against 0.826 us, and the cause is not the state of the card.

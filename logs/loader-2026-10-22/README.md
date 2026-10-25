@@ -51,6 +51,12 @@ One Colab run of `panvram_loader_A100_v3.ipynb`, 2026-10-25, **NVIDIA A100-SXM4-
 | 8 192 | 3.872 | 3.693 / 4.007 | 264 475 | 2.167 | 1 536 | **2.521** |
 | 32 768 | 2.575 | 2.501 / 2.766 | 397 729 | 13.033 | 3 072 | **0.838** |
 
+A second run, `panvram_loader_A100_v4.ipynb` (`gpu/v4_run.log`), ramped the card, shuffled the order and repeated the
+sweep three times: clocks 1 410 MHz in every row, spread 2.0 % and 0.8 %, allocation 0.4 to 0.6 % of a batch. The
+8 KiB row still costs **2.389 us per decoded block against 0.826 us**, now with the block counts *counted* rather than
+predicted (1 544 and 3 072). **The state of the card is excluded**; the cause is still NOT MEASURED, and what has
+been ruled out and what is left is set out in `gpu/ANOMALY.md`.
+
 **Open question, and the reason no GPU row joins the table above.** Each warp decodes exactly one 16 KiB block, so
 microseconds per decoded block must not depend on W; here it differs by 3.0x. The block counts come from the launch
 formula `bpw = (W + Q - 1) / Q + 1` (`csrc/pv_cuda.cu:128`) and from how many blocks a window touches on average,

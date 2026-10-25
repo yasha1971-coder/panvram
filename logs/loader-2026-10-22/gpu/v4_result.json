@@ -1,0 +1,80 @@
+{
+ "tool": "panvram-v1-q16k",
+ "device": "cuda",
+ "notebook": "panvram_loader_A100_v4.ipynb",
+ "gpu": "NVIDIA A100-SXM4-40GB",
+ "host": "Colab",
+ "date": "2026-10-25",
+ "assemblies": 558,
+ "dataset": "q16k",
+ "open_s": 24.471807695,
+ "vram_allocated_gb": 11.567,
+ "vram_peak_gb": 11.567,
+ "nvidia_smi_mib": 11466,
+ "batch": 1024,
+ "runs": 9,
+ "repeats": 3,
+ "Q": 16384,
+ "order_log": [
+  [
+   32768,
+   8192
+  ],
+  [
+   32768,
+   8192
+  ],
+  [
+   8192,
+   32768
+  ]
+ ],
+ "clocks_before_ramp_mhz": 1110,
+ "clocks_after_ramp_mhz": 1410,
+ "throttle_reasons": "0x0",
+ "rows": [
+  {
+   "W": 8192,
+   "median_s": 0.003689438,
+   "per_repeat_s": [
+    0.003651623,
+    0.003689438,
+    0.00372507
+   ],
+   "windows_per_s": 277549.05,
+   "gb_per_s": 2.2736818,
+   "blocks": 1544,
+   "us_per_block": 2.389061,
+   "alloc_s": 1.4655e-05,
+   "bpw_launched": 2,
+   "warps_launched": 2048,
+   "warps_early_exit": 504,
+   "clocks_mhz": 1410
+  },
+  {
+   "W": 32768,
+   "median_s": 0.002534011,
+   "per_repeat_s": [
+    0.002529813,
+    0.002534011,
+    0.002549416
+   ],
+   "windows_per_s": 404102.43,
+   "gb_per_s": 13.2416284,
+   "blocks": 3072,
+   "us_per_block": 0.826089,
+   "alloc_s": 1.4814e-05,
+   "bpw_launched": 3,
+   "warps_launched": 3072,
+   "warps_early_exit": 0,
+   "clocks_mhz": 1410
+  }
+ ],
+ "check": {
+  "W": 8192,
+  "windows": 256,
+  "identical": 256,
+  "differ": 0
+ },
+ "status": "cold-card hypothesis refuted: clocks 1410 MHz in every row, order shuffled, spread 2.0 % and 0.8 %; the 2.9x difference in us per decoded block remains and is NOT MEASURED as to cause"
+}
