@@ -1,0 +1,3 @@
+CHECK	W 8192	windows 1024	identical 1024	differ 0
+CHECK	W 32768	windows 1024	identical 1024	differ 0
+# from scripts/check_a_vs_fasta.py, re-run from this directory on 2026-10-22

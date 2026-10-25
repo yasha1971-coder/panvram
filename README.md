@@ -125,6 +125,11 @@ The 558-assembly GPU figures come from one Colab run (`logs/colab-c1-558-forms-A
 Statement by statement, with commits, SHA-256 of every artifact, reproduction commands and one limitation each:
 [EVIDENCE.md](EVIDENCE.md).
 
+A window loader for model training is measured against GenVarLoader and pyfaidx on one machine in
+[`logs/loader-2026-10-22/`](logs/loader-2026-10-22/README.md) (CPU; speed only, the three return different objects):
+panvram 438 468 windows of 8 KiB per second over 5 assemblies and 411 668 over 558, GenVarLoader 2 337 735 over one
+chromosome of 3 samples, pyfaidx 9 073; at 32 KiB 180 609 against 211 398 and 3 951.
+
 A research prototype that stores each assembly against the reference **and eight cohort assemblies** ("anchors"), with
 its decoder, logs and negative controls, is in [`research/refrel_v2/`](research/refrel_v2/RESULTS_V2.md): at N = 558 it
 holds the window law that v1 fails at 64 KiB, at 2.4 times the resident memory. Its container is not frozen and its

@@ -1,0 +1,10 @@
+# panvram_loader_A100_v3.ipynb, Colab, 2026-10-25, NVIDIA A100-SXM4-40GB, N_ASM = 558, q16k
+# Reported by the runner; this file is the output as received, not a re-run.
+OPEN 558 assemblies 24.499 s
+allocated 11.567 GB; peak 11.567 GB; nvidia-smi 11466 MiB
+A-GPU	W 8192	batch 1024	median 3.872 ms	264475 windows/s	2.167 GB/s	min 3.693	max 4.007
+A-GPU	W 32768	batch 1024	median 2.575 ms	397729 windows/s	13.033 GB/s	min 2.501	max 2.766
+runs 9
+CHECK	W 8192	windows 256	identical 256	differ 0
+# Note: the 8 KiB row is an open anomaly - microseconds per decoded block differ by 3.0x between the two rows, which
+# the kernel cannot explain. See README.md in this directory. Superseded by a v4 run, not yet made.

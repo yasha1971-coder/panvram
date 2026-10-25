@@ -1,0 +1,49 @@
+{
+ "tool": "panvram-v1-q16k",
+ "device": "cuda",
+ "notebook": "panvram_loader_A100_v3.ipynb",
+ "gpu": "NVIDIA A100-SXM4-40GB",
+ "host": "Colab",
+ "date": "2026-10-25",
+ "assemblies": 558,
+ "dataset": "q16k",
+ "open_s": 24.499,
+ "vram_allocated_gb": 11.567,
+ "vram_peak_gb": 11.567,
+ "nvidia_smi_mib": 11466,
+ "batch": 1024,
+ "runs": 9,
+ "Q": 16384,
+ "rows": [
+  {
+   "W": 8192,
+   "median_s": 0.003872,
+   "min_s": 0.003693,
+   "max_s": 0.004007,
+   "windows_per_s": 264475,
+   "gb_per_s": 2.167,
+   "bpw_launched": 2,
+   "blocks_decoded_batch": 1536,
+   "us_per_decoded_block": 2.5208333333333335
+  },
+  {
+   "W": 32768,
+   "median_s": 0.002575,
+   "min_s": 0.002501,
+   "max_s": 0.002766,
+   "windows_per_s": 397729,
+   "gb_per_s": 13.033,
+   "bpw_launched": 3,
+   "blocks_decoded_batch": 3072,
+   "us_per_decoded_block": 0.8382161458333334
+  }
+ ],
+ "check": {
+  "W": 8192,
+  "windows": 256,
+  "identical": 256,
+  "differ": 0
+ },
+ "status": "the 8 KiB row is an open anomaly: us per decoded block differs 3.0x between the rows; cause NOT MEASURED",
+ "superseded_by": "a v4 run (panvram_loader_A100_v4.ipynb), not yet made"
+}
