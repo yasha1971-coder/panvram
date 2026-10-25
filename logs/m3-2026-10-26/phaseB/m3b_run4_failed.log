@@ -1,0 +1,123 @@
+[colab] Creating session 'm3b'...
+[colab] Session READY (m3b). Executing m3b.py...
+NVIDIA L4, 23034 MiB, 580.82.07, 2040 MHz
+[  136.2 s] panvram built
+[  168.8 s] fork at c7053fa + panvram patch
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+[  262.8 s] cohort ready; training assembly r2_HG00097_hap1_hprc_r2_v1.0.1
+/content/gg/megatron/core/distributed/fsdp/src/megatron_fsdp/mixed_precision.py:99: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/__init__.py:24: UserWarning: Transformer Engine and Apex are not installed. Falling back to Torch optimizers.
+  warnings.warn(
+/content/gg/megatron/core/optimizer/optimizer.py:28: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/clip_grads.py:29: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier, multi_tensor_l2norm, and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/training/utils.py:23: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_l2norm
+  warnings.warn(
+/content/gg/megatron/core/models/gpt/gpt_layer_specs.py:76: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/core/models/retro/encoder_spec.py:49: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f'Apex is not installed. Falling back to Torch Norm')
+/content/gg/megatron/core/models/retro/decoder_spec.py:39: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f"Apex is not installed. Falling back to Torch Norm")
+LANG_RL Log directory: None
+[  322.8 s] .bin written: 6068262842 B, 75 documents, archive 13279654 B
+^^^^^^^^^
+[rank0]:   File "/content/gg/megatron/core/transformer/transformer_layer.py", line 568, in _forward_attention
+[rank0]:     attention_output_with_bias = self.self_attention(
+[rank0]:         input_layernorm_output,
+[rank0]:     ...<8 lines>...
+[rank0]:         sequence_len_offset=sequence_len_offset,
+[rank0]:     )
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/content/gg/megatron/core/transformer/attention.py", line 965, in forward
+[rank0]:     core_attn_out = self.core_attention(
+[rank0]:         query,
+[rank0]:     ...<5 lines>...
+[rank0]:         packed_seq_params=packed_seq_params,
+[rank0]:     )
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/content/gg/megatron/core/transformer/dot_product_attention.py", line 229, in forward
+[rank0]:     attention_probs: Tensor = self.scale_mask_softmax(
+[rank0]:                               ~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         attention_scores, attention_mask, self.softmax_offset
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+[rank0]:     return self._call_impl(*args, **kwargs)
+[rank0]:            ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+[rank0]:   File "/usr/local/lib/python3.13/dist-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+[rank0]:     return forward_call(*args, **kwargs)
+[rank0]:   File "/content/gg/megatron/core/fusions/fused_softmax.py", line 233, in forward
+[rank0]:     if self.is_kernel_available(mask, *input.size()) and softmax_offset is None:
+[rank0]:        ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/content/gg/megatron/core/fusions/fused_softmax.py", line 262, in is_kernel_available
+[rank0]:     batch_per_block = self.get_batch_per_block(sq, sk, b, np)
+[rank0]:   File "/content/gg/megatron/core/fusions/fused_softmax.py", line 357, in get_batch_per_block
+[rank0]:     import scaled_masked_softmax_cuda
+[rank0]: ModuleNotFoundError: No module named 'scaled_masked_softmax_cuda'
+[rank0]:[W1025 23:02:40.310303633 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+E1025 23:02:42.566000 4403 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 0 (pid: 4426) of binary: /usr/bin/python3
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 994, in <module>
+    main()
+    ~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+    ~~~^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+pretrain_gpt.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-10-25_23:02:42
+  host      : 53ab338febe5
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 4426)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+
+[colab] Stopping session 'm3b'...
+[colab] Session terminated.

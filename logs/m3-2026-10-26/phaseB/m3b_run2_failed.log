@@ -1,0 +1,123 @@
+[colab] Creating session 'm3b'...
+[colab] Session READY (m3b). Executing m3b.py...
+NVIDIA L4, 23034 MiB, 580.82.07, 2040 MHz
+[  131.1 s] panvram built
+[  144.4 s] fork at c7053fa + panvram patch
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+[  261.3 s] cohort ready; training assembly r2_HG00097_hap1_hprc_r2_v1.0.1
+/content/gg/megatron/core/distributed/fsdp/src/megatron_fsdp/mixed_precision.py:99: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/__init__.py:24: UserWarning: Transformer Engine and Apex are not installed. Falling back to Torch optimizers.
+  warnings.warn(
+/content/gg/megatron/core/optimizer/optimizer.py:28: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/clip_grads.py:29: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier, multi_tensor_l2norm, and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/training/utils.py:23: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_l2norm
+  warnings.warn(
+/content/gg/megatron/core/models/gpt/gpt_layer_specs.py:76: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/core/models/retro/encoder_spec.py:49: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f'Apex is not installed. Falling back to Torch Norm')
+/content/gg/megatron/core/models/retro/decoder_spec.py:39: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f"Apex is not installed. Falling back to Torch Norm")
+LANG_RL Log directory: None
+[  327.7 s] .bin written: 6068262842 B, 75 documents, archive 13279654 B
+id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+[rank0]:[W1025 22:36:01.961539918 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+>>> done with compiling and loading fused kernels. Compilation time: 0.544 seconds
+time to initialize megatron (seconds): 9.776
+/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+[after megatron is initialized] datetime: 2026-10-25 22:36:07 
+building GPT model ...
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/content/gg/pretrain_gpt.py", line 307, in <module>
+[rank0]:     pretrain(
+[rank0]:     ~~~~~~~~^
+[rank0]:         train_valid_test_datasets_provider,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     ...<6 lines>...
+[rank0]:         get_embedding_ranks=get_embedding_ranks,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/content/gg/megatron/training/training.py", line 763, in pretrain
+[rank0]:     model, optimizer, opt_param_scheduler = setup_model_and_optimizer(
+[rank0]:                                             ~~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         model_provider, model_type, checkpointing_context=checkpointing_context
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/content/gg/megatron/training/training.py", line 1227, in setup_model_and_optimizer
+[rank0]:     model = get_model(model_provider_func, model_type)
+[rank0]:   File "/content/gg/megatron/training/training.py", line 997, in get_model
+[rank0]:     model = build_model()
+[rank0]:   File "/content/gg/megatron/training/training.py", line 989, in build_model
+[rank0]:     model = model_provider_func(pre_process=pre_process, post_process=post_process)
+[rank0]:   File "/content/gg/model_provider.py", line 67, in model_provider
+[rank0]:     return model_builder(args, pre_process, post_process, vp_stage)
+[rank0]:   File "/content/gg/gpt_builders.py", line 34, in gpt_builder
+[rank0]:     config = core_transformer_config_from_args(args)
+[rank0]:   File "/content/gg/megatron/training/arguments.py", line 1441, in core_transformer_config_from_args
+[rank0]:     return config_class(**kw_args)
+[rank0]:   File "<string>", line 249, in __init__
+[rank0]:   File "/content/gg/megatron/core/transformer/transformer_config.py", line 1573, in __post_init__
+[rank0]:     raise ValueError(
+[rank0]:         "apply_rope_fusion is not available. Please install TE >= 1.4."
+[rank0]:     )
+[rank0]: ValueError: apply_rope_fusion is not available. Please install TE >= 1.4.
+[rank0]:[W1025 22:36:09.270605062 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+E1025 22:36:11.480000 13901 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 0 (pid: 13923) of binary: /usr/bin/python3
+Traceback (most recent call last):
+  File "/usr/local/bin/torchrun", line 10, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+    ~~~^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+pretrain_gpt.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-10-25_22:36:11
+  host      : 452fd01fd90e
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 13923)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+
+[colab] Stopping session 'm3b'...
+[colab] Session terminated.

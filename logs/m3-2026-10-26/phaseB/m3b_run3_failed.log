@@ -1,0 +1,126 @@
+[colab] Creating session 'm3b'...
+[colab] Session READY (m3b). Executing m3b.py...
+NVIDIA L4, 23034 MiB, 580.82.07, 2040 MHz
+[  143.2 s] panvram built
+[  156.8 s] fork at c7053fa + panvram patch
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+[  249.8 s] cohort ready; training assembly r2_HG00097_hap1_hprc_r2_v1.0.1
+/content/gg/megatron/core/distributed/fsdp/src/megatron_fsdp/mixed_precision.py:99: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/__init__.py:24: UserWarning: Transformer Engine and Apex are not installed. Falling back to Torch optimizers.
+  warnings.warn(
+/content/gg/megatron/core/optimizer/optimizer.py:28: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/clip_grads.py:29: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier, multi_tensor_l2norm, and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/training/utils.py:23: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_l2norm
+  warnings.warn(
+/content/gg/megatron/core/models/gpt/gpt_layer_specs.py:76: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/core/models/retro/encoder_spec.py:49: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f'Apex is not installed. Falling back to Torch Norm')
+/content/gg/megatron/core/models/retro/decoder_spec.py:39: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f"Apex is not installed. Falling back to Torch Norm")
+LANG_RL Log directory: None
+[  318.3 s] .bin written: 6068262842 B, 75 documents, archive 13279654 B
+lid_test_data_iterators
+[rank0]:     train_dataloader, valid_dataloaders, test_dataloader = build_train_valid_test_data_loaders(
+[rank0]:                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         build_train_valid_test_datasets_provider,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:         vp_stage=vp_stage
+[rank0]:         ^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/content/gg/megatron/training/training.py", line 3010, in build_train_valid_test_data_loaders
+[rank0]:     train_ds, valid_ds, test_ds = build_train_valid_test_datasets(
+[rank0]:                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         build_train_valid_test_datasets_provider,
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:         vp_stage=vp_stage,
+[rank0]:         ^^^^^^^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/content/gg/megatron/training/training.py", line 2970, in build_train_valid_test_datasets
+[rank0]:     return build_train_valid_test_datasets_provider(train_valid_test_num_samples)
+[rank0]:   File "/content/gg/pretrain_gpt.py", line 277, in train_valid_test_datasets_provider
+[rank0]:     ).build()
+[rank0]:       ~~~~~^^
+[rank0]:   File "/content/gg/megatron/core/datasets/blended_megatron_dataset_builder.py", line 126, in build
+[rank0]:     datasets = self._build_blended_dataset_splits()
+[rank0]:   File "/content/gg/megatron/core/datasets/blended_megatron_dataset_builder.py", line 170, in _build_blended_dataset_splits
+[rank0]:     return self._build_megatron_dataset_splits(prefixes[0], split, self.sizes)
+[rank0]:            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/content/gg/megatron/core/datasets/blended_megatron_dataset_builder.py", line 451, in _build_megatron_dataset_splits
+[rank0]:     self.build_generic_dataset(
+[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~~~~~^
+[rank0]:         self.cls,
+[rank0]:         ^^^^^^^^^
+[rank0]:     ...<7 lines>...
+[rank0]:         self.config,
+[rank0]:         ^^^^^^^^^^^^
+[rank0]:     )
+[rank0]:     ^
+[rank0]:   File "/content/gg/megatron/core/datasets/blended_megatron_dataset_builder.py", line 504, in build_generic_dataset
+[rank0]:     dataset = cls(*args)
+[rank0]:   File "/content/gg/megatron/core/datasets/gpt_dataset.py", line 124, in __init__
+[rank0]:     self._build_document_sample_shuffle_indices()
+[rank0]:     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+[rank0]:   File "/content/gg/megatron/core/datasets/gpt_dataset.py", line 433, in _build_document_sample_shuffle_indices
+[rank0]:     from megatron.core.datasets import helpers
+[rank0]:   File "/content/gg/megatron/core/datasets/helpers.py", line 8, in <module>
+[rank0]:     from megatron.core.datasets.helpers_cpp import *
+[rank0]: ModuleNotFoundError: No module named 'megatron.core.datasets.helpers_cpp'
+[rank0]:[W1025 22:51:40.926543484 ProcessGroupNCCL.cpp:1575] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+E1025 22:51:42.242000 21312 torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: 1) local_rank: 0 (pid: 21331) of binary: /usr/bin/python3
+Traceback (most recent call last):
+  File "/usr/local/bin/torchrun", line 10, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 362, in wrapper
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 990, in main
+    run(args)
+    ~~~^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/run.py", line 981, in run
+    elastic_launch(
+    ~~~~~~~~~~~~~~~
+        config=config,
+        ~~~~~~~~~~~~~~
+        entrypoint=cmd,
+        ~~~~~~~~~~~~~~~
+    )(*cmd_args)
+    ~^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 170, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/usr/local/lib/python3.13/dist-packages/torch/distributed/launcher/api.py", line 317, in launch_agent
+    raise ChildFailedError(
+    ...<2 lines>...
+    )
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+pretrain_gpt.py FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-10-25_22:51:42
+  host      : 0ec0f0bb6c9d
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 21331)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+
+[colab] Stopping session 'm3b'...
+[colab] Session terminated.

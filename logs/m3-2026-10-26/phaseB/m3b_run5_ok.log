@@ -1,0 +1,112 @@
+[colab] Creating session 'm3b'...
+[colab] Session READY (m3b). Executing m3b.py...
+NVIDIA L4, 23034 MiB, 580.82.07, 2040 MHz
+[  138.1 s] panvram built
+[  172.2 s] fork at c7053fa + panvram patch
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+[  264.2 s] cohort ready; training assembly r2_HG00097_hap1_hprc_r2_v1.0.1
+/content/gg/megatron/core/distributed/fsdp/src/megatron_fsdp/mixed_precision.py:99: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/__init__.py:24: UserWarning: Transformer Engine and Apex are not installed. Falling back to Torch optimizers.
+  warnings.warn(
+/content/gg/megatron/core/optimizer/optimizer.py:28: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/optimizer/clip_grads.py:29: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier, multi_tensor_l2norm, and multi_tensor_scale
+  warnings.warn(
+/content/gg/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/training/utils.py:23: UserWarning: Transformer Engine and Apex are not installed. Falling back to local implementations of multi_tensor_applier and multi_tensor_l2norm
+  warnings.warn(
+/content/gg/megatron/core/models/gpt/gpt_layer_specs.py:76: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+/content/gg/megatron/core/models/retro/encoder_spec.py:49: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f'Apex is not installed. Falling back to Torch Norm')
+/content/gg/megatron/core/models/retro/decoder_spec.py:39: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn(f"Apex is not installed. Falling back to Torch Norm")
+LANG_RL Log directory: None
+[  324.6 s] .bin written: 6068262842 B, 75 documents, archive 13279654 B
+[  444.3 s] bin: iteration 383.0 ms median (after 20), 85556 tokens/s, GPU util median 92.0 % mean 63.1 %, wall 119 s
+   lm loss every 10 steps: [3.689346, 2.223499, 1.711655, 1.445536, 1.370483, 1.344938, 1.335546, 1.326653, 1.322709, 1.321217, 1.318803, 1.31945, 1.316252, 1.317243, 1.316515, 1.317369, 1.316459, 1.315168, 1.311767, 1.313614]
+[  568.5 s] panvram: iteration 384.2 ms median (after 20), 85278 tokens/s, GPU util median 91.0 % mean 60.6 %, wall 123 s
+   lm loss every 10 steps: [3.689346, 2.223499, 1.711655, 1.445536, 1.370483, 1.34495, 1.335551, 1.326643, 1.322741, 1.321237, 1.318858, 1.319464, 1.316328, 1.31728, 1.316638, 1.317432, 1.31648, 1.315181, 1.311781, 1.31356]
+lm loss identical in every logged step: False
+panvram index cache directories (PanvramIndexedDataset was built by the training run): ['panvram-c4c251727c548eba']
+{
+ "assembly": "r2_HG00097_hap1_hprc_r2_v1.0.1",
+ "seq": 2048,
+ "mbs": 16,
+ "gbs": 16,
+ "iters": 200,
+ "bin": {
+  "tag": "bin",
+  "wall_s": 118.5336983203888,
+  "iter_ms_median_after_20": 383.0,
+  "tokens_per_s": 85556.13577023499,
+  "lm_loss": [
+   3.689346,
+   2.223499,
+   1.711655,
+   1.445536,
+   1.370483,
+   1.344938,
+   1.335546,
+   1.326653,
+   1.322709,
+   1.321217,
+   1.318803,
+   1.31945,
+   1.316252,
+   1.317243,
+   1.316515,
+   1.317369,
+   1.316459,
+   1.315168,
+   1.311767,
+   1.313614
+  ],
+  "gpu_util_median": 92.0,
+  "gpu_util_mean": 63.12897822445561,
+  "util_samples": 597
+ },
+ "panvram": {
+  "tag": "panvram",
+  "wall_s": 123.24310755729675,
+  "iter_ms_median_after_20": 384.25,
+  "tokens_per_s": 85277.81392322708,
+  "lm_loss": [
+   3.689346,
+   2.223499,
+   1.711655,
+   1.445536,
+   1.370483,
+   1.34495,
+   1.335551,
+   1.326643,
+   1.322741,
+   1.321237,
+   1.318858,
+   1.319464,
+   1.316328,
+   1.31728,
+   1.316638,
+   1.317432,
+   1.31648,
+   1.315181,
+   1.311781,
+   1.31356
+  ],
+  "gpu_util_median": 91.0,
+  "gpu_util_mean": 60.57809983896941,
+  "util_samples": 621
+ },
+ "loss_identical": false
+}
+DONE
+[colab] Stopping session 'm3b'...
+[colab] Session terminated.

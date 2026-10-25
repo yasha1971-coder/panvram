@@ -1,0 +1,21 @@
+date 2026-10-25T21:57:16+00:00
+CPU(s):                                  16
+Model name:                              AMD EPYC 4344P 8-Core Processor
+               total        used        free      shared  buff/cache   available
+Mem:             125           8          27           0          90         115
+5.15.0-163-generic
+torch 2.14.1+cpu numpy 2.2.6 panvram /tmp/claude-1002/fresh/pv/panvram/__init__.py
+4ee6879 panvram: GPTDataset low-level dataset and device batch iterator from panvram archives (data path panvram:<dir>)
+3eb025e logs/refrel-v2-2026-10-21 + research/refrel_v2: link the five-archive release asset, record the end-to-end check
+74c25d41d6f82a5c2a562a3eeca615622059046a92550480a58ff635487d12dc  m3_bench_gated.py
+04e75e3ded31a3f3019284c6830b1afaf09eeacef9e713a2d93be1c36af53aaf  m3_judge.py
+  SEQ 8192  panvram loader               13946.9 samples/s   114.25 Mtoken/s  (min 12349.6 max 14168.3)  raw 12349.6 12353.2 13946.9 13972.8 14168.3  load 0.16 0.16 0.16 0.16 0.44
+  SEQ 8192  bin DataLoader workers 0     12158.5 samples/s    99.60 Mtoken/s  (min 10927.0 max 12163.6)  raw 10927.0 12148.4 12163.6 12159.3 12158.5  load 0.44 0.44 0.44 0.44 0.44
+  SEQ 8192  bin DataLoader workers 2      4580.7 samples/s    37.53 Mtoken/s  (min 1985.6 max 4623.2)  raw 1985.6 4435.2 4623.2 4580.7 4611.9  load 0.44 0.44 0.44 0.44 0.44
+  SEQ 8192  bin DataLoader workers 8      4996.2 samples/s    40.93 Mtoken/s  (min 4223.4 max 5038.4)  raw 4223.4 4996.2 5016.3 4989.1 5038.4  load 0.44 0.44 0.44 0.44 0.44
+SEQ 8192 wall 75.63 s peak 3572764 kB
+  SEQ 32768  panvram loader                8029.6 samples/s   263.12 Mtoken/s  (min 7384.6 max 9293.1)  raw 7384.6 8029.6 9293.1 7787.1 8461.9  load 0.46 0.46 0.46 0.46 0.46
+  SEQ 32768  bin DataLoader workers 0      4858.5 samples/s   159.20 Mtoken/s  (min 4459.6 max 4895.8)  raw 4459.6 4717.2 4858.5 4895.8 4877.7  load 0.46 0.46 0.46 0.46 0.46
+  SEQ 32768  bin DataLoader workers 2      2084.1 samples/s    68.29 Mtoken/s  (min 1373.5 max 2121.9)  raw 1373.5 2074.7 2093.3 2121.9 2084.1  load 0.46 0.46 0.46 0.46 0.46
+  SEQ 32768  bin DataLoader workers 8      3339.4 samples/s   109.42 Mtoken/s  (min 3300.4 max 3412.1)  raw 3412.1 3396.8 3339.4 3312.7 3300.4  load 0.40 0.40 0.40 0.40 0.40
+SEQ 32768 wall 78.59 s peak 3646572 kB
