@@ -1,0 +1,57 @@
+[colab] Creating session 's2heavy'...
+[colab] Session READY (s2heavy). Executing s2_heavy.py...
+238a66f logs/loader-2026-10-22/gpu: the v4 run excludes the state of the card; the 8 KiB difference survives and its cause is not measured
+csrc/pv_core.cpp |  6 ++++++
+ csrc/pv_cuda.cu  | 28 +++++++++++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+built
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+panvram /content/pvrepo/panvram/__init__.py
+NVIDIA A100-SXM4-40GB, 1410 MHz, 0x0000000000000000
+CHECK heavy-first vs CPU decoder: 256/256 windows identical; heavy-first vs before: 1024/1024
+  B  1024 draw 0  before   7.069 ms (again   7.053)  heavy-first   7.559 ms (order  357.0 us)  parallelism   49.6 ->   48.7  span   6964.2 ->   7030.8 us  max warp  6785.0 us  identical 1024/1024
+  B  1024 draw 1  before   3.920 ms (again   3.917)  heavy-first   4.164 ms (order  346.0 us)  parallelism   90.6 ->   92.6  span   3828.7 ->   3711.0 us  max warp  3828.7 us  identical 1024/1024
+  B  1024 draw 2  before   3.446 ms (again   3.451)  heavy-first   3.899 ms (order  354.5 us)  parallelism  104.1 ->  102.7  span   3381.2 ->   3382.3 us  max warp  3381.2 us  identical 1024/1024
+  B  1024 draw 3  before   1.305 ms (again   1.294)  heavy-first   1.686 ms (order  351.8 us)  parallelism  268.3 ->  270.0  span   1220.6 ->   1200.1 us  max warp  1146.9 us  identical 1024/1024
+  B  1024 draw 4  before   2.003 ms (again   2.007)  heavy-first   2.524 ms (order  345.0 us)  parallelism  175.8 ->  163.9  span   1926.1 ->   2031.6 us  max warp  1809.4 us  identical 1024/1024
+  B  1024 draw 5  before   3.161 ms (again   3.112)  heavy-first   3.535 ms (order  345.8 us)  parallelism  111.1 ->  113.2  span   3148.8 ->   3041.3 us  max warp  2982.9 us  identical 1024/1024
+  B  1024 draw 6  before   2.515 ms (again   2.500)  heavy-first   2.991 ms (order  351.1 us)  parallelism  144.8 ->  138.0  span   2421.8 ->   2503.7 us  max warp  2421.8 us  identical 1024/1024
+  B  1024 draw 7  before   3.162 ms (again   3.165)  heavy-first   3.789 ms (order  347.8 us)  parallelism  116.6 ->  108.9  span   3119.1 ->   3288.1 us  max warp  3119.1 us  identical 1024/1024
+  B  1024 draw 8  before   3.727 ms (again   3.647)  heavy-first   4.149 ms (order  346.8 us)  parallelism  103.3 ->   98.0  span   3489.8 ->   3663.9 us  max warp  3486.7 us  identical 1024/1024
+  B  1024 draw 9  before   1.977 ms (again   1.969)  heavy-first   2.458 ms (order  342.8 us)  parallelism  174.2 ->  172.0  span   1983.5 ->   1985.5 us  max warp  1983.5 us  identical 1024/1024
+  B  1024 before      over 10 draws: median 3.161 ms  p90 4.235  max 7.069  min 1.305
+  B  1024 before again over 10 draws: median 3.138 ms  p90 4.231  max 7.053  min 1.294
+  B  1024 heavy-first over 10 draws: median 3.662 ms  p90 4.504  max 7.559  min 1.686
+  B  1024 parallelism before: median 113.9  p90 185.0  min 49.6  max 268.3
+  B  1024 parallelism heavy-first: median 111.1  p90 181.8  min 48.7  max 270.0
+
+Traceback (most recent call last):
+  File "/tmp/s2run.py", line 90, in <module>
+    asm, start = coords_of(SEED + k, B)
+                 ~~~~~~~~~^^^^^^^^^^^^^
+  File "/tmp/s2run.py", line 48, in coords_of
+    _, co = c.sample(B, W, generator=gg, return_coords=True)
+            ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/pvrepo/panvram/cohort.py", line 190, in sample
+    x = self.windows(asm, start, W, rc, tokens, check)
+  File "/content/pvrepo/panvram/cohort.py", line 154, in windows
+    s = int(status.item())
+            ~~~~~~~~~~~^^
+torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+[W1025 18:57:52.252664860 CUDAEvent.h:57] Warning: CUDA warning: an illegal memory access was encountered (function ~CUDAEvent)
+[W1025 18:57:52.252707017 CUDAEvent.h:57] Warning: CUDA warning: an illegal memory access was encountered (function ~CUDAEvent)
+
+DONE
+[colab] Stopping session 's2heavy'...
+[colab] Session terminated.

@@ -1,66 +1,69 @@
-# GPU path of A: what is measured and what is still open (2026-10-25)
+# GPU path of A: measured distributions (2026-10-25)
 
-The CPU rows of this directory were measured by the author on ace-core. The GPU numbers here come from one Colab run
-of `panvram_loader_A100_v3.ipynb` on 2026-10-25, **NVIDIA A100-SXM4-40GB**, with the 558-assembly q16k cohort
-resident on the card. Raw output as received: `v3_run.log`; the same with the derived block figures: `v3_result.json`.
+NVIDIA A100-SXM4-40GB on Colab, 1 410 MHz with no throttle reason in every run of `runs-2026-10-25/`. Those runs use a
+cohort of 5 assemblies (`colab_prepare.prepare_cohort(5)`, q16k, Q = 16 384) and report **distributions over 10
+independent draws of windows** (`Cohort.sample`, seeds 20261003 .. 20261012); each draw is timed several times and its
+median taken. The CPU rows of the parent README were measured on ace-core and are not changed by anything here.
 
-| | value |
-|---|---|
-| cohort opened | 558 assemblies, **24.499 s** |
-| resident on the card | **11.567 GB** allocated and peak; `nvidia-smi` 11 466 MiB |
-| batch / timed runs | 1 024 windows / 9, median reported |
-| correctness | `CHECK W 8192 windows 256 identical 256 differ 0` - every window equals the CPU decoder's answer |
+## Headline: batch 16 384 (`runs-2026-10-25/b2head.log`, 3 timings per draw)
 
-| W | ms per batch | min / max, ms | windows/s | GB/s delivered | blocks decoded per batch | us per block decode |
-|---:|---:|---|---:|---:|---:|---:|
-| 8 192 | 3.872 | 3.693 / 4.007 | 264 475 | 2.167 | 1 536 | **2.521** |
-| 32 768 | 2.575 | 2.501 / 2.766 | 397 729 | 13.033 | 3 072 | **0.838** |
+| W | time median | p90 | max | min | windows/s median | windows/s worst | GB/s median | GB/s worst |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 8 192 | 11.938 ms | 13.681 | 14.766 | 10.541 | 1 379 788 | 1 109 551 | 11.303 | 9.089 |
+| 32 768 | 17.427 ms | 18.781 | 19.332 | 15.644 | 940 250 | 847 528 | 30.810 | 27.772 |
 
-**The 8 KiB row is an open anomaly; it is not a window-size result and nothing here supersedes the CPU table of the
-parent README. A v4 run is awaited.** Why:
+## Batch 1 024 (`runs-2026-10-25/b1dist.log`, 5 timings per draw)
 
-The last column is the problem. Each warp decodes exactly one 16 KiB block (`csrc/pv_cuda.cu`: one warp per block,
-lane 0 runs `r3_decode_stream`, lanes 1..31 execute the copies), so microseconds per decoded block must not depend on
-W. Here it differs by **3.0x**.
+| W | time median | p90 | max | min | max/min |
+|---:|---:|---:|---:|---:|---:|
+| 8 192 | 3.125 ms | 4.175 | 6.899 | 1.270 | 5.43x |
+| 32 768 | 3.216 ms | 3.642 | 4.249 | 2.202 | 1.93x |
 
-The block counts are not a guess. `csrc/pv_cuda.cu:128` launches `bpw = (W + Q - 1) / Q + 1` warps per window, and a
-window of W bases starting at an arbitrary offset touches `1 + (W-1)/Q` blocks on average: 1.50 blocks at W = 8 192,
-3.00 at W = 32 768 with Q = 16 384. So the 8 KiB batch decodes **fewer** blocks (1 536 against 3 072) and must
-therefore be the **cheaper** of the two. With equal cost per block, the 32 KiB batch should have taken
-3.872 x 3 072 / 1 536 = 7.744 ms; it took 2.575 ms, a factor of 3.0 the other way.
+A batch of 1 024 does not fill the card and waits for its slowest block; why, with the per-block record and the
+refuted hypotheses: `ANOMALY.md`.
 
-A second consequence of the same formula, which is a real property and not an artefact: at q16k a 8 KiB window
-decodes 24 575 bases to deliver 8 192, a 3.00x overhead, while a 32 KiB window decodes 49 151 to deliver 32 768,
-1.50x. Per delivered base the small window costs twice the decode. That is why the GB/s column rises with W on the
-CPU rows as well (3.37 -> 5.92 GB/s at N = 558).
+## Heavy-first block order (#S2, `runs-2026-10-25/s2heavy_b1024.log`, `s2h16k.log`)
 
-## The hypothesis for the 3.0x
+No format change. A launch-order permutation is passed to the kernel: grid slot i runs logical (window, block) slot
+order[i], order = argsort of the block's compressed stream length `off[b+1] - off[b]` from the block table,
+descending, empty slots last; computed on the GPU per call. Same build for both arms (order none / heavy-first),
+W = 8 192, the same 10 draws. Check: heavy-first against the CPU decoder 256/256 windows identical (at batch 1 024 and
+at 16 384), and heavy-first against before every window of every draw identical (1 024/1 024, 16 384/16 384).
+Achieved parallelism = sum of warp durations / (last warp end - first warp start), `%globaltimer`, one instrumented
+run per draw and arm.
 
-W = 8 192 was measured **first**, immediately after `Cohort.open` pushed ~14 GB to the card - a memcpy-bound phase
-during which the SM clocks sit low - and after only three warm-up batches of 8 MB each, far too little work to bring
-an A100 from its idle clock to boost. By the time W = 32 768 was measured the card had been busy for seconds. An idle
-to boost ratio on A100 is of the order of 1 410 / 300 MHz, which is enough to cover a factor of 3 on its own. Nothing
-in the kernel, the block arithmetic or the output allocation predicts a 3.0x advantage for the larger window; the
-order of the sweep does.
+| batch | arm | median | p90 | max | min | parallelism median (min .. max) |
+|---:|---|---:|---:|---:|---:|---:|
+| 1 024 | before | 3.161 ms | 4.235 | 7.069 | 1.305 | 113.9 (49.6 .. 268.3) |
+| 1 024 | heavy-first, order in the call | 3.662 ms | 4.504 | 7.559 | 1.686 | 111.1 (48.7 .. 270.0) |
+| 16 384 | before | 10.973 ms | 11.839 | 11.918 | 9.741 | 561.0 (520.5 .. 634.4) |
+| 16 384 | heavy-first, order in the call | 10.212 ms | 10.634 | 11.174 | 8.809 | 612.2 (559.6 .. 721.3) |
+| 16 384 | heavy-first, order precomputed | 9.720 ms | 10.138 | 10.646 | 8.298 | - |
 
-This is a hypothesis, not a measurement: the v3 run recorded no clock readings, so **the cause is NOT MEASURED**.
+Computing the order costs 343 - 357 us at batch 1 024 and 410 - 455 us at 16 384 (409.9 - 454.7). "Before" timed again after the
+heavy-first arm: medians 3.138 / 11.041 ms, so there is no drift between arms.
 
-## What v4 changes, so the next run settles it
+- **Batch 1 024: no gain.** The slowest warp alone is 94 - 100 % of the batch span in every draw (e.g. 6 785 of
+  6 964 us), so reordering cannot shorten the batch and the order computation is pure cost (+0.50 ms median).
+- **Batch 16 384: -6.9 % median, -10.2 % p90, -6.2 % max with the order in the call; -11.4 % median with it
+  precomputed.** Parallelism rises 561 -> 612 (median). The floor is again the slowest block (longest warp 6.4 -
+  10.7 ms per draw).
 
-`panvram_loader_A100_v4.ipynb`:
+The tail is set by serial rANS on lane 0 (P1 in `ANOMALY.md`); scheduling only moves it.
 
-- a 10-second ramp at the largest W before anything is timed, with `nvidia-smi` clocks printed before and after;
-- the W order **shuffled**, the whole sweep repeated 3 times, every repeat reported, and the spread over repeats
-  printed as a percentage - an order effect cannot hide in a median any more;
-- blocks decoded per batch computed from the drawn coordinates, so **microseconds per decoded block** is printed
-  directly; that number must be flat in W, and if it is not, the cause is not the window size;
-- the cost of allocating the output tensor measured on its own and printed beside each batch time, so it can be
-  subtracted;
-- clocks and throttle reasons recorded with every row, and the whole result written to `gpu_result.json`.
+## Earlier runs: one draw each
 
-Until that run exists, the two rows above are the only GPU numbers in this directory, the 8 KiB one is flagged as an
-anomaly, and the window-size comparison on the GPU stays open.
+`v3_run.log` / `v3_result.json` (`panvram_loader_A100_v3.ipynb`) and `v4_run.log` / `v4_result.json`
+(`panvram_loader_A100_v4.ipynb`), 558 assemblies resident, batch 1 024. **One draw** of windows per W, timed 9
+times; the spread they report is the clock's, not the workload's.
 
-Two figures from this run are measurements in their own right and are not in doubt: the 558-assembly q16k cohort is
-resident in **11.567 GB** of VRAM, and opening it took **24.499 s**. The 2-bit and compact forms measured elsewhere in
-this repository are not used here.
+| run | W | ms per batch (one draw) | windows/s | GB/s |
+|---|---:|---:|---:|---:|
+| v3 | 8 192 | 3.872 | 264 475 | 2.167 |
+| v3 | 32 768 | 2.575 | 397 729 | 13.033 |
+| v4 | 8 192 | 3.689 | - | - |
+| v4 | 32 768 | 2.534 | - | - |
+
+Two figures from v3 are not draw-dependent and stand: the 558-assembly q16k cohort is resident in **11.567 GB** of
+VRAM (`nvidia-smi` 11 466 MiB), and opening it took **24.499 s**. The CPU decoder check of v3:
+`CHECK W 8192 windows 256 identical 256 differ 0`.

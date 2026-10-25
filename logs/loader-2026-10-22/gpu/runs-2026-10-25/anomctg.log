@@ -1,0 +1,50 @@
+[colab] Creating session 'anomctg'...
+[colab] Session READY (anomctg). Executing anomaly_contigs.py...
+NVIDIA A100-SXM4-40GB, 1410 MHz
+panvram /content/pvrepo/panvram/__init__.py with_cuda True
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+contigs 430; >= 32768 bases: 428; < 32768: 2
+bases in contigs >= 32768: 100.00 % of the cohort
+all eligible contigs (what sample() does)     2.205 ms  blocks   1520   1.450 us per block     464482 windows/s  pool 430 contigs
+contigs >= 32768 only                         1.964 ms  blocks   1533   1.281 us per block     521385 windows/s  pool 428 contigs
+contigs < 32768 only                          0.383 ms  blocks   1522   0.251 us per block    2675900 windows/s  pool 2 contigs
+
+{
+ "W": 8192,
+ "batch": 1024,
+ "rows": [
+  {
+   "pool": "all eligible contigs (what sample() does)",
+   "contigs": 430,
+   "median_s": 0.0022046049999744355,
+   "blocks": 1520,
+   "us_per_block": 1.4503980262989706,
+   "windows_per_s": 464482.2995556457
+  },
+  {
+   "pool": "contigs >= 32768 only",
+   "contigs": 428,
+   "median_s": 0.001963998999940486,
+   "blocks": 1533,
+   "us_per_block": 1.281147423314081,
+   "windows_per_s": 521385.19420378
+  },
+  {
+   "pool": "contigs < 32768 only",
+   "contigs": 2,
+   "median_s": 0.00038267499996891274,
+   "blocks": 1522,
+   "us_per_block": 0.2514290407154486,
+   "windows_per_s": 2675899.9152889173
+  }
+ ]
+}
+DONE
+[colab] Stopping session 'anomctg'...
+[colab] Session terminated.

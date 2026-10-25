@@ -1,0 +1,64 @@
+[colab] Creating session 'b1dist'...
+[colab] Session READY (b1dist). Executing b1_dist_blocks.py...
+panvram /content/pvrepo/panvram/__init__.py with_cuda True
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+1410 MHz, 0x0000000000000000
+
+=== PART 1: 10 independent draws per W, batch 1024
+  W   8192 draw 0 seed 20261003    6.899 ms  blocks   1534   4.497 us/block
+  W   8192 draw 1 seed 20261004    3.873 ms  blocks   1539   2.516 us/block
+  W   8192 draw 2 seed 20261005    3.427 ms  blocks   1562   2.194 us/block
+  W   8192 draw 3 seed 20261006    1.270 ms  blocks   1534   0.828 us/block
+  W   8192 draw 4 seed 20261007    1.984 ms  blocks   1550   1.280 us/block
+  W   8192 draw 5 seed 20261008    3.083 ms  blocks   1536   2.007 us/block
+  W   8192 draw 6 seed 20261009    2.495 ms  blocks   1551   1.609 us/block
+  W   8192 draw 7 seed 20261010    3.166 ms  blocks   1545   2.049 us/block
+  W   8192 draw 8 seed 20261011    3.701 ms  blocks   1558   2.375 us/block
+  W   8192 draw 9 seed 20261012    2.009 ms  blocks   1532   1.312 us/block
+  W   8192  over 10 draws: median 3.125 ms  p90 4.175  max 6.899  min 1.270  max/min 5.43x   blocks 1544+-10
+  W  32768 draw 0 seed 20261003    3.209 ms  blocks   3072   1.045 us/block
+  W  32768 draw 1 seed 20261004    4.249 ms  blocks   3072   1.383 us/block
+  W  32768 draw 2 seed 20261005    2.202 ms  blocks   3072   0.717 us/block
+  W  32768 draw 3 seed 20261006    3.575 ms  blocks   3072   1.164 us/block
+  W  32768 draw 4 seed 20261007    3.222 ms  blocks   3072   1.049 us/block
+  W  32768 draw 5 seed 20261008    3.409 ms  blocks   3072   1.110 us/block
+  W  32768 draw 6 seed 20261009    2.559 ms  blocks   3072   0.833 us/block
+  W  32768 draw 7 seed 20261010    2.570 ms  blocks   3072   0.837 us/block
+  W  32768 draw 8 seed 20261011    2.352 ms  blocks   3072   0.766 us/block
+  W  32768 draw 9 seed 20261012    3.468 ms  blocks   3072   1.129 us/block
+  W  32768  over 10 draws: median 3.216 ms  p90 3.642  max 4.249  min 2.202  max/min 1.93x   blocks 3072+-0
+PART1_DONE
+
+=== PART 2: per-block cycles, instrumented kernel
+csrc/pv_core.cpp |  5 +++++
+ csrc/pv_cuda.cu  | 18 ++++++++++++++++++
+ 2 files changed, 23 insertions(+)
+batch wall 7.740 ms; warps launched 2048, decoding 1534
+cycles per block: median 240833  p90 521529  p99 1230577  max 9696905  min 3251  max/median 40.3x
+at 1410 MHz that is median 170.8 us, max 6877.2 us
+sum of all block cycles / wall: 40.2x (concurrency actually achieved)
+slowest ten blocks: cycles, ops emitted, payload bytes of the block
+        9696905  ops     51  payload    3919 B
+        5591109  ops    352  payload    2258 B
+        1908340  ops    390  payload     977 B
+        1697180  ops    341  payload     746 B
+        1482211  ops    328  payload     462 B
+        1428147  ops    217  payload     745 B
+        1377155  ops    253  payload     769 B
+        1344596  ops    243  payload     591 B
+        1342027  ops    196  payload     616 B
+        1334339  ops    207  payload     683 B
+ops emitted: median 26 max 390; payload bytes: median 38 max 3919
+correlation of cycles with ops: +0.676
+correlation of cycles with payload bytes: +0.966
+PART2_DONE
+
+DONE
+[colab] Stopping session 'b1dist'...
+[colab] Session terminated.

@@ -1,0 +1,38 @@
+[colab] Creating session 's2h16k'...
+[colab] Session READY (s2h16k). Executing s2_heavy16k.py...
+238a66f logs/loader-2026-10-22/gpu: the v4 run excludes the state of the card; the 8 KiB difference survives and its cause is not measured
+csrc/pv_core.cpp |  6 ++++++
+ csrc/pv_cuda.cu  | 28 +++++++++++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+built
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+panvram /content/pvrepo/panvram/__init__.py
+NVIDIA A100-SXM4-40GB, 1410 MHz, 0x0000000000000000
+CHECK heavy-first vs CPU decoder: 256/256 windows identical; heavy-first vs before: 16384/16384
+  B 16384 draw 0  before  10.937 ms (again  10.971)  heavy-first  11.174 ms (order precomputed  10.646) (order  416.1 us)  parallelism  566.6 ->  559.6  span  10895.4 ->  10531.8 us  max warp 10713.1 us  identical 16384/16384
+  B 16384 draw 1  before  11.008 ms (again  11.111)  heavy-first  10.574 ms (order precomputed  10.082) (order  415.6 us)  parallelism  555.4 ->  588.7  span  11104.3 ->   9969.7 us  max warp  9846.8 us  identical 16384/16384
+  B 16384 draw 2  before  11.502 ms (again  11.439)  heavy-first   9.931 ms (order precomputed   9.445) (order  410.9 us)  parallelism  548.4 ->  631.4  span  11250.7 ->   9321.5 us  max warp  6937.6 us  identical 16384/16384
+  B 16384 draw 3  before  11.830 ms (again  11.882)  heavy-first  10.236 ms (order precomputed   9.734) (order  420.1 us)  parallelism  520.6 ->  602.5  span  11660.3 ->   9630.7 us  max warp  6404.1 us  identical 16384/16384
+  B 16384 draw 4  before   9.741 ms (again   9.761)  heavy-first   9.269 ms (order precomputed   8.845) (order  454.7 us)  parallelism  634.4 ->  678.5  span   9718.8 ->   8640.5 us  max warp  7901.2 us  identical 16384/16384
+  B 16384 draw 5  before   9.960 ms (again   9.981)  heavy-first   9.092 ms (order precomputed   8.614) (order  416.4 us)  parallelism  620.2 ->  700.3  span  10045.4 ->   8497.2 us  max warp  7747.6 us  identical 16384/16384
+  B 16384 draw 6  before  10.417 ms (again  10.311)  heavy-first   8.809 ms (order precomputed   8.298) (order  436.5 us)  parallelism  609.7 ->  721.3  span  10170.4 ->   8181.8 us  max warp  6476.8 us  identical 16384/16384
+  B 16384 draw 7  before  11.279 ms (again  11.241)  heavy-first  10.361 ms (order precomputed   9.907) (order  415.8 us)  parallelism  551.5 ->  601.5  span  11229.2 ->   9823.2 us  max warp  9263.1 us  identical 16384/16384
+  B 16384 draw 8  before  11.918 ms (again  11.974)  heavy-first  10.399 ms (order precomputed   9.910) (order  411.0 us)  parallelism  520.5 ->  601.6  span  11940.9 ->   9837.6 us  max warp  7331.8 us  identical 16384/16384
+  B 16384 draw 9  before  10.577 ms (again  10.529)  heavy-first  10.188 ms (order precomputed   9.706) (order  409.9 us)  parallelism  585.8 ->  621.8  span  10616.8 ->   9527.3 us  max warp  9566.2 us  identical 16384/16384
+  B 16384 before      over 10 draws: median 10.973 ms  p90 11.839  max 11.918  min 9.741
+  B 16384 before again over 10 draws: median 11.041 ms  p90 11.891  max 11.974  min 9.761
+  B 16384 heavy-first over 10 draws: median 10.212 ms  p90 10.634  max 11.174  min 8.809
+  B 16384 heavy-first, order precomputed over 10 draws: median 9.720 ms  p90 10.138  max 10.646  min 8.298
+  B 16384 parallelism before: median 561.0  p90 621.6  min 520.5  max 634.4
+  B 16384 parallelism heavy-first: median 612.2  p90 702.4  min 559.6  max 721.3
+S2_DONE
+
+DONE
+[colab] Stopping session 's2h16k'...
+[colab] Session terminated.

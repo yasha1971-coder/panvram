@@ -1,67 +1,70 @@
-# The 8 KiB row on the GPU: what has been excluded, and what is left (2026-10-25)
+# The 8 KiB row on the GPU: under-occupancy and the spread between draws (2026-10-25)
 
-Two Colab runs on an A100-SXM4-40GB, 558 assemblies resident in 11.567 GB, batches of 1 024 windows:
+A100-SXM4-40GB on Colab, 1 410 MHz with no throttle reason in every run below, cohort of 5 assemblies (`q16k`,
+Q = 16 384). Runs and their logs are in `runs-2026-10-25/` (`v4_run.log` in this directory); every number below carries its log.
 
-| run | W | ms per batch | blocks decoded | us per decoded block | clocks | spread over repeats |
-|---|---:|---:|---:|---:|---|---:|
-| v3 | 8 192 | 3.872 | 1 536 (predicted) | 2.521 | not recorded | - |
-| v3 | 32 768 | 2.575 | 3 072 (predicted) | 0.838 | not recorded | - |
-| **v4** | 8 192 | 3.689 | **1 544 (counted)** | **2.389** | 1 410 MHz | 2.0 % |
-| **v4** | 32 768 | 2.534 | **3 072 (counted)** | **0.826** | 1 410 MHz | 0.8 % |
+## What it is
 
-## Excluded: the state of the card
+The v3/v4 rows (558 assemblies resident; 8 KiB 3.689 ms against 32 KiB 2.534 ms per batch of 1 024, "2.9x more per
+decoded block") were
+**one draw of windows timed nine times**. Their 2 % spread was the spread of the clock, not of the workload. Two
+effects explain them, and both are measured:
 
-v4 ramps the card for ten seconds before timing, shuffles the window-size order and repeats the whole sweep three
-times. Clocks read **1 410 MHz in every row**, before and after, with no throttle reason set; the spread over repeats
-is 2.0 % at 8 KiB and 0.8 % at 32 KiB, and the order of the sweep makes no difference. **The cold-card hypothesis of
-the v3 run is refuted.** The cost of allocating the output tensor is 14 to 21 us, 0.4 to 0.6 % of a batch, so that is
-excluded too.
+**1. Under-occupancy at batch 1 024.** `T = alpha + B * beta` fitted over B = 256 .. 16 384 on one fixed list of
+windows (`b1.log`):
 
-The difference survives: 2.389 us against 0.826 us per decoded block, a factor of 2.9.
+| W | alpha, kernel only | beta per window | alpha in a batch of 1 024 | GB/s at 1 024 | GB/s at 16 384 |
+|---:|---:|---:|---:|---:|---:|
+| 8 192 | 2 013 us | 0.466 us | 81 % | 2.945 | 14.393 |
+| 32 768 | 1 896 us | 0.878 us | 68 % | 10.424 | 33.431 |
 
-## What the warps actually do
+Host time per call is 71 - 112 us and reading the status word 0 - 99 us, so alpha is inside the kernel: it is the
+latency of one decoding warp (median 170.8 us of rANS on lane 0, see 2.), not a launch cost. A batch of 1 024 at
+8 KiB has 1 534 decoding warps against 972 resident slots (17 152 B of shared memory per block, 9 per SM, 108 SMs),
+so the card is mostly waiting for the last warps.
 
-`csrc/pv_cuda.cu:128` launches `bpw = (W + Q - 1) / Q + 1` warps per window and `:46` maps `blockIdx.x` to
-`w = blockIdx.x / bpw`, `j = blockIdx.x % bpw`, so **bpw consecutive warps serve one window** and decode its
-consecutive blocks. `:50` is `b = b0 + j; if (b > b1) return;` - a warp whose index is past the last block the window
-touches returns there, before the shared-memory head/tail are initialised and before any decode.
+**2. A batch waits for its slowest block, and the slowest block depends on the draw.** Ten independent draws per W,
+batch 1 024, five timings each (`b1dist.log`):
 
-| W | warps launched | warps that decode | warps that return at `:50` | waves of the 972-block residency |
-|---:|---:|---:|---:|---:|
-| 8 192 | 2 048 | 1 544 | **504** | 2.11 |
-| 32 768 | 3 072 | 3 072 | 0 | 3.16 |
+| W | median | p90 | max | min | max/min | decoded blocks |
+|---:|---:|---:|---:|---:|---:|---:|
+| 8 192 | 3.125 ms | 4.175 | 6.899 | 1.270 | 5.43x | 1 544 +- 10 |
+| 32 768 | 3.216 ms | 3.642 | 4.249 | 2.202 | 1.93x | 3 072 |
 
-Residency: shared memory per block is `Q + QN * sizeof(QOp)` = 16 384 + 64 x 12 = **17 152 B** (`:129`, `:18-19`), so
-an A100 SM with the 164 KiB opt-in carveout holds **9 blocks**, 972 on 108 SMs - `__launch_bounds__(32, 16)` asks for
-16 and cannot get them. Tail efficiency is therefore 2.11/3 = 0.70 at 8 KiB against 3.16/4 = 0.79 at 32 KiB.
+Over draws the two window sizes cost the same median time per batch. Per-block instrumentation of the slowest draw
+(seed 20261003, W 8 192, clock64 around `r3_decode_stream` on lane 0):
 
-**So the 504 warps are nearly free, and they do not explain the gap.** They return before touching the queue, they do
-not spin to `QSPIN` (that path is `:78`, reachable only by a consumer lane inside the loop), and they do not wait for
-another warp's block: there is no cross-warp dependency in this kernel at all - each warp decodes its own block into
-its own shared buffer. Nor is a block decoded twice by two windows except when two sampled windows happen to touch
-the same block, which over 558 assemblies is rare. The worse tail accounts for about 13 %, not 190 %.
+- batch wall 7.740 ms; 2 048 warps launched, 1 534 decoding;
+- decode cycles per block: median 240 833 (170.8 us), p90 521 529, p99 1 230 577, **max 9 696 905 (6.88 ms)**,
+  max/median 40.3x;
+- **one block is 6.88 ms of the 7.74 ms batch**; achieved concurrency (sum of block cycles / wall) 40.2x of 972 slots;
+- slowest blocks carry 3 919 / 2 258 / 977 B of payload against a median of 38 B; correlation of cycles with payload
+  bytes **+0.966**, with emitted operations +0.676. Payload is literal-heavy: rANS on one lane is the cost.
 
-## What is left, and the one measurement that settles it
+At batch 16 384 (the headline, `b2head.log`, 10 draws, 3 timings each) the tail is diluted but still visible:
 
-The work per decoding warp is **the same** whatever W is: a full 16 KiB block is decoded and its copies executed, and
-only the window's slice is written out (`:84-85`). The slice is *larger* at 32 KiB (10 923 bases on average against
-5 461), so if anything the 32 KiB warp should be the slower one. It is not. Therefore the difference cannot be in the
-per-block work, and the surviving candidate is **locality between the warps of one window**:
+| W | median | p90 | max | min | max/min | windows/s median | GB/s median / worst |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 8 192 | 11.938 ms | 13.681 | 14.766 | 10.541 | 1.40x | 1 379 788 | 11.303 / 9.089 |
+| 32 768 | 17.427 ms | 18.781 | 19.332 | 15.644 | 1.24x | 940 250 | 30.810 / 27.772 |
 
-- `w = blockIdx.x / bpw` puts the warps of one window at adjacent `blockIdx`, so they are co-resident and read
-  neighbouring parts of the reference and of the same archive. At bpw = 3 each window has three such warps covering a
-  contiguous 48 KiB span of its assembly; at bpw = 2 only two, and 504 windows have a single warp with no neighbour
-  at all. The reference is 3.117 G bases in HBM and a block's copies are scattered through it, so L2 reuse between
-  the warps of one window is the one quantity that grows with bpw.
+## Refuted hypotheses
 
-This is a hypothesis. **No change to the kernel should be made on it until it is measured**, and two cheap
-measurements would settle it, neither of them touching the kernel:
+| hypothesis | test | result | log |
+|---|---|---|---|
+| cold card / clocks | 10 s ramp, sweep order shuffled, clocks read per row | 1 410 MHz in every row, no throttle reason; repeats spread 2.0 % (8 KiB) / 0.8 % (32 KiB); difference survived | `v4_run.log` |
+| locality between the warps of one window | same 1 024 starts drawn once at 32 KiB, timed at 32 KiB and truncated to 8 KiB | same windows: 8 KiB **2.905 / 2.886 ms**, 32 KiB 3.198 / 3.195 ms - 8 KiB is *faster*; the 7.033 ms came only with 8 KiB's own draw | `anom3.log` |
+| short contigs (unplaced scaffolds) entering the 8 KiB draw | draw from contigs >= 32 768 only vs < 32 768 only | 428 of 430 contigs are >= 32 768 and hold 100.00 % of the bases; long-contig pool 1.964 ms vs all 2.205 ms; short pool 0.383 ms (fastest) | `anomctg.log` |
 
-1. Sample the windows **once** at W = 32 768 and time the same starts truncated to 8 192. Same loci, same locality,
-   different W. If microseconds per decoded block converge, locality explains the gap; if the 8 KiB number stays at
-   2.4 us, it does not.
-2. Nsight Compute on the two launches: `lts__t_sector_hit_rate`, `dram__bytes_read.sum` and
-   `sm__warps_launched.sum` per kernel. A locality effect shows as a lower L2 hit rate and more DRAM traffic per
-   decoded block at 8 KiB.
+The seed-20261003 `Cohort.sample` draw reproduces at 7.033 ms (min 6.852, max 7.216) in a separate session, while
+other draws of the same size take 2.266 - 3.911 ms (`anomab.log`): the draw, not the card, sets the time.
 
-Until then the cause is **NOT MEASURED**, and the 8 KiB GPU row is not a statement about window size.
+"Microseconds per decoded block" (batch time / blocks) was the wrong unit for a batch dominated by alpha and by one
+slow block; it is not used any more.
+
+## Open direction (P1, not started)
+
+Lane 0 decodes a block's rANS stream serially: median 170.8 us per block, alpha about 2 ms per batch, and the
+slowest block 6.88 ms of a 7.74 ms batch (`b1dist.log`, `b1.log`). A multi-way interleaved rANS (several states per block decoded by
+several lanes) would cut both alpha and the tail; it changes the stream layout, so it is a format decision and is
+recorded here only.

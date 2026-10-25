@@ -39,33 +39,22 @@ Read those numbers with the scopes in the table: B covers **one chromosome (248 
 stays in RAM and is re-read every batch; A covers 15 Gb of bases over 5 assemblies, or 1.68 Tb over 558. Raw logs and
 the per-row JSON are in `cpu/`.
 
-## The GPU path of A: measured, not yet publishable
+## The GPU path of A: distributions over draws
 
-One Colab run of `panvram_loader_A100_v3.ipynb`, 2026-10-25, **NVIDIA A100-SXM4-40GB**, 558 assemblies resident in
-**11.567 GB** of VRAM (`nvidia-smi` 11 466 MiB), opened in **24.499 s**; same batch of 1 024, 9 timed runs, median;
-`CHECK W 8192 windows 256 identical 256 differ 0`. Raw output `gpu/v3_run.log`, with derived figures
-`gpu/v3_result.json`.
+A100-SXM4-40GB on Colab, 1 410 MHz, cohort of 5 assemblies, **10 independent draws of windows per row**, median /
+p90 / max over draws (`gpu/runs-2026-10-25/`; full tables, batch 1 024 and the heavy-first order in `gpu/README.md`).
 
-| W | ms per batch | min / max | windows/s | GB/s | blocks decoded | us per decoded block |
-|---:|---:|---|---:|---:|---:|---:|
-| 8 192 | 3.872 | 3.693 / 4.007 | 264 475 | 2.167 | 1 536 | **2.521** |
-| 32 768 | 2.575 | 2.501 / 2.766 | 397 729 | 13.033 | 3 072 | **0.838** |
+| batch | W | time median | p90 | max | windows/s median | GB/s median | log |
+|---:|---:|---:|---:|---:|---:|---:|---|
+| 16 384 | 8 192 | 11.938 ms | 13.681 | 14.766 | 1 379 788 | 11.303 | `b2head.log` |
+| 16 384 | 32 768 | 17.427 ms | 18.781 | 19.332 | 940 250 | 30.810 | `b2head.log` |
+| 1 024 | 8 192 | 3.125 ms | 4.175 | 6.899 | - | - | `b1dist.log` |
+| 1 024 | 32 768 | 3.216 ms | 3.642 | 4.249 | - | - | `b1dist.log` |
 
-A second run, `panvram_loader_A100_v4.ipynb` (`gpu/v4_run.log`), ramped the card, shuffled the order and repeated the
-sweep three times: clocks 1 410 MHz in every row, spread 2.0 % and 0.8 %, allocation 0.4 to 0.6 % of a batch. The
-8 KiB row still costs **2.389 us per decoded block against 0.826 us**, now with the block counts *counted* rather than
-predicted (1 544 and 3 072). **The state of the card is excluded**; the cause is still NOT MEASURED, and what has
-been ruled out and what is left is set out in `gpu/ANOMALY.md`.
-
-**Open question, and the reason no GPU row joins the table above.** Each warp decodes exactly one 16 KiB block, so
-microseconds per decoded block must not depend on W; here it differs by 3.0x. The block counts come from the launch
-formula `bpw = (W + Q - 1) / Q + 1` (`csrc/pv_cuda.cu:128`) and from how many blocks a window touches on average,
-`1 + (W-1)/Q`: 1.50 at 8 KiB and 3.00 at 32 KiB. So the 8 KiB batch decodes **half** as many blocks and must be the
-cheaper one - with an equal cost per block the 32 KiB batch should have taken 7.744 ms, and it took 2.575 ms. The
-standing hypothesis is the order of the sweep: 8 KiB was measured first, right after ~14 GB were pushed to the card
-and after three 8 MB warm-up batches, far too little to bring the clocks up. The run recorded no clocks, so the cause
-is **NOT MEASURED**. `gpu/README.md` states it in full, and `panvram_loader_A100_v4.ipynb` shuffles the W order,
-repeats the sweep three times, ramps the card first and prints microseconds per decoded block and the clocks.
+Batch 1 024 does not fill the card and waits for its slowest (literal-heavy) block; see `gpu/ANOMALY.md`. The earlier
+v3 / v4 rows (558 assemblies, `gpu/v3_run.log`, `gpu/v4_run.log`) are **one draw** each: 8 KiB 3.872 / 3.689 ms,
+32 KiB 2.575 / 2.534 ms per batch of 1 024. From v3, independent of the draw: 558 assemblies resident in
+**11.567 GB** of VRAM, opened in **24.499 s**, `CHECK W 8192 windows 256 identical 256 differ 0`.
 
 A property that is **not** an artefact, and shows in the CPU rows too: at q16k a 8 KiB window decodes 24 575 bases to
 deliver 8 192 (3.00x) while a 32 KiB window decodes 49 151 to deliver 32 768 (1.50x), so the small window costs twice
@@ -125,8 +114,7 @@ read, so the five were re-compressed with `bgzip` and indexed with `samtools fai
   A's thread count.
 - `inputs.sha256` - the reference, the renamed reference, both VCF, the five bgzip FASTA and the five v1 archives.
 - `panvram_loader_A100_v4.ipynb` - the GPU path of A for Colab (A100): same protocol, same batch and window sizes,
-  the result tensor already on the card, plus a check of 256 windows against the CPU decoder. **The only GPU numbers
-  so far are the two times above, from v3; see `gpu/README.md`.** `N_ASM` is 558 by default; the cohort is fetched and verified by
+  the result tensor already on the card, plus a check of 256 windows against the CPU decoder. Its v3 / v4 runs are one draw each; the distributions are in `gpu/README.md`. `N_ASM` is 558 by default; the cohort is fetched and verified by
   `scripts/colab_prepare.py`, the same file the notebook embeds, and any 0-byte archive or wrong SHA-256 stops the run.
   **Its five-assembly mode is not the five assemblies of the CPU rows:** the record ships the archives only inside a
   tar ordered by name, so the first five complete ones are release-2 haplotypes (`r2_HG00097_hap1`, `r2_HG00097_hap2`,
@@ -134,7 +122,8 @@ read, so the five were re-compressed with `bgzip` and indexed with `samtools fai
   controls cohort size, not the names.
 - `scripts/colab_prepare.py` - the fetch and verification used by the notebook, tested on this host in both modes
   (below).
-- `gpu/README.md` - what the GPU run reported, why it is not a window-size result, and what v4 changes.
+- `gpu/README.md` - GPU distributions over 10 draws (batch 16 384 and 1 024), the heavy-first order (#S2), the one-draw
+  v3 / v4 rows; `gpu/ANOMALY.md` - why batch 1 024 waits for its slowest block; `gpu/runs-2026-10-25/` - scripts and logs.
 - `panvram_lane0_A100_v2.ipynb` - a separate study: what share of a block's time lane 0 spends decoding the rANS
   stream while lanes 1..31 wait, by Nsight Compute on the shipped kernel and by `clock64()` in an instrumented build
   (`scripts/lane0_patch.py`). **No numbers yet.**

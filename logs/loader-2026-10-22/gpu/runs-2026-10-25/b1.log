@@ -1,0 +1,154 @@
+[colab] Creating session 'b1ab'...
+[colab] Session READY (b1ab). Executing b1_alpha_beta.py...
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+OPEN 5 assemblies, 3.188 GB, Q 16384
+1410 MHz, 0x0000000000000000
+fixed window list: 16384 starts, all valid for 32768
+
+     W      B   blocks   host us  kernel us  status us  total us  us/window    GB/s
+  8192    256      378      70.7     1112.8       34.5    1147.4      4.482   1.828
+  8192   1024     1534      73.5     2840.5        7.9    2848.4      2.782   2.945
+  8192   4096     6159      74.5     4822.4       99.4    4921.8      1.202   6.818
+  8192  16384    24591      88.2     9416.1        0.0    9325.0      0.569  14.393
+ 32768    256      768      81.5     1183.6       27.7    1211.2      4.731   6.926
+ 32768   1024     3072      71.3     3181.3       37.5    3218.8      3.143  10.424
+ 32768   4096    12288      88.1     6243.4       80.3    6323.6      1.544  21.225
+ 32768  16384    49152     111.8    16091.5        0.0   16059.1      0.980  33.431
+
+fit T = alpha(W) + B * beta(W), least squares over the four batch sizes:
+  W  8192 total       : alpha   2069.5 us   beta  0.4579 us per window   (alpha is 82 % of a 1024 batch)
+  W  8192 kernel only : alpha   2013.2 us   beta  0.4659 us per window   (alpha is 81 % of a 1024 batch)
+  W 32768 total       : alpha   1949.7 us   beta  0.8738 us per window   (alpha is 69 % of a 1024 batch)
+  W 32768 kernel only : alpha   1896.4 us   beta  0.8784 us per window   (alpha is 68 % of a 1024 batch)
+
+{
+ "seed": 20261003,
+ "runs": 7,
+ "Q": 16384,
+ "assemblies": 5,
+ "rows": [
+  {
+   "W": 8192,
+   "B": 256,
+   "blocks": 378,
+   "host_s": 7.074199993439834e-05,
+   "kernel_s": 0.0011128319501876832,
+   "total_s": 0.0011473570000362088,
+   "status_s": 3.4525049848525575e-05,
+   "us_per_window": 4.4818632813914405,
+   "gb_per_s": 1.8278112217329194
+  },
+  {
+   "W": 8192,
+   "B": 1024,
+   "blocks": 1534,
+   "host_s": 7.354100000611652e-05,
+   "kernel_s": 0.002840480089187622,
+   "total_s": 0.0028484270000035394,
+   "status_s": 7.946910815917474e-06,
+   "us_per_window": 2.7816669921909565,
+   "gb_per_s": 2.944996659556161
+  },
+  {
+   "W": 8192,
+   "B": 4096,
+   "blocks": 6159,
+   "host_s": 7.454599995071476e-05,
+   "kernel_s": 0.0048224000930786135,
+   "total_s": 0.004921802000012576,
+   "status_s": 9.940190693396266e-05,
+   "us_per_window": 1.2016118164093204,
+   "gb_per_s": 6.817509521901584
+  },
+  {
+   "W": 8192,
+   "B": 16384,
+   "blocks": 24591,
+   "host_s": 8.82379999893601e-05,
+   "kernel_s": 0.009416064262390137,
+   "total_s": 0.009325016000047981,
+   "status_s": 0.0,
+   "us_per_window": 0.5691538085966785,
+   "gb_per_s": 14.393297341185194
+  },
+  {
+   "W": 32768,
+   "B": 256,
+   "blocks": 768,
+   "host_s": 8.149200004936574e-05,
+   "kernel_s": 0.0011835839748382568,
+   "total_s": 0.0012112389999856532,
+   "status_s": 2.7655025147396445e-05,
+   "us_per_window": 4.731402343693958,
+   "gb_per_s": 6.9256422556566966
+  },
+  {
+   "W": 32768,
+   "B": 1024,
+   "blocks": 3072,
+   "host_s": 7.130099993446493e-05,
+   "kernel_s": 0.0031813440322875975,
+   "total_s": 0.0032188459999815677,
+   "status_s": 3.750196769397021e-05,
+   "us_per_window": 3.1434042968569997,
+   "gb_per_s": 10.424366993696543
+  },
+  {
+   "W": 32768,
+   "B": 4096,
+   "blocks": 12288,
+   "host_s": 8.809600001313811e-05,
+   "kernel_s": 0.006243360042572021,
+   "total_s": 0.006323618000010356,
+   "status_s": 8.025795743833459e-05,
+   "us_per_window": 1.5438520507837783,
+   "gb_per_s": 21.224831733950435
+  },
+  {
+   "W": 32768,
+   "B": 16384,
+   "blocks": 49152,
+   "host_s": 0.00011177399994721782,
+   "kernel_s": 0.016091487884521485,
+   "total_s": 0.01605913799994596,
+   "status_s": 0.0,
+   "us_per_window": 0.9801719970670142,
+   "gb_per_s": 33.430867335582185
+  }
+ ],
+ "fit": [
+  {
+   "W": 8192,
+   "series": "total",
+   "alpha_us": 2069.4761343435594,
+   "beta_us": 0.4579364642796909
+  },
+  {
+   "W": 8192,
+   "series": "kernel only",
+   "alpha_us": 2013.2341633981735,
+   "beta_us": 0.4659393263442723
+  },
+  {
+   "W": 32768,
+   "series": "total",
+   "alpha_us": 1949.6739999954452,
+   "beta_us": 0.8738118106590884
+  },
+  {
+   "W": 32768,
+   "series": "kernel only",
+   "alpha_us": 1896.4389521091118,
+   "beta_us": 0.8784016601922296
+  }
+ ]
+}
+DONE
+[colab] Stopping session 'b1ab'...
+[colab] Session terminated.

@@ -1,0 +1,108 @@
+[colab] Creating session 'anom8k3'...
+[colab] Session READY (anom8k3). Executing anomaly_locality.py...
+NVIDIA A100-SXM4-40GB, 40960 MiB, 580.82.07, 1410 MHz
+--- installing
+238a66f logs/loader-2026-10-22/gpu: the v4 run excludes the state of the card; the 8 KiB difference survives and its cause is not measured
+panvram /content/pvrepo/panvram/__init__.py | torch 2.11.0+cu130 | with_cuda True
+--- import verified before any download
+--- reference
+reference sha256 51ab7d3c2a375ecff53ee2a1be03e58d57cc1601c948a860c03a78d724f26e4c
+--- archives
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+5 archives
+OPEN 5 assemblies 20.997 s, 3.188 GB
+ramping
+1410 MHz, 0x0000000000000000
+
+=== same windows, two sizes (the decisive comparison)
+same-windows  W  32768    3.198 ms  blocks   3072   1.041 us per block     320237 windows/s  10.494 GB/s  min 3.131 max 3.406
+same-windows  W   8192    2.905 ms  blocks   1534   1.894 us per block     352512 windows/s   2.888 GB/s  min 2.806 max 2.948
+same-windows  W  32768    3.195 ms  blocks   3072   1.040 us per block     320462 windows/s  10.501 GB/s  min 3.109 max 3.261
+same-windows  W   8192    2.886 ms  blocks   1534   1.882 us per block     354765 windows/s   2.906 GB/s  min 2.793 max 2.927
+
+=== each size draws its own windows (what v4 did)
+own-windows   W  32768    3.163 ms  blocks   3072   1.030 us per block     323709 windows/s  10.607 GB/s
+own-windows   W   8192    7.033 ms  blocks   1534   4.585 us per block     145598 windows/s   1.193 GB/s
+
+=== one warp per window: W = 16384, every window touches 1 or 2 blocks with bpw = 2
+same-windows  W  16384    3.015 ms  blocks   2048   1.472 us per block
+
+{
+ "gpu": "NVIDIA A100-SXM4-40GB",
+ "batch": 1024,
+ "runs": 9,
+ "Q": 16384,
+ "assemblies": 5,
+ "rows": [
+  {
+   "mode": "same_windows",
+   "W": 32768,
+   "median_s": 0.0031976349999922604,
+   "min_s": 0.003130943999963165,
+   "max_s": 0.00340574300003027,
+   "blocks": 3072,
+   "us_per_block": 1.040896809893314
+  },
+  {
+   "mode": "same_windows",
+   "W": 8192,
+   "median_s": 0.00290486900007636,
+   "min_s": 0.002806225999961498,
+   "max_s": 0.0029478710000603314,
+   "blocks": 1534,
+   "us_per_block": 1.893656453765554
+  },
+  {
+   "mode": "same_windows",
+   "W": 32768,
+   "median_s": 0.0031953909999629104,
+   "min_s": 0.0031089969999129607,
+   "max_s": 0.0032611540000289096,
+   "blocks": 3072,
+   "us_per_block": 1.0401663411337598
+  },
+  {
+   "mode": "same_windows",
+   "W": 8192,
+   "median_s": 0.002886414000045079,
+   "min_s": 0.002792557000020679,
+   "max_s": 0.0029265370000075563,
+   "blocks": 1534,
+   "us_per_block": 1.8816258148924896
+  },
+  {
+   "mode": "own_windows",
+   "W": 32768,
+   "median_s": 0.0031633340000780663,
+   "min_s": 0.003087402000005568,
+   "max_s": 0.0032676700000138226,
+   "blocks": 3072,
+   "us_per_block": 1.0297311198170789
+  },
+  {
+   "mode": "own_windows",
+   "W": 8192,
+   "median_s": 0.007033052999986467,
+   "min_s": 0.006783362000078341,
+   "max_s": 0.007193434999976489,
+   "blocks": 1534,
+   "us_per_block": 4.5847803128986095
+  },
+  {
+   "mode": "same_windows",
+   "W": 16384,
+   "median_s": 0.00301488699994934,
+   "blocks": 2048,
+   "us_per_block": 1.4721127929440136
+  }
+ ]
+}
+DONE
+[colab] Stopping session 'anom8k3'...
+[colab] Session terminated.

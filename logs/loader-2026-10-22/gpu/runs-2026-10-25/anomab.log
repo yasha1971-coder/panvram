@@ -1,0 +1,85 @@
+[colab] Creating session 'anomab'...
+[colab] Session READY (anomab). Executing anomaly_ab.py...
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+rep 0 Cohort.sample    7.033 ms  min  6.852 max  7.216  blocks   1534   4.585 us/block  assemblies 5  start spread 3.03 G  | 1410 MHz, 0x0000000000000000
+rep 0 manual draw      2.266 ms  min  2.183 max  2.349  blocks   1554   1.458 us/block  assemblies 5  start spread 3.03 G  | 1410 MHz, 0x0000000000000000
+rep 1 Cohort.sample    3.911 ms  min  3.842 max  3.957  blocks   1539   2.541 us/block  assemblies 5  start spread 3.02 G  | 1410 MHz, 0x0000000000000000
+rep 1 manual draw      3.506 ms  min  3.412 max  3.625  blocks   1533   2.287 us/block  assemblies 5  start spread 3.03 G  | 1410 MHz, 0x0000000000000000
+rep 2 Cohort.sample    3.463 ms  min  3.330 max  3.520  blocks   1562   2.217 us/block  assemblies 5  start spread 3.04 G  | 1410 MHz, 0x0000000000000000
+rep 2 manual draw      2.281 ms  min  2.196 max  2.461  blocks   1553   1.469 us/block  assemblies 5  start spread 3.03 G  | 1410 MHz, 0x0000000000000000
+
+{
+ "W": 8192,
+ "batch": 1024,
+ "rows": [
+  {
+   "rep": 0,
+   "draw": "Cohort.sample",
+   "median_s": 0.007033336999938911,
+   "min_s": 0.006851704000041536,
+   "max_s": 0.007215776999942136,
+   "blocks": 1534,
+   "us_per_block": 4.584965449764609,
+   "assemblies": 5
+  },
+  {
+   "rep": 0,
+   "draw": "manual draw",
+   "median_s": 0.0022658130000081655,
+   "min_s": 0.0021833760000617985,
+   "max_s": 0.0023490829998991103,
+   "blocks": 1554,
+   "us_per_block": 1.458052123557378,
+   "assemblies": 5
+  },
+  {
+   "rep": 1,
+   "draw": "Cohort.sample",
+   "median_s": 0.003911178999942422,
+   "min_s": 0.003841815999976461,
+   "max_s": 0.003956554999945183,
+   "blocks": 1539,
+   "us_per_block": 2.5413768680587534,
+   "assemblies": 5
+  },
+  {
+   "rep": 1,
+   "draw": "manual draw",
+   "median_s": 0.0035063659998968433,
+   "min_s": 0.0034122889999252948,
+   "max_s": 0.003625401000022066,
+   "blocks": 1533,
+   "us_per_block": 2.287257664642429,
+   "assemblies": 5
+  },
+  {
+   "rep": 2,
+   "draw": "Cohort.sample",
+   "median_s": 0.0034625389999973777,
+   "min_s": 0.0033304080000107206,
+   "max_s": 0.0035201359999064152,
+   "blocks": 1562,
+   "us_per_block": 2.216734314979115,
+   "assemblies": 5
+  },
+  {
+   "rep": 2,
+   "draw": "manual draw",
+   "median_s": 0.002280625999901531,
+   "min_s": 0.0021962230000553973,
+   "max_s": 0.0024606560000393074,
+   "blocks": 1553,
+   "us_per_block": 1.4685292980692408,
+   "assemblies": 5
+  }
+ ]
+}
+DONE
+[colab] Stopping session 'anomab'...
+[colab] Session terminated.

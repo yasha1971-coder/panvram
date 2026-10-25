@@ -1,0 +1,91 @@
+[colab] Creating session 'b2head'...
+[colab] Session READY (b2head). Executing b2_head.py...
+RANGE	104857600 B of part00
+PREFIX	7 tar members seen, 5 archives complete: r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3, r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3, r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3
+VERIFIED	5 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 2 more
+1410 MHz, 0x0000000000000000
+batch 16384, 10 draws per W, 3 timings per draw
+  W   8192 draw 0    11.002 ms    1489222 windows/s  12.200 GB/s  blocks   24568  0.448 us/block
+  W   8192 draw 1    11.066 ms    1480555 windows/s  12.129 GB/s  blocks   24630  0.449 us/block
+  W   8192 draw 2    13.433 ms    1219639 windows/s   9.991 GB/s  blocks   24547  0.547 us/block
+  W   8192 draw 3    14.766 ms    1109551 windows/s   9.089 GB/s  blocks   24690  0.598 us/block
+  W   8192 draw 4    10.541 ms    1554244 windows/s  12.732 GB/s  blocks   24565  0.429 us/block
+  W   8192 draw 5    10.792 ms    1518128 windows/s  12.437 GB/s  blocks   24583  0.439 us/block
+  W   8192 draw 6    12.810 ms    1279021 windows/s  10.478 GB/s  blocks   24676  0.519 us/block
+  W   8192 draw 7    12.915 ms    1268597 windows/s  10.392 GB/s  blocks   24564  0.526 us/block
+  W   8192 draw 8    13.560 ms    1208218 windows/s   9.898 GB/s  blocks   24547  0.552 us/block
+  W   8192 draw 9    10.956 ms    1495380 windows/s  12.250 GB/s  blocks   24609  0.445 us/block
+  W   8192 over 10 draws: time median 11.938 ms  p90 13.681  max 14.766  min 10.541  max/min 1.40x
+  W   8192            windows/s median 1379788  p90 1198352 (slow end)  worst 1109551 | GB/s median 11.303  worst 9.089
+  W  32768 draw 0    17.124 ms     956759 windows/s  31.351 GB/s  blocks   49152  0.348 us/block
+  W  32768 draw 1    17.241 ms     950315 windows/s  31.140 GB/s  blocks   49152  0.351 us/block
+  W  32768 draw 2    19.332 ms     847528 windows/s  27.772 GB/s  blocks   49152  0.393 us/block
+  W  32768 draw 3    16.043 ms    1021231 windows/s  33.464 GB/s  blocks   49150  0.326 us/block
+  W  32768 draw 4    15.644 ms    1047289 windows/s  34.318 GB/s  blocks   49152  0.318 us/block
+  W  32768 draw 5    18.568 ms     882365 windows/s  28.913 GB/s  blocks   49150  0.378 us/block
+  W  32768 draw 6    18.720 ms     875228 windows/s  28.679 GB/s  blocks   49152  0.381 us/block
+  W  32768 draw 7    17.982 ms     911136 windows/s  29.856 GB/s  blocks   49152  0.366 us/block
+  W  32768 draw 8    17.614 ms     930186 windows/s  30.480 GB/s  blocks   49151  0.358 us/block
+  W  32768 draw 9    16.354 ms    1001818 windows/s  32.828 GB/s  blocks   49151  0.333 us/block
+  W  32768 over 10 draws: time median 17.427 ms  p90 18.781  max 19.332  min 15.644  max/min 1.24x
+  W  32768            windows/s median 940250  p90 872458 (slow end)  worst 847528 | GB/s median 30.810  worst 27.772
+
+{
+ "8192": {
+  "per_draw": [
+   {
+    "draw": 0,
+    "seed": 20261003,
+    "median_s": 0.01100171699999919,
+    "blocks": 24568,
+    "windows_per_s": 1489222.0914245665,
+    "gb_per_s": 12.199707372950048,
+    "us_per_block": 0.4478067811787361
+   },
+   {
+    "draw": 1,
+    "seed": 20261004,
+    "median_s": 0.01106612400008089,
+    "blocks": 24630,
+    "windows_per_s": 1480554.5283859314,
+    "gb_per_s": 12.12870269653755,
+    "us_per_block": 0.44929451888269956
+   },
+   {
+    "draw": 2,
+    "seed": 20261005,
+    "median_s": 0.013433478000024479,
+    "blocks": 24547,
+    "windows_per_s": 1219639.4708779175,
+    "gb_per_s": 9.9912865454319,
+    "us_per_block": 0.5472553876247395
+   },
+   {
+    "draw": 3,
+    "seed": 20261006,
+    "median_s": 0.01476633300035246,
+    "blocks": 24690,
+    "windows_per_s": 1109551.030686422,
+    "gb_per_s": 9.089442043383169,
+    "us_per_block": 0.5980693803301929
+   },
+   {
+    "draw": 4,
+    "seed": 20261007,
+    "median_s": 0.010541456000282778,
+    "blocks": 24565,
+    "windows_per_s": 1554244.4990104302,
+    "gb_per_s": 12.732370935893444,
+    "us_per_block": 0.42912501527713326
+   },
+   {
+    "draw": 5,
+    "seed": 20261008,
+    "median_s": 0.010
+DONE
+[colab] Stopping session 'b2head'...
+[colab] Session terminated.
