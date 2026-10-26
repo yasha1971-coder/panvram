@@ -12,7 +12,8 @@ dist = distribution("panvram")
 checked = 0
 with zipfile.ZipFile(wheels[0]) as archive:
     for name in archive.namelist():
-        if name.endswith("/") or ".dist-info/" in name:
+        # pip rewrites RECORD; METADATA/WHEEL must still match (including ABI pins).
+        if name.endswith("/") or name.endswith(".dist-info/RECORD"):
             continue
         expected = archive.read(name)
         actual = Path(dist.locate_file(name)).read_bytes()
