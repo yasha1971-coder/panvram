@@ -3,7 +3,7 @@ requires = ["setuptools>=78.1", "wheel", "torch==2.14.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64"
+build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
 archs = ["x86_64"]
 build-frontend = { name = "pip", args = ["--no-build-isolation"] }
 before-build = "bash {project}/scripts/wheels_before_build.sh"

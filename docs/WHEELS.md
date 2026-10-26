@@ -1,9 +1,10 @@
 # Linux CPU wheels (TestPyPI only)
 
-The `pypi` branch builds x86_64 manylinux_2_28 wheels for CPython 3.10,
-3.11 and 3.12. The native extension is compiled against torch 2.14.1+cpu;
-wheel metadata pins torch 2.14.1+cpu because its C++ ABI is not stable between
-releases. No GPU or CUDA toolkit is needed. These wheels do not contain the
+The `pypi` branch builds x86_64 manylinux_2_28 wheels for CPython 3.10 to
+3.14. The native extension is compiled against torch 2.14.1+cpu; wheel
+metadata pins the release, torch==2.14.1, because its C++ ABI is not stable
+between releases. The pin carries no local label, so torch 2.14.1 from PyPI
+(the default CUDA build) or 2.14.1+cpu from download.pytorch.org satisfies it. No GPU or CUDA toolkit is needed. These wheels do not contain the
 optional CUDA kernel. Building from source with `PANVRAM_CUDA=1` remains
 available; CUDA wheels are outside this workflow's scope.
 
@@ -14,6 +15,12 @@ python -m venv .venv
 . .venv/bin/activate
 python -m pip install torch==2.14.1+cpu --index-url https://download.pytorch.org/whl/cpu
 pip install -i https://test.pypi.org/simple panvram
+```
+
+Or in one step, with dependencies from PyPI (this installs torch 2.14.1 from PyPI if another version is present):
+
+```sh
+pip install -i https://test.pypi.org/simple --extra-index-url https://pypi.org/simple panvram
 ```
 
 The CPU extension loads torch's libraries from the pinned runtime package.
