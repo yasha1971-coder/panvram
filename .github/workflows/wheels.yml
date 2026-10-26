@@ -1,0 +1,154 @@
+name: Linux CPU wheels and TestPyPI
+
+on:
+  push:
+    branches: [pypi]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wheels-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: yasha1971-coder/aceapex
+          ref: e902934d8476d9823bcc7b04246148243f8804ef
+          path: encoder-source
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: facebook/zstd
+          ref: v1.5.5
+          path: zstd-source
+          persist-credentials: false
+      - name: Encode five distinct synthetic assemblies
+        shell: bash
+        run: |
+          set -euo pipefail
+          g++ -std=c++17 -O2 -ffunction-sections -fdata-sections \
+            -Iencoder-source/src -Izstd-source/lib -Icsrc -Itools/rr3bench \
+            tools/rr3bench/refrel3v1.cpp -Wl,--gc-sections \
+            /usr/lib/x86_64-linux-gnu/libzstd.so.1 -pthread \
+            -o "$RUNNER_TEMP/refrel3v1"
+          python3 tests/make_wheel_fixtures.py "$RUNNER_TEMP/refrel3v1" wheel-fixtures | tee fixtures.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-fixtures
+          path: |
+            wheel-fixtures/
+            fixtures.log
+          if-no-files-found: error
+
+  wheels:
+    needs: fixtures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [cp310, cp311, cp312]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel-fixtures
+          path: .
+      - uses: pypa/cibuildwheel@v3.2.1
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-manylinux_x86_64
+      - name: Record distribution hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum wheelhouse/*.whl | tee wheel-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.python }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hashes-${{ matrix.python }}
+          path: wheel-sha256.txt
+
+  publish:
+    needs: wheels
+    if: github.repository == 'yasha1971-coder/panvram' && github.ref == 'refs/heads/pypi' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/panvram
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-cp*
+          path: dist
+          merge-multiple: true
+      - name: Publish only to TestPyPI with OIDC
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  testpypi-install:
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel-fixtures
+          path: .
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel-cp311
+          path: expected-wheel
+      - name: Clean venv on a fresh VM, TestPyPI install and round trip
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/install-check"
+          source "$RUNNER_TEMP/install-check/bin/activate"
+          {
+            uname -a
+            python --version
+            python -m pip install --upgrade pip
+            # Dependencies are intentionally fetched separately, never from TestPyPI.
+            python -m pip install 'torch==2.14.1+cpu' --index-url https://download.pytorch.org/whl/cpu
+            python -m pip install numpy
+            pip install -i https://test.pypi.org/simple panvram
+            python scripts/check_installed_wheel.py expected-wheel
+            cd "$RUNNER_TEMP"
+            python "$GITHUB_WORKSPACE/tests/wheel_roundtrip.py" "$GITHUB_WORKSPACE/wheel-fixtures"
+            python -m pip check
+            python -m pip freeze
+          } 2>&1 | tee "$GITHUB_WORKSPACE/testpypi-install.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testpypi-install-log
+          path: testpypi-install.log
+          if-no-files-found: error

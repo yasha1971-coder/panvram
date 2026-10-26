@@ -25,6 +25,9 @@ def _torch():
 
 
 torch = _torch()
+wheel_torch = os.environ.get("PANVRAM_WHEEL_TORCH")
+if wheel_torch and torch.__version__.split("+")[0] != wheel_torch:
+    raise RuntimeError("wheel build torch does not match PANVRAM_WHEEL_TORCH")
 from torch.utils.cpp_extension import CUDA_HOME, BuildExtension, CppExtension, CUDAExtension  # noqa: E402
 
 want = os.environ.get("PANVRAM_CUDA", "auto")
@@ -50,6 +53,7 @@ setup(
     packages=find_packages(include=["panvram"]),
     ext_modules=[ext],
     cmdclass={"build_ext": BuildExtension},
-    python_requires=">=3.9",
-    install_requires=["torch"],
+    python_requires=">=3.10",
+    # Native torch extensions do not promise ABI compatibility across torch releases.
+    install_requires=["torch==" + (torch.__version__ if wheel_torch else torch.__version__.split("+")[0])],
 )

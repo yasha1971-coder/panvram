@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=78.1", "wheel", "torch==2.14.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64"
+archs = ["x86_64"]
+build-frontend = { name = "pip", args = ["--no-build-isolation"] }
+before-build = "bash {project}/scripts/wheels_before_build.sh"
+before-test = "python -m pip install torch==2.14.1+cpu --index-url https://download.pytorch.org/whl/cpu"
+test-requires = ["numpy", "pytest"]
+test-command = "python {project}/tests/wheel_roundtrip.py {project}/wheel-fixtures && python -m pytest -q {project}/tests/test_synth.py"
+
+[tool.cibuildwheel.environment]
+PANVRAM_CUDA = "0"
+MAX_JOBS = "1"
+PANVRAM_WHEEL_TORCH = "2.14.1"
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux_2_28"
+before-all = "dnf install -y libzstd-devel"
+# libtorch is supplied by the exact runtime dependency, not vendored in each wheel.
+# libzstd and any other non-policy dependencies are bundled by auditwheel.
+repair-wheel-command = "auditwheel repair -w {dest_dir} --exclude libc10.so --exclude libtorch.so --exclude libtorch_cpu.so --exclude libtorch_python.so {wheel}"
