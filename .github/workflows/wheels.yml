@@ -3,6 +3,7 @@ name: Linux CPU wheels and TestPyPI
 on:
   push:
     branches: [pypi]
+    tags: ['v1.0.1']
   pull_request:
   workflow_dispatch:
 
@@ -106,6 +107,33 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
+
+  pypi-publish:
+    # production PyPI: only the tag v1.0.1, only from this repository, through the pypi environment (OIDC, no token)
+    needs: wheels
+    if: github.repository == 'yasha1971-coder/panvram' && github.ref == 'refs/tags/v1.0.1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/p/panvram
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-cp*
+          path: dist
+          merge-multiple: true
+      - name: Every wheel is version 1.0.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -l dist
+          for w in dist/*.whl; do [ "$(basename "$w" | cut -d- -f2)" = "1.0.1" ] || { echo "not 1.0.1: $w"; exit 1; }; done
+          sha256sum dist/*.whl
+      - name: Publish to PyPI with OIDC
+        uses: pypa/gh-action-pypi-publish@release/v1
 
   testpypi-install:
     needs: publish
