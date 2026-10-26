@@ -1,0 +1,112 @@
+[colab] Creating session 'h558'...
+[colab] Session READY (h558). Executing h558.py...
+DOWNLOAD 16 parts, 4 streams: 109.1 s, rc 0 
+setup so far 197 s
+  part ok cohort558_q16k.tar.part00 524288000 B
+  part ok cohort558_q16k.tar.part01 524288000 B
+  part ok cohort558_q16k.tar.part02 524288000 B
+  part ok cohort558_q16k.tar.part03 524288000 B
+  part ok cohort558_q16k.tar.part04 524288000 B
+  part ok cohort558_q16k.tar.part05 524288000 B
+  part ok cohort558_q16k.tar.part06 524288000 B
+  part ok cohort558_q16k.tar.part07 524288000 B
+  part ok cohort558_q16k.tar.part08 524288000 B
+  part ok cohort558_q16k.tar.part09 524288000 B
+  part ok cohort558_q16k.tar.part10 524288000 B
+  part ok cohort558_q16k.tar.part11 524288000 B
+  part ok cohort558_q16k.tar.part12 524288000 B
+  part ok cohort558_q16k.tar.part13 524288000 B
+  part ok cohort558_q16k.tar.part14 524288000 B
+  part ok cohort558_q16k.tar.part15 234147840 B
+TAR	8098467840 B, SHA-256 matches the record
+VERIFIED	558 archives, every SHA-256 equals the record's, no empty file
+  r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3	13279654 B	sha256 41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3	md5 dba01cfa8ce334c10fc8e12fe88dfbfb
+  r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3	13746537 B	sha256 ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540	md5 495f11d0b03ad1b553be5f4be172adef
+  r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3	13156369 B	sha256 43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745	md5 45d5e6953d641c889c4b9817c37f8c07
+  ... 555 more
+PREPARED 558 in 114 s
+OPEN 558 assemblies in 24.711 s, resident 11.567 GB
+1410 MHz, 0x0000000000000000
+batch 16384, 10 draws per W, 3 timings per draw
+CHECK W 8192 draw 0: 256/256 windows identical to the CPU decoder
+  W   8192 draw 0    12.255 ms    1336975 windows/s  10.952 GB/s  blocks   24565  0.499 us/block
+  W   8192 draw 1    13.229 ms    1238495 windows/s  10.146 GB/s  blocks   24544  0.539 us/block
+  W   8192 draw 2    13.920 ms    1177027 windows/s   9.642 GB/s  blocks   24552  0.567 us/block
+  W   8192 draw 3    11.529 ms    1421053 windows/s  11.641 GB/s  blocks   24544  0.470 us/block
+  W   8192 draw 4    15.814 ms    1036038 windows/s   8.487 GB/s  blocks   24552  0.644 us/block
+  W   8192 draw 5    13.549 ms    1209266 windows/s   9.906 GB/s  blocks   24636  0.550 us/block
+  W   8192 draw 6    10.788 ms    1518664 windows/s  12.441 GB/s  blocks   24634  0.438 us/block
+  W   8192 draw 7    16.838 ms     973039 windows/s   7.971 GB/s  blocks   24526  0.687 us/block
+  W   8192 draw 8    13.486 ms    1214892 windows/s   9.952 GB/s  blocks   24542  0.550 us/block
+  W   8192 draw 9    12.936 ms    1266590 windows/s  10.376 GB/s  blocks   24499  0.528 us/block
+  W   8192 over 10 draws: time median 13.357 ms  p90 15.916  max 16.838  min 10.788  max/min 1.56x
+  W   8192            windows/s median 1226693  p90 1029738 (slow end)  worst 973039 | GB/s median 10.049  worst 7.971
+CHECK W 32768 draw 0: 256/256 windows identical to the CPU decoder
+  W  32768 draw 0    20.460 ms     800778 windows/s  26.240 GB/s  blocks   49150  0.416 us/block
+  W  32768 draw 1    20.026 ms     818142 windows/s  26.809 GB/s  blocks   49152  0.407 us/block
+  W  32768 draw 2    19.035 ms     860735 windows/s  28.205 GB/s  blocks   49151  0.387 us/block
+  W  32768 draw 3    20.705 ms     791315 windows/s  25.930 GB/s  blocks   49150  0.421 us/block
+  W  32768 draw 4    20.436 ms     801732 windows/s  26.271 GB/s  blocks   49151  0.416 us/block
+  W  32768 draw 5    21.540 ms     760617 windows/s  24.924 GB/s  blocks   49149  0.438 us/block
+  W  32768 draw 6    22.577 ms     725682 windows/s  23.779 GB/s  blocks   49152  0.459 us/block
+  W  32768 draw 7    22.484 ms     728681 windows/s  23.877 GB/s  blocks   49152  0.457 us/block
+  W  32768 draw 8    20.418 ms     802445 windows/s  26.295 GB/s  blocks   49152  0.415 us/block
+  W  32768 draw 9    20.974 ms     781157 windows/s  25.597 GB/s  blocks   49152  0.427 us/block
+  W  32768 over 10 draws: time median 20.582 ms  p90 22.494  max 22.577  min 19.035  max/min 1.19x
+  W  32768            windows/s median 796046  p90 728381 (slow end)  worst 725682 | GB/s median 26.085  worst 23.779
+
+{
+ "8192": {
+  "per_draw": [
+   {
+    "draw": 0,
+    "seed": 20261003,
+    "median_s": 0.012254530000063824,
+    "blocks": 24565,
+    "windows_per_s": 1336974.9798576257,
+    "gb_per_s": 10.95249903499367,
+    "us_per_block": 0.4988613881564756
+   },
+   {
+    "draw": 1,
+    "seed": 20261004,
+    "median_s": 0.013228959999992185,
+    "blocks": 24544,
+    "windows_per_s": 1238494.9383783517,
+    "gb_per_s": 10.145750535195457,
+    "us_per_block": 0.5389895697519632
+   },
+   {
+    "draw": 2,
+    "seed": 20261005,
+    "median_s": 0.013919820999944932,
+    "blocks": 24552,
+    "windows_per_s": 1177026.6298729572,
+    "gb_per_s": 9.642202151919266,
+    "us_per_block": 0.5669526311479689
+   },
+   {
+    "draw": 3,
+    "seed": 20261006,
+    "median_s": 0.01152947600007792,
+    "blocks": 24544,
+    "windows_per_s": 1421053.3071831947,
+    "gb_per_s": 11.641268692444731,
+    "us_per_block": 0.4697472294686245
+   },
+   {
+    "draw": 4,
+    "seed": 20261007,
+    "median_s": 0.01581409100003839,
+    "blocks": 24552,
+    "windows_per_s": 1036038.0498607367,
+    "gb_per_s": 8.487223704459154,
+    "us_per_block": 0.6441060198777447
+   },
+   {
+    "draw": 5,
+    "seed": 20261008,
+    "median_s": 0.0
+DONE
+[colab] Stopping session 'h558'...
+[colab] Session terminated.
