@@ -1,0 +1,333 @@
+From 4ee687941eb624f7de81812e89760b539a1a0916 Mon Sep 17 00:00:00 2001
+From: Yakiv Shavidze <aceapex.contour@outlook.com>
+Date: Sun, 25 Oct 2026 20:42:47 +0000
+Subject: [PATCH] panvram: GPTDataset low-level dataset and device batch
+ iterator from panvram archives (data path panvram:<dir>)
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ megatron/core/datasets/gpt_dataset.py         |   5 +
+ megatron/training/datasets/data_samplers.py   |   8 +
+ megatron/training/datasets/panvram_dataset.py | 126 ++++++++++++++++
+ megatron/training/datasets/panvram_loader.py  | 141 ++++++++++++++++++
+ 4 files changed, 280 insertions(+)
+ create mode 100644 megatron/training/datasets/panvram_dataset.py
+ create mode 100644 megatron/training/datasets/panvram_loader.py
+
+diff --git a/megatron/core/datasets/gpt_dataset.py b/megatron/core/datasets/gpt_dataset.py
+index f50a6a7..612889d 100644
+--- a/megatron/core/datasets/gpt_dataset.py
++++ b/megatron/core/datasets/gpt_dataset.py
+@@ -151,6 +151,11 @@ class GPTDataset(MegatronDataset):
+         Returns:
+             IndexedDataset: The underlying IndexedDataset
+         """
++        if isinstance(dataset_path, str) and dataset_path.startswith("panvram:"):
++            # panvram archives instead of .bin/.idx (megatron/training/datasets/panvram_dataset.py)
++            from megatron.training.datasets.panvram_dataset import PanvramIndexedDataset
++
++            return PanvramIndexedDataset.from_data_path(dataset_path)
+         if is_object_storage_path(dataset_path):
+             assert config.object_storage_cache_path is not None
+             return IndexedDataset(
+diff --git a/megatron/training/datasets/data_samplers.py b/megatron/training/datasets/data_samplers.py
+index d332505..026975e 100644
+--- a/megatron/training/datasets/data_samplers.py
++++ b/megatron/training/datasets/data_samplers.py
+@@ -72,6 +72,14 @@ def build_pretraining_data_loader(dataset, consumed_samples):
+     else:
+         raise Exception('{} dataloader type is not supported.'.format(args.dataloader_type))
+ 
++    # panvram: the cohort is resident on the device; one decode call per micro-batch replaces the DataLoader
++    if not args.hybrid_context_parallel:
++        from megatron.training.datasets.panvram_loader import maybe_panvram_loader
++
++        loader = maybe_panvram_loader(dataset, batch_sampler)
++        if loader is not None:
++            return loader
++
+     def worker_init_fn(_):
+         DistributedSignalHandler(args.exit_signal).__enter__()
+ 
+diff --git a/megatron/training/datasets/panvram_dataset.py b/megatron/training/datasets/panvram_dataset.py
+new file mode 100644
+index 0000000..53ec5fd
+--- /dev/null
++++ b/megatron/training/datasets/panvram_dataset.py
+@@ -0,0 +1,126 @@
++# Copyright (c) 2026, Yakiv Shavidze. MIT licence.
++"""PanvramIndexedDataset: Megatron's low-level dataset contract served straight from panvram (refrel3 v1) archives,
++with no .bin/.idx on disk.
++
++Contract (what megatron/core/datasets/gpt_dataset.py needs of a low-level dataset):
++  * `sequence_lengths` -> numpy int32 array, one entry per document;
++  * `get(idx, offset=0, length=None)` -> numpy array of token ids of document `idx`;
++  * `__len__`, `document_indices`.
++
++One document = one contig, in the archive's record order, assemblies in the order given. Tokens are the ids of
++`--gengram-token-ids` (A=8, C=5, G=6, T=7, anything else=9; megatron/core/transformer/transformer_config.py), and a
++virtual end-of-document id (12 = `--vocab-size` of the NullTokenizer) ends every document, the token
++`tools/preprocess_data.py --append-eod` writes. The end-of-document id is produced on read; nothing is stored for it.
++
++Data path syntax (`--data-path`): `panvram:<cohort directory>`. Environment, all optional:
++  PANVRAM_ASSEMBLIES  comma-separated assembly names (default: every archive in the directory)
++  PANVRAM_DEVICE      cuda | cpu (default: cuda when available) - where the cohort is resident
++  PANVRAM_DATASET     archive kind (default q16k)
++  PANVRAM_THREADS     CPU decoder threads (default 0 = all)
++"""
++import hashlib
++import json
++import os
++from typing import List, Optional
++
++import numpy as np
++import torch
++
++PREFIX = "panvram:"
++EOD_ID = 12
++TOKEN_IDS = (8, 5, 6, 7, 9)                                  # A, C, G, T, other
++
++
++def is_panvram_path(path: Optional[str]) -> bool:
++    return isinstance(path, str) and path.startswith(PREFIX)
++
++
++def _lut(token_ids=TOKEN_IDS):
++    """byte -> token id for the bytes panvram returns (case kept, so both cases are mapped)."""
++    a, c, g, t, n = token_ids
++    lut = np.full(256, n, dtype=np.uint16)
++    for ch, v in (('A', a), ('C', c), ('G', g), ('T', t)):
++        lut[ord(ch)] = v
++        lut[ord(ch.lower())] = v
++    return lut
++
++
++class PanvramIndexedDataset:
++    def __init__(self, path: str, assemblies: Optional[List[str]] = None, dataset: str = "q16k",
++                 device: Optional[str] = None, threads: int = 0, token_ids=TOKEN_IDS, eod_id: int = EOD_ID,
++                 append_eod: bool = True):
++        import panvram
++        if device is None:
++            device = "cuda" if torch.cuda.is_available() else "cpu"
++        self.cohort = panvram.Cohort.open(path, device=device, dataset=dataset, threads=threads,
++                                          assemblies=assemblies)
++        # GPTDataset caches its indices under <path_prefix>/cache, keyed by the data path string only; the data path
++        # does not name the assemblies, so the prefix must: one directory per (assemblies, kind, ids, eod) selection
++        sel = json.dumps([list(self.cohort.names), dataset, list(token_ids), eod_id, append_eod])
++        self.path_prefix = os.path.join(path, "panvram-" + hashlib.md5(sel.encode()).hexdigest()[:16])
++        self.device = torch.device(device)
++        self.token_ids = tuple(token_ids)
++        self.lut = _lut(token_ids)
++        self.eod_id = eod_id
++        self.append_eod = append_eod
++        self.dtype = np.uint16
++        asm, ln, boff, name = [], [], [], []
++        for a in range(len(self.cohort.names)):
++            for rec in self.cohort._core.contigs(a):
++                cname, _, clen, off, _ = rec
++                asm.append(a)
++                ln.append(int(clen))
++                boff.append(int(off))
++                name.append(cname)
++        self.doc_asm = np.array(asm, dtype=np.int64)              # assembly of every document
++        self.doc_start = np.array(boff, dtype=np.int64)           # offset of its first base in the assembly's stream
++        self.doc_bases = np.array(ln, dtype=np.int64)             # bases, without the end-of-document id
++        self._name = name
++        self._lengths = (self.doc_bases + (1 if append_eod else 0)).astype(np.int32)
++        self._doc_idx = np.arange(len(ln) + 1, dtype=np.int64)
++
++    @classmethod
++    def from_data_path(cls, data_path: str):
++        assert is_panvram_path(data_path), data_path
++        env = os.environ
++        names = env.get("PANVRAM_ASSEMBLIES")
++        return cls(data_path[len(PREFIX):],
++                   assemblies=[x for x in names.split(",") if x] if names else None,
++                   dataset=env.get("PANVRAM_DATASET", "q16k"),
++                   device=env.get("PANVRAM_DEVICE") or None,
++                   threads=int(env.get("PANVRAM_THREADS", "0")))
++
++    # ---- the contract ----
++    @property
++    def sequence_lengths(self) -> np.ndarray:
++        return self._lengths
++
++    @property
++    def document_indices(self) -> np.ndarray:
++        return self._doc_idx
++
++    def __len__(self) -> int:
++        return len(self._lengths)
++
++    def get(self, idx: int, offset: int = 0, length: Optional[int] = None) -> np.ndarray:
++        idx, offset = int(idx), int(offset)                      # Megatron passes numpy ints here
++        total = int(self._lengths[idx])
++        length = total - offset if length is None else int(length)
++        if offset < 0 or length < 0 or offset + length > total:
++            raise IndexError(f"document {idx}: offset {offset} length {length} outside {total}")
++        take = max(0, min(length, int(self.doc_bases[idx]) - offset))   # the part of the request that is bases
++        out = np.empty(length, dtype=self.dtype)
++        if take:
++            asm = torch.tensor([int(self.doc_asm[idx])], dtype=torch.int64)
++            st = torch.tensor([int(self.doc_start[idx]) + offset], dtype=torch.int64)
++            raw = self.cohort.windows(asm, st, take)[0]
++            out[:take] = self.lut[raw.cpu().numpy()]
++        if take < length:                                        # the tail is the virtual end-of-document id
++            out[take:] = self.eod_id
++        return out
++
++    def __getitem__(self, idx):
++        return self.get(idx)
++
++    def document_name(self, idx: int) -> str:
++        return f"{self.cohort.names[int(self.doc_asm[idx])]}:{self._name[idx]}"
+diff --git a/megatron/training/datasets/panvram_loader.py b/megatron/training/datasets/panvram_loader.py
+new file mode 100644
+index 0000000..b3f51b3
+--- /dev/null
++++ b/megatron/training/datasets/panvram_loader.py
+@@ -0,0 +1,141 @@
++# Copyright (c) 2026, Yakiv Shavidze. MIT licence.
++"""PanvramGPTLoader: the batch iterator for a GPTDataset over a PanvramIndexedDataset.
++
++It replaces torch's DataLoader for that one case (data_samplers.build_pretraining_data_loader): DataLoader would call
++GPTDataset.__getitem__ once per sample in worker processes with pin_memory, which cannot hold device tensors. Here the
++index arithmetic stays Megatron's (document / sample / shuffle index of the GPTDataset, the same arrays as for
++.bin/.idx), and only the fetch and the masks change:
++
++  fast path  a sample inside one document that does not reach its end-of-document id -> one (assembly, start) pair;
++             every such sample of the micro-batch is decoded by one `Cohort.windows` call where the cohort is
++             resident, tokens 0..4 mapped to the Gengram ids on the device;
++  slow path  every other sample (crossing a document boundary, carrying an end-of-document id, padded, idx None, or
++             create_attention_mask) -> GPTDataset.__getitem__ itself, copied into its row.
++
++The masks of the fast rows repeat _get_ltor_masks_and_position_ids and the padding rules of GPTDataset.__getitem__,
++vectorised over the batch. Output: the dict the DataLoader's default collate would give, on the cohort's device.
++"""
++import numpy as np
++import torch
++
++from megatron.training.datasets.panvram_dataset import PanvramIndexedDataset
++
++
++def maybe_panvram_loader(dataset, batch_sampler):
++    """The panvram iterator if `dataset` is a GPTDataset over a PanvramIndexedDataset, else None."""
++    low = getattr(dataset, "dataset", None)
++    if not isinstance(low, PanvramIndexedDataset):
++        return None
++    return PanvramGPTLoader(dataset, batch_sampler)
++
++
++class PanvramGPTLoader:
++    def __init__(self, dataset, batch_sampler):
++        self.ds = dataset
++        self.batch_sampler = batch_sampler
++        self.low = low = dataset.dataset
++        cfg = dataset.config
++        self.cfg = cfg
++        self.dev = low.device
++        self.extra = int(cfg.add_extra_token_to_sequence)
++        self.S = int(cfg.sequence_length)
++        self.L = self.S + self.extra
++        self.eod = int(cfg.tokenizer.eod)
++        self.pad = int(dataset._pad_token_id)
++        self.lut5 = torch.tensor(low.token_ids, dtype=torch.int64, device=self.dev)   # panvram token 0..4 -> id
++        self.ar = torch.arange(self.S, dtype=torch.int64, device=self.dev)
++        self.stats = {"fast": 0, "slow": 0}
++
++    def __len__(self):
++        return len(self.batch_sampler)
++
++    def __iter__(self):
++        for idxs in self.batch_sampler:
++            yield self.batch(idxs)
++
++    # ---- one micro-batch ----
++    def _plan(self, idxs):
++        """Split the batch into fast rows (assembly, start) and slow rows."""
++        ds, low = self.ds, self.low
++        fast_r, fast_a, fast_s, slow_r = [], [], [], []
++        if self.cfg.create_attention_mask:
++            return fast_r, fast_a, fast_s, list(range(len(idxs)))
++        for r, idx in enumerate(idxs):
++            if idx is None:
++                slow_r.append(r)
++                continue
++            j = ds.shuffle_index[idx]
++            beg, bo = ds.sample_index[j]
++            end, eo = ds.sample_index[j + 1]
++            if beg == end and int(eo) - int(bo) + self.extra == self.L:
++                doc = int(ds.document_index[beg])
++                if int(bo) + self.L <= int(low.doc_bases[doc]):          # stays before the end-of-document id
++                    fast_r.append(r)
++                    fast_a.append(int(low.doc_asm[doc]))
++                    fast_s.append(int(low.doc_start[doc]) + int(bo))
++                    continue
++            slow_r.append(r)
++        return fast_r, fast_a, fast_s, slow_r
++
++    def batch(self, idxs):
++        idxs = list(idxs)
++        n, S, dev = len(idxs), self.S, self.dev
++        fast_r, fast_a, fast_s, slow_r = self._plan(idxs)
++        self.stats["fast"] += len(fast_r)
++        self.stats["slow"] += len(slow_r)
++
++        tokens = torch.empty((n, S), dtype=torch.int64, device=dev)
++        labels = torch.empty((n, S), dtype=torch.int64, device=dev)
++        loss_mask = torch.empty((n, S), dtype=torch.float32, device=dev)
++        position_ids = torch.empty((n, S), dtype=torch.int64, device=dev)
++        attention_mask = None
++
++        if fast_r:
++            asm = torch.tensor(fast_a, dtype=torch.int64, device=dev)
++            st = torch.tensor(fast_s, dtype=torch.int64, device=dev)
++            raw = self.low.cohort.windows(asm, st, self.L, tokens=True)          # uint8 0..4, [k, L], on dev
++            text = self.lut5[raw.long()]
++            if self.extra:
++                tk, lb = text[:, :-1], text[:, 1:]
++            else:
++                tk = text
++                lb = torch.roll(text, shifts=-1, dims=1)
++                lb[:, -1] = self.pad
++            lm = torch.ones(tk.shape, dtype=torch.float32, device=dev)
++            if self.cfg.eod_mask_loss:
++                lm[tk == self.eod] = 0.0
++            pos = self.ar.expand(tk.shape[0], S)
++            if self.cfg.reset_position_ids:
++                # position restarts at 0 right after every end-of-document id (as the loop in
++                # _get_ltor_masks_and_position_ids does)
++                mark = torch.zeros(tk.shape, dtype=torch.bool, device=dev)
++                mark[:, 1:] = tk[:, :-1] == self.eod
++                seg = torch.where(mark, self.ar.expand_as(mark), torch.zeros_like(pos)).cummax(dim=1).values
++                pos = pos - seg
++            lm[lb == self.pad] = 0.0
++            tk = tk.masked_fill(tk == self.pad, 0)
++            lb = lb.masked_fill(lb == self.pad, 0)
++            rows = torch.tensor(fast_r, dtype=torch.int64, device=dev)
++            tokens[rows] = tk
++            labels[rows] = lb
++            loss_mask[rows] = lm
++            position_ids[rows] = pos
++
++        if slow_r:
++            masks = []
++            for r in slow_r:
++                d = self.ds[idxs[r]]
++                tokens[r] = d["tokens"].to(dev)
++                labels[r] = d["labels"].to(dev)
++                loss_mask[r] = d["loss_mask"].to(dev)
++                position_ids[r] = d["position_ids"].to(dev)
++                if "attention_mask" in d:
++                    masks.append(d["attention_mask"])
++            if masks:
++                assert len(masks) == n
++                attention_mask = torch.stack(masks).to(dev)
++
++        out = {"tokens": tokens, "labels": labels, "loss_mask": loss_mask, "position_ids": position_ids}
++        if attention_mask is not None:
++            out["attention_mask"] = attention_mask
++        return out
+-- 
+2.34.1
+
