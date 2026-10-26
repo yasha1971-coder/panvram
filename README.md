@@ -108,6 +108,18 @@ The 558-assembly GPU figures come from one Colab run (`logs/colab-c1-558-forms-A
 
 ## Measured (each number from a file in `logs/`)
 
+**GPU headline: 558 assemblies resident, batch 16 384, NVIDIA A100-SXM4-40GB** (median / p90 / worst over draws)
+
+| batch | window | GB/s | ms per batch | windows/s | GPU |
+|---:|---:|---|---|---|---|
+| 16 384 | 8 KiB | 10.049 / 8.435 / 7.971 | 13.357 / 15.916 / 16.838 | 1 226 694 / 1 029 738 / 973 039 | NVIDIA A100-SXM4-40GB |
+| 16 384 | 32 KiB | 26.085 / 23.867 / 23.779 | 20.582 / 22.494 / 22.577 | 796 046 / 728 381 / 725 682 | NVIDIA A100-SXM4-40GB |
+
+10 independent samples x 3 runs, 256/256 windows match CPU decoder. Log:
+[`logs/loader-2026-10-22/gpu/runs-2026-10-26-h558/h558.log`](logs/loader-2026-10-22/gpu/runs-2026-10-26-h558/h558.log);
+card name from `nvidia-smi` on a repeat of draw 0 within +-5 % ([`card-check-hf/run.log`](logs/loader-2026-10-22/gpu/runs-2026-10-26-h558/card-check-hf/run.log)).
+
+
 | what | number | log |
 |---|---|---|
 | 558 assemblies resident on one GPU, q4k, four resident forms (Colab NVIDIA A100-SXM4-80GB, sm_80, panvram 56c32dc) | default 16.642 GB (nvidia-smi 16 310 MiB), 743 271 windows/s; 2-bit reference 14.304 GB, 674 822 /s; compact block table 13.972 GB, 710 235 /s; **both compact 11.634 GB (nvidia-smi 11 534 MiB), 736 762 windows/s**; every form: sample == CPU decoder, 1000 / 1000 fetches, full decode on the GPU 558 / 558 XXH3 == manifest, PASS | `logs/colab-c1-558-forms-A100-2026-10-07.log` |

@@ -9,9 +9,15 @@ colab run --gpu A100 --timeout 1500 -s h558 h558.py         # GPU VM, released w
 
 ## Card
 
-`--gpu A100` was requested. The log records the clocks: `nvidia-smi --query-gpu=clocks.sm,clocks_throttle_reasons.active`
-reports **1 410 MHz, throttle reasons 0x0** after a 5 s ramp. The card's name and memory size were **not printed** by
-this script (they went only to `/content/h558.json` on the released VM), so 40 GB or 80 GB is NOT MEASURED here.
+`h558.log` itself records only the clocks (1 410 MHz, throttle reasons 0x0); the script did not print the card's name.
+The name comes from a second run on a fresh VM (`card-check-hf/`, 2026-10-26 16:55 UTC, archive from the Hugging Face
+mirror Yakiv-Contour/panvram-hprc558, every stage a separate command with its time): first line of its log,
+`nvidia-smi --query-gpu=name,memory.total,clocks.max.sm,driver_version` ->
+**NVIDIA A100-SXM4-40GB, 40960 MiB, 1410 MHz, 580.82.07**. Same draw as `h558.log` draw 0 (seed 20261003, batch
+16 384, 3 timings): W 8 192 median 12.068 ms against 12.255 ms (-1.5 %), W 32 768 20.545 ms against 20.460 ms
+(+0.4 %), both within +-5 %; 256/256 windows equal the CPU decoder at both W; 558 assemblies, 11.567 GB resident.
+Stage times of that run: download 30.1 s, verify parts 6.0 s, join + hash + extract 24.7 s, verify 558 archives 4.1 s,
+reference 39.5 s, panvram CUDA build 379.6 s, cohort open 29.7 s, measurement 6.8 s.
 
 ## Archive
 
