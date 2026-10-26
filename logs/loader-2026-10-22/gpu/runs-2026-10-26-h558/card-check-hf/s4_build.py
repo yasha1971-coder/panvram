@@ -1,0 +1,6 @@
+t0 = time.time()
+sh("apt-get -qq install -y libzstd-dev")
+sh("git clone -q https://github.com/yasha1971-coder/panvram.git /content/pvrepo")
+print(sh("cd /content/pvrepo && git rev-parse HEAD").strip(), flush=True)
+sh("cd /content/pvrepo && pip install -q -e .")
+stage("build_panvram_cuda", t0)

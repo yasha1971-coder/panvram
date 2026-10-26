@@ -1,0 +1,46 @@
+session start 16:55:10
+=== s0_smi start 16:55:10
+name, memory.total [MiB], clocks.max.sm [MHz], driver_version
+NVIDIA A100-SXM4-40GB, 40960 MiB, 1410 MHz, 580.82.07
+=== s0_smi rc 0 end 16:55:22
+=== s1_download start 16:55:22
+8098471581	/content/dl
+STAGE download_hf_16_parts_4_streams: 30.1 s  (utc 16:55:53)
+/tmp/ipykernel_602/1107348149.py:3: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  def stage(name, t0): T_STAGE[name] = time.time() - t0; print(f"STAGE {name}: {T_STAGE[name]:.1f} s  (utc {datetime.datetime.utcnow():%H:%M:%S})", flush=True)
+=== s1_download rc 0 end 16:55:53
+=== s2_verify_extract start 16:55:53
+PARTS 16/16 sha256 == record PARTS.sha256
+STAGE verify_parts: 6.0 s  (utc 16:56:00)
+/tmp/ipykernel_602/1107348149.py:3: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  def stage(name, t0): T_STAGE[name] = time.time() - t0; print(f"STAGE {name}: {T_STAGE[name]:.1f} s  (utc {datetime.datetime.utcnow():%H:%M:%S})", flush=True)
+TAR sha256 3b8c497e9193984724128e0fd18df02d131a05c341df41df44fe3ed89a8114d5 == record
+STAGE join_hash_extract: 24.7 s  (utc 16:56:24)
+VERIFIED 558 archives == tar SHA256SUMS
+STAGE verify_558_archives: 4.1 s  (utc 16:56:29)
+=== s2_verify_extract rc 0 end 16:56:29
+=== s3_reference start 16:56:29
+reference sha256 51ab7d3c2a375ecff53ee2a1be03e58d57cc1601c948a860c03a78d724f26e4c
+STAGE reference_download_verify: 39.5 s  (utc 16:57:09)
+/tmp/ipykernel_602/1107348149.py:3: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  def stage(name, t0): T_STAGE[name] = time.time() - t0; print(f"STAGE {name}: {T_STAGE[name]:.1f} s  (utc {datetime.datetime.utcnow():%H:%M:%S})", flush=True)
+=== s3_reference rc 0 end 16:57:09
+=== s4_build start 16:57:09
+ffc4b9660e6ece24ba47cba3670444fa7d40ed8e
+STAGE build_panvram_cuda: 379.6 s  (utc 17:03:30)
+/tmp/ipykernel_602/1107348149.py:3: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  def stage(name, t0): T_STAGE[name] = time.time() - t0; print(f"STAGE {name}: {T_STAGE[name]:.1f} s  (utc {datetime.datetime.utcnow():%H:%M:%S})", flush=True)
+=== s4_build rc 0 end 17:03:30
+=== s5_measure start 17:03:30
+OPEN 558 assemblies, resident 11.567 GB
+STAGE cohort_open: 29.7 s  (utc 17:04:00)
+/tmp/ipykernel_602/1107348149.py:3: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  def stage(name, t0): T_STAGE[name] = time.time() - t0; print(f"STAGE {name}: {T_STAGE[name]:.1f} s  (utc {datetime.datetime.utcnow():%H:%M:%S})", flush=True)
+1410 MHz, 0x0000000000000000
+CHECK W 8192: 256/256 windows identical to the CPU decoder
+W 8192 draw 0 seed 20261003: runs 12.058 12.068 12.382 ms, median 12.068 ms, 1357666 windows/s, 11.122 GB/s; h558.log draw 0 12.255 ms -> -1.5 %
+CHECK W 32768: 256/256 windows identical to the CPU decoder
+W 32768 draw 0 seed 20261003: runs 20.473 20.545 20.556 ms, median 20.545 ms, 797458 windows/s, 26.131 GB/s; h558.log draw 0 20.460 ms -> +0.4 %
+STAGE measure: 6.8 s  (utc 17:04:07)
+DONE
+=== s5_measure rc 0 end 17:04:17

@@ -1,0 +1,11 @@
+t0 = time.time()
+sh("cd /content/dl && grep q16k PARTS.sha256 > p16 && cat p16 | xargs -P 4 -L 1 sh -c 'echo \"$0  $1\" | sha256sum -c --quiet'")
+print("PARTS 16/16 sha256 == record PARTS.sha256", flush=True)
+stage("verify_parts", t0); t0 = time.time()
+sh("cd /content/dl && (cat cohort558_q16k.tar.part* | sha256sum > tar.have) & (cd /content/dl && cat cohort558_q16k.tar.part* | tar -x -C /content/cohort); wait")
+have = open("/content/dl/tar.have").read().split()[0]; want = open("/content/dl/tar.sha256").read().split()[0]
+assert have == want, (have, want); print(f"TAR sha256 {have} == record", flush=True)
+stage("join_hash_extract", t0); t0 = time.time()
+sh("cd /content/cohort && grep -E 'q16k.rr3$' SHA256SUMS | sed -E 's#  (.*/)?#  #' > s16 && split -n l/8 s16 s16. && ls s16.?? | xargs -P 8 -I{} sha256sum -c --quiet {}")
+print(f"VERIFIED {int(sh('wc -l < /content/cohort/s16').strip())} archives == tar SHA256SUMS", flush=True)
+stage("verify_558_archives", t0)
