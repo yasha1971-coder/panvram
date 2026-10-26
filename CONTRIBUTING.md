@@ -9,3 +9,6 @@
   default path (the tests compare them).
 - Numbers in README / BENCHMARKS come only from logs committed with the change (or named precisely); no estimates.
 - Every source file starts with `SPDX-License-Identifier: MIT`; contributions are under the MIT license.
+* New here? Start with issues labeled [good first issue](https://github.com/yasha1971-coder/panvram/labels/good%20first%20issue).
+* More demanding work, including GPU backends: [help wanted](https://github.com/yasha1971-coder/panvram/labels/help%20wanted).
+* Before opening a PR, run the synthetic tests and include reproducible commands, logs and byte-exact CPU/FASTA comparison where applicable.
