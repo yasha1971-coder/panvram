@@ -4,7 +4,7 @@ A pangenome cohort resident on the GPU: every assembly stored as refrel3 v1 (edi
 T2T-CHM13v2.0 for HPRC; [FORMAT.md](FORMAT.md)), random training windows and coordinate slices decoded on the card by
 a queue kernel, straight into a PyTorch tensor. A CPU decoder serves the same API without a GPU.
 
-Version 1.0.0. Repository: https://github.com/yasha1971-coder/panvram. Dataset (the 558 refrel3 v1 archives, q4k and q16k): DOI 10.5281/zenodo.23232317.
+Version 1.0.1 ([PyPI](https://pypi.org/project/panvram/1.0.1/)). Repository: https://github.com/yasha1971-coder/panvram. Dataset (the 558 refrel3 v1 archives, q4k and q16k): DOI 10.5281/zenodo.23232317.
 Paper: "panvram: GPU-resident random access to a human pangenome cohort", [arXiv:2610.25149](https://arxiv.org/abs/2610.25149).
 Numbers below come only from the logs named next to them.
 
@@ -18,7 +18,26 @@ t = c.sample(1024, 8192, generator=g, tokens=True,     # A/a 0, C/c 1, G/g 2, T/
 y = c.fetch("y1_HG00438.1", "HG00438#1#JAHBCB010000001.1", 1_000_000, 5000)   # 0-based start, length
 ```
 
+## Quickstart (Colab, one cell)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/yasha1971-coder/panvram/blob/main/notebooks/quickstart.ipynb)
+
+GPU runtime of sm_80 or newer (A100, L4, ...; T4 is refused). One cell builds panvram with CUDA, takes the first five
+q16k archives from the Hugging Face mirror [Yakiv-Contour/panvram-hprc558](https://huggingface.co/datasets/Yakiv-Contour/panvram-hprc558)
+of the Zenodo record (Zenodo itself as the fallback; every archive checked against the record's SHA-256), the NCBI
+T2T reference (size, SHA-256 and MD5 checked), opens the cohort on the GPU and returns `dna`, `uint8 [5, 8192]` on
+the card, every row compared byte for byte with the CPU decoder. Measured on a fresh Colab L4 (Python 3.13.16, torch
+2.11.0+cu130): CUDA build 78.0 s, data 85.7 s, open 20.6 s, **190.1 s from cell start to the tensor**, 5 / 5 windows
+== CPU, PASS (`logs/quickstart-L4-2026-10-26/`: `quickstart.log`, `receipt.json`, the executed notebook). The time
+the browser takes to give you a runtime is not inside the cell and not counted.
+
 ## Install
+
+```
+pip install panvram          # CPU wheels for Linux x86_64, CPython 3.10-3.14; pulls torch==2.14.1
+```
+
+From source (CUDA path):
 
 ```
 pip install torch            # first; the extension is built against it
