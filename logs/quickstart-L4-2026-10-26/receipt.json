@@ -1,0 +1,84 @@
+{
+  "archives": [
+    {
+      "bytes": 13279654,
+      "name": "r2_HG00097_hap1_hprc_r2_v1.0.1.q16k.rr3",
+      "sha256": "41af97fa704028f4b69fca7f1e9e430926cf106a82176c1eee3e4aff16c2e6a3"
+    },
+    {
+      "bytes": 13746537,
+      "name": "r2_HG00097_hap2_hprc_r2_v1.0.1.q16k.rr3",
+      "sha256": "ec3627d5dc51ae42c314100794d7548cb69ee2446594176d29d9518722b85540"
+    },
+    {
+      "bytes": 13156369,
+      "name": "r2_HG00099_hap1_hprc_r2_v1.0.1.q16k.rr3",
+      "sha256": "43ec9ec6b137e33e18b858e4b44b6ba24be6895878efee95da46b320aa744745"
+    },
+    {
+      "bytes": 13447544,
+      "name": "r2_HG00099_hap2_hprc_r2_v1.0.1.q16k.rr3",
+      "sha256": "a5b88496cb70cc9bd2107789e7ef961970387c5ef664f428adbcf8b3c9a45f86"
+    },
+    {
+      "bytes": 13382124,
+      "name": "r2_HG00126_hap1_hprc_r2_v1.0.1.q16k.rr3",
+      "sha256": "ed925dd227694abbfd62b97fa2e738e7750e2214582713d4d25d2513da9908fb"
+    }
+  ],
+  "cohort_open_seconds": 20.601762896000082,
+  "commit": "0087fd42320ddc5742db19a8efa538f5cd32b551",
+  "cuda_build_install_seconds": 77.97618120999994,
+  "data_source": "huggingface:Yakiv-Contour/panvram-hprc558",
+  "download_verify_seconds": 85.68425321199993,
+  "gpu": "NVIDIA L4",
+  "python": "3.13.16",
+  "reference_sha256": "51ab7d3c2a375ecff53ee2a1be03e58d57cc1601c948a860c03a78d724f26e4c",
+  "status": "PASS",
+  "time_to_tensor_seconds": 190.13241636099997,
+  "time_to_verified_tensor_seconds": 190.14359497300006,
+  "timing_origin": "cell_execution_start_excludes_UI_queue",
+  "torch": "2.11.0+cu130",
+  "windows": [
+    {
+      "assembly": "r2_HG00097_hap1_hprc_r2_v1.0.1",
+      "contig": "HG00097#1#CM094060.1",
+      "cpu_sha256": "459da202ce92c8080b14d2e16b1a7d6bf78ce02241ee34fd3498035db5d84565",
+      "gpu_sha256": "459da202ce92c8080b14d2e16b1a7d6bf78ce02241ee34fd3498035db5d84565",
+      "length": 8192,
+      "start0": 12345
+    },
+    {
+      "assembly": "r2_HG00097_hap2_hprc_r2_v1.0.1",
+      "contig": "HG00097#2#CM094075.1",
+      "cpu_sha256": "0d4d687f3792d87b8d8dd0f5b3490695f4dbd64ee21bae9e76bfdbbd9a5d507f",
+      "gpu_sha256": "0d4d687f3792d87b8d8dd0f5b3490695f4dbd64ee21bae9e76bfdbbd9a5d507f",
+      "length": 8192,
+      "start0": 12345
+    },
+    {
+      "assembly": "r2_HG00099_hap1_hprc_r2_v1.0.1",
+      "contig": "HG00099#1#CM087317.1",
+      "cpu_sha256": "76b54a8e9f6e6e5965c99f8a78effc61e90ac3646f73779853b4039f44d779e6",
+      "gpu_sha256": "76b54a8e9f6e6e5965c99f8a78effc61e90ac3646f73779853b4039f44d779e6",
+      "length": 8192,
+      "start0": 12345
+    },
+    {
+      "assembly": "r2_HG00099_hap2_hprc_r2_v1.0.1",
+      "contig": "HG00099#2#CM087358.1",
+      "cpu_sha256": "fd7684bec3ec5649f93dbd3a7cc695aedcaa8e607405b611c9783a79cfd2b53c",
+      "gpu_sha256": "fd7684bec3ec5649f93dbd3a7cc695aedcaa8e607405b611c9783a79cfd2b53c",
+      "length": 8192,
+      "start0": 12345
+    },
+    {
+      "assembly": "r2_HG00126_hap1_hprc_r2_v1.0.1",
+      "contig": "HG00126#1#CM090108.1",
+      "cpu_sha256": "1b11d3b269137f3afebb247296455450fe277f6e7e965113c4152df1efb81b3a",
+      "gpu_sha256": "1b11d3b269137f3afebb247296455450fe277f6e7e965113c4152df1efb81b3a",
+      "length": 8192,
+      "start0": 12345
+    }
+  ]
+}
