@@ -1,5 +1,24 @@
 # panvram
 
+**Train DNA models on all 558 human pangenome assemblies — from one GPU, byte-exact.**
+
+1.68 Tbp of HPRC assemblies (≈1.7 TB of FASTA) resident in 11.6 GB of GPU memory. Random windows go straight into
+PyTorch: no pre-cut windows on disk, no reconstruction from variants — every window equals the source FASTA, including
+centromeres and structural variants.
+737k windows/s (8 kb) on A100 in the 11.6 GB form; 1.4M on RTX PRO 6000 Blackwell in the 16.6 GB default form
+(logs below).
+
+```python
+import panvram
+c = panvram.Cohort.open("cohort/", device="cuda")
+x = c.sample(1024, 8192)   # uint8 [1024, 8192] on the GPU
+```
+
+**How do you get training windows from many assemblies today?**
+Tell us in [Discussions](https://github.com/yasha1971-coder/panvram/discussions) — what you use now and what last went wrong.
+
+---
+
 A pangenome cohort resident on the GPU: every assembly stored as refrel3 v1 (edits against one decoded reference,
 T2T-CHM13v2.0 for HPRC; [FORMAT.md](FORMAT.md)), random training windows and coordinate slices decoded on the card by
 a queue kernel, straight into a PyTorch tensor. A CPU decoder serves the same API without a GPU.
