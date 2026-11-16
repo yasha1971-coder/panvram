@@ -210,6 +210,33 @@ Ported from aceapex `research/refrel` @ 5b6d5cec0f5962a561ac48822a1b5c48793a5b47
 | `csrc/pv_cuda.cu` | `r3q_kernel` of `refrel3_gpu.cu` - runtime Q, many assemblies resident, window = (assembly, start); new: case / RC / token kernels |
 | `FORMAT.md` | [`research/refrel/FORMAT.md`](https://github.com/yasha1971-coder/aceapex/tree/panvram-1.0-sources/research/refrel/FORMAT.md) (format unchanged) |
 
+## Measured zeros and limits
+
+What panvram does not give, measured, with a prediction written before each run. Each result holds only in the
+conditions listed; none is generalised.
+
+| Experiment | Question | Result | Holds for | Log |
+|---|---|---|---|---|
+| TRAIN-1 | Does a model trained on cohort windows beat the same model trained on the reference alone? | No. Held-out bits/base, cohort minus reference: +0.0012 / +0.0051 / +0.0002 over 3 seeds, mean +0.0022 (cohort slightly worse); the pre-registered bar was a gain of at least 0.01 | `examples/train_small.py` (causal CNN, 0.40 M parameters), W 2 048, 2 000 steps, 508 training / 50 held-out assemblies (split by assembly), reference T2T-CHM13v2.0, one NVIDIA L4 | `logs/train1-L4-2026-11-15/` |
+| TRAIN-2 | The same models, held-out windows split by region | No effect: random windows as TRAIN-1; HLA + KIR + segmental duplications, cohort worse by 0.0045 bits/base on average. Assembly windows with no CHM13 alignment (insertions relative to CHM13): cohort better by 0.030 (0.048 / 0.023 / 0.019, same sign on all three seeds), below the pre-registered 0.05 - a hypothesis, not a result | as TRAIN-1, 1 024 windows per set per seed | `logs/train2-L4-2026-11-15/` |
+| PV-LOADER | Is the data loader the bottleneck of training? | No. Compute step 114.46 ms (0.40 M model) against at most 11.6 ms of data per batch; GPU idle 0 % with prefetch overlap and at most 9.18 % without it, for every loader tried (panvram, memmap, pysam, bgzip) | `train_small` and an 8x wider model on one NVIDIA L4 (a 64x model did not fit). Not measured: tiny models, many GPUs, inference only - the cases where data could be the bottleneck | `logs/pvloader-L4-2026-11-16/` |
+
+So panvram is not shown to make DNA models better or their training faster.
+
+**Exact window access, the same function compared.** Return the exact bases of a window `[start, start + W)` of any
+assembly of the 558-assembly HPRC cohort. The rows are not one benchmark: machines, window sizes and threads differ as
+noted.
+
+| Tool | Stored, 558 assemblies | Where it lives | Random windows per second | Exact to the source FASTA | Source |
+|---|---|---|---|---|---|
+| AGC 3.2.4 | about 3.0 GB (5.40 MB per assembly) | disk | 26 (4 096 bases, one thread, random sample order; 868 with requests sorted by sample) | yes | `logs/m6-curves-timing-2026-10-07.csv` |
+| bgzip + faidx | 469 GB | disk | not measured | yes | `logs/pvloader-L4-2026-11-16/RESULT_PVLOADER.md` |
+| GenVarLoader 0.43.1 | not measured at 558 | memory-mapped | 2 337 735 (8 KiB, one chromosome of 3 samples, CPU) | no: rebuilt from a VCF; on chr20-22, 92.8 / 85.6 / 66.6 % of 1 / 8 / 32 kb windows exact, and up to 41 % of windows with SV breaks lose more than 1 kb | `logs/duel1-2026-11-15/` |
+| panvram q4k | 9.05 GB without block hashes, 11.48 GB with them; 11.634 GB resident in the compact form | GPU memory | 145 222 (4 096 bases, one CPU thread); 126 918 (L4) and 736 762 (A100) for `sample` of 8 KiB | yes: 26 358 / 26 358 windows byte-for-byte against the assemblies; 558 / 558 XXH3 == manifest | `logs/m6-curves-timing-2026-10-07.csv`, `logs/duel1-2026-11-15/`, `logs/colab-c1-558-forms-A100-2026-10-07.log` |
+
+What panvram combines that the others do not: the whole cohort resident on one GPU, exact bytes, and fast random
+access. It is about 3 times larger than AGC and needs a GPU for the fast path.
+
 ## Limitations
 
 - **Size against AGC.** On the 558 HPRC assemblies refrel3 takes 13.04 (q16k) - 16.22 (q4k) MB per assembly without
