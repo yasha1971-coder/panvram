@@ -1,0 +1,20 @@
+[2026-11-16T00:37:18Z] wait for NVIDIA driver
+[2026-11-16T00:37:18Z] GPU: NVIDIA L4, 23034 MiB, 580.178.04
+[2026-11-16T00:37:18Z] python: Python 3.10.12
+[2026-11-16T00:37:26Z] install build-essential + python3-dev + libzstd-dev
+[2026-11-16T00:37:53Z] have cohort_q4k.tgz (12071089211 B)
+[2026-11-16T00:37:53Z] have t2t.fa.gz (963558609 B)
+[2026-11-16T00:37:53Z] have panvram_src.tgz (8346851 B)
+[2026-11-16T00:37:53Z] have train2_eval.py (5700 B)
+[2026-11-16T00:37:53Z] have train2_eval_windows.json (404556 B)
+[2026-11-16T00:39:29Z] cohort at train2_out/cohort (558 q4k)
+[2026-11-16T00:39:54Z] have t2t.fa (3156259565 B)
+[2026-11-16T00:39:54Z] panvram sha: 01f0ce11ddfbe3bf42ea5c00cb2a644382e0b94d
+[2026-11-16T00:39:54Z] build panvram (PANVRAM_CUDA=1, --no-build-isolation)
+[2026-11-16T00:42:51Z] RUN seed=default (20261115) batch=64 steps=2000 W=2048 holdout=50
+[2026-11-16T00:52:27Z] OK seed=default batch=64 (weights in results/weights)
+[2026-11-16T00:52:27Z] RUN seed=1 (1) batch=64 steps=2000 W=2048 holdout=50
+[2026-11-16T01:02:02Z] OK seed=1 batch=64 (weights in results/weights)
+[2026-11-16T01:02:02Z] RUN seed=2 (2) batch=64 steps=2000 W=2048 holdout=50
+[2026-11-16T01:11:38Z] OK seed=2 batch=64 (weights in results/weights)
+[2026-11-16T01:11:38Z] ALL DONE

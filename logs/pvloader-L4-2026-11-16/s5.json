@@ -1,0 +1,46 @@
+{
+  "measured": {
+    "n_assemblies": 6,
+    "mean_gz_GB": 0.84,
+    "mean_bases_Gbp": 3.038,
+    "assemblies": [
+      "HG00097_hap1",
+      "HG00097_hap2",
+      "HG00438_mat",
+      "HG00438_pat",
+      "HG02630_mat",
+      "HG02630_pat"
+    ]
+  },
+  "baseline_storage": {
+    "N50": {
+      "N": 50,
+      "bgzip_fasta_GB": 42.0,
+      "memmap_uint8_GB": 141.5,
+      "memmap_uint8_TB": 0.138
+    },
+    "N558": {
+      "N": 558,
+      "bgzip_fasta_GB": 468.9,
+      "memmap_uint8_GB": 1578.8,
+      "memmap_uint8_TB": 1.542
+    }
+  },
+  "panvram": {
+    "q4k_disk_558_GB": 11.48,
+    "vram_resident_GB": 11.6,
+    "note": "panvram is resident in VRAM (11.6 GB) and decodes windows on-card; no per-assembly files"
+  },
+  "fit": {
+    "ace_core_disk_GB": 878,
+    "ace_core_ram_GB": 125,
+    "N50_memmap_fits_disk": true,
+    "N50_memmap_fits_ram": false,
+    "N558_memmap_fits_disk": false,
+    "N558_memmap_fits_ram": false
+  },
+  "ratio": {
+    "memmap_N558_over_panvram_vram": 136.1,
+    "bgzip_N558_over_panvram_vram": 40.4
+  }
+}

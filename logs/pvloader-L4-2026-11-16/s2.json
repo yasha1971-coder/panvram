@@ -1,0 +1,34 @@
+{
+  "config": {
+    "W": 2048,
+    "batch": 64,
+    "steps": 50,
+    "seed": 20261115
+  },
+  "models": {
+    "x1_d128L8": {
+      "d": 128,
+      "layers": 8,
+      "params": 397573,
+      "t_step_s": 0.114455,
+      "t_step_ms": 114.455,
+      "compute_bound_windows_s": 559,
+      "gpu": "NVIDIA L4"
+    },
+    "x8_d256L16": {
+      "d": 256,
+      "layers": 16,
+      "params": 3160581,
+      "t_step_s": 0.49863,
+      "t_step_ms": 498.63,
+      "compute_bound_windows_s": 128,
+      "gpu": "NVIDIA L4"
+    },
+    "x64_d512L32": {
+      "d": 512,
+      "layers": 32,
+      "error": "CUDA out of memory. Tried to allocate 256.00 MiB. GPU 0 has a total capacity of 22.03 GiB of which 229.12 MiB is free. Including non-PyTorch memory, this process has 21.80 GiB memory in use. Of the al",
+      "oom": true
+    }
+  }
+}

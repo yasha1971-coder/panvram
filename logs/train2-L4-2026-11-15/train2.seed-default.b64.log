@@ -1,0 +1,3 @@
+[default] cohort: random=1.7248 b=1.7092 c=1.6696
+[default] reference_only: random=1.7236 b=1.7091 c=1.7178
+wrote train2_out/results/train2.seed-default.json

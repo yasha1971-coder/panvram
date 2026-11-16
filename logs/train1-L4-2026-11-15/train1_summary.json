@@ -1,0 +1,37 @@
+{
+  "panvram_sha": "01f0ce11ddfbe3bf42ea5c00cb2a644382e0b94d",
+  "seeds": [
+    {
+      "seed_label": "default",
+      "cohort_bits": 1.7248,
+      "cohort_tok_s": 1136077,
+      "batch_used": 64,
+      "reference_bits": 1.7236,
+      "reference_tok_s": 1131638,
+      "cohort_minus_ref_improvement_bits": -0.0012,
+      "verdict": "no effect"
+    },
+    {
+      "seed_label": "1",
+      "cohort_bits": 1.7314,
+      "cohort_tok_s": 1133398,
+      "batch_used": 64,
+      "reference_bits": 1.7263,
+      "reference_tok_s": 1131082,
+      "cohort_minus_ref_improvement_bits": -0.0051,
+      "verdict": "no effect"
+    },
+    {
+      "seed_label": "2",
+      "cohort_bits": 1.7082,
+      "cohort_tok_s": 1132710,
+      "batch_used": 64,
+      "reference_bits": 1.708,
+      "reference_tok_s": 1130975,
+      "cohort_minus_ref_improvement_bits": -0.0002,
+      "verdict": "no effect"
+    }
+  ],
+  "mean_improvement_bits": -0.0022,
+  "prereg_rule": "cohort >= 0.01 bit/base lower on holdout => effect; < 0.01 => no effect"
+}

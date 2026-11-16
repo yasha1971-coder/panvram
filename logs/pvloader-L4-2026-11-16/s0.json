@@ -1,0 +1,67 @@
+{
+  "seed": 20261115,
+  "W": 2048,
+  "n": 512,
+  "batch": 64,
+  "n_batches": 8,
+  "assemblies": [
+    "HG00097_hap1",
+    "HG00097_hap2",
+    "HG00438_mat",
+    "HG00438_pat",
+    "HG02630_mat",
+    "HG02630_pat"
+  ],
+  "mismatches": 0,
+  "all_match": true,
+  "per_batch": [
+    {
+      "batch": 0,
+      "panvram": "1ee5d8b7c7ba6936",
+      "fasta": "1ee5d8b7c7ba6936",
+      "match": true
+    },
+    {
+      "batch": 1,
+      "panvram": "7f466026a72c1e0a",
+      "fasta": "7f466026a72c1e0a",
+      "match": true
+    },
+    {
+      "batch": 2,
+      "panvram": "d1eb5200a6d39562",
+      "fasta": "d1eb5200a6d39562",
+      "match": true
+    },
+    {
+      "batch": 3,
+      "panvram": "2601f7ea33c74a01",
+      "fasta": "2601f7ea33c74a01",
+      "match": true
+    },
+    {
+      "batch": 4,
+      "panvram": "009ded1069e3e8ad",
+      "fasta": "009ded1069e3e8ad",
+      "match": true
+    },
+    {
+      "batch": 5,
+      "panvram": "f6b8dae11d346dba",
+      "fasta": "f6b8dae11d346dba",
+      "match": true
+    },
+    {
+      "batch": 6,
+      "panvram": "45a7f8d33db3a076",
+      "fasta": "45a7f8d33db3a076",
+      "match": true
+    },
+    {
+      "batch": 7,
+      "panvram": "b275f8c40a05b520",
+      "fasta": "b275f8c40a05b520",
+      "match": true
+    }
+  ]
+}

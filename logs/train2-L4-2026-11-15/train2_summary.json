@@ -1,0 +1,53 @@
+{
+  "panvram_sha": "01f0ce11ddfbe3bf42ea5c00cb2a644382e0b94d",
+  "per_seed": [
+    {
+      "seed_label": "1",
+      "random_ref_minus_cohort": -0.0051,
+      "random_cohort": 1.7314,
+      "random_ref": 1.7263,
+      "hla_kir_segdup_ref_minus_cohort": -0.0104,
+      "hla_kir_segdup_cohort": 1.707,
+      "hla_kir_segdup_ref": 1.6966,
+      "sv_insertion_ref_minus_cohort": 0.0232,
+      "sv_insertion_cohort": 1.7006,
+      "sv_insertion_ref": 1.7238
+    },
+    {
+      "seed_label": "2",
+      "random_ref_minus_cohort": -0.0002,
+      "random_cohort": 1.7082,
+      "random_ref": 1.708,
+      "hla_kir_segdup_ref_minus_cohort": -0.003,
+      "hla_kir_segdup_cohort": 1.6987,
+      "hla_kir_segdup_ref": 1.6957,
+      "sv_insertion_ref_minus_cohort": 0.0191,
+      "sv_insertion_cohort": 1.685,
+      "sv_insertion_ref": 1.7041
+    },
+    {
+      "seed_label": "default",
+      "random_ref_minus_cohort": -0.0012,
+      "random_cohort": 1.7248,
+      "random_ref": 1.7236,
+      "hla_kir_segdup_ref_minus_cohort": -0.0001,
+      "hla_kir_segdup_cohort": 1.7092,
+      "hla_kir_segdup_ref": 1.7091,
+      "sv_insertion_ref_minus_cohort": 0.0482,
+      "sv_insertion_cohort": 1.6696,
+      "sv_insertion_ref": 1.7178
+    }
+  ],
+  "mean_ref_minus_cohort": {
+    "random": -0.0022,
+    "hla_kir_segdup": -0.0045,
+    "sv_insertion": 0.0302
+  },
+  "verdict_per_set": {
+    "random": "no effect",
+    "hla_kir_segdup": "no effect",
+    "sv_insertion": "weak/inconclusive"
+  },
+  "hypothesis_confirmed": false,
+  "prereg_rule": ">=0.05 effect; 0.01-0.05 weak; <0.01 none; hypothesis needs b AND c >=0.05 AND random <0.01"
+}

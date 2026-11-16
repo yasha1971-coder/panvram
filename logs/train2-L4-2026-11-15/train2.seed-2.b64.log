@@ -1,0 +1,3 @@
+[2] cohort: random=1.7082 b=1.6987 c=1.685
+[2] reference_only: random=1.708 b=1.6957 c=1.7041
+wrote train2_out/results/train2.seed-2.json
