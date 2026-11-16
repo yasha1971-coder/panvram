@@ -1,0 +1,21 @@
+[2026-11-16T01:50:04Z] wait for NVIDIA driver
+[2026-11-16T01:50:04Z] GPU: NVIDIA L4, 23034 MiB, 580.178.04
+[2026-11-16T01:50:04Z] python: Python 3.10.12
+[2026-11-16T01:50:11Z] install build-essential + python3-dev + libzstd-dev
+[2026-11-16T01:50:38Z] have cohort_q4k.tgz (12071089211 B)
+[2026-11-16T01:50:38Z] have t2t.fa.gz (963558609 B)
+[2026-11-16T01:50:38Z] have panvram_src.tgz (8346851 B)
+[2026-11-16T01:50:38Z] have pvloader_s1_panvram.py (3265 B)
+[2026-11-16T01:50:38Z] have pvloader_s2.py (3128 B)
+[2026-11-16T01:50:38Z] have pvloader_lib.py (1491 B)
+[2026-11-16T01:52:13Z] cohort at pvloader_out/cohort (558 q4k)
+[2026-11-16T01:52:38Z] have t2t.fa (3156259565 B)
+[2026-11-16T01:52:38Z] panvram sha: 01f0ce11ddfbe3bf42ea5c00cb2a644382e0b94d
+[2026-11-16T01:52:38Z] build panvram (PANVRAM_CUDA=1, --no-build-isolation)
+[2026-11-16T01:55:16Z] S1-panvram (6 baseline assemblies)
+[2026-11-16T01:55:47Z] OK S1-panvram n6: sample_win_s": [
+[2026-11-16T01:55:47Z] S1-panvram (all 558 resident)
+[2026-11-16T01:57:22Z] OK S1-panvram all558
+[2026-11-16T01:57:22Z] S2 synthetic ceiling (x1/x8/x64)
+[2026-11-16T01:58:05Z] OK S2: {  "config": {    "W": 2048,    "batch": 64,    "steps": 50,    "seed": 20261115  },  "models": {    "x1_d128L8": {      "d": 128,      "layers": 8,      "params": 397573,      "t_step_s": 0.114455,      "t_step_ms": 114.455,      "compute_bound_windows_s": 559,      "gpu": "NVIDIA L4"    },    "x8_d256L16": {      "d": 256,      "layers": 16,      "params": 3160581,      "t_step_s": 0.49863,     
+[2026-11-16T01:58:05Z] ALL DONE (S4 NOT run here — only if S3 prediction shows >=10% idle)

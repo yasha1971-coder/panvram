@@ -1,0 +1,416 @@
+{
+  "duel": "DUEL-1 panvram vs GenVarLoader",
+  "phase": "A",
+  "date": "2026-11-14",
+  "seed": 20261114,
+  "env": {
+    "panvram_version": "1.0.0",
+    "panvram_tag": "v1.0.0",
+    "panvram_head": "8f8e9e1",
+    "panvram_cuda": false,
+    "panvram_reference": "T2T-CHM13v2.0",
+    "gvl_target_version": ">=0.43.1",
+    "gvl_installed": false,
+    "cpu": "AMD EPYC 4344P 8-Core (16 threads)",
+    "ram_kb": 131494864,
+    "python": "3.10.12",
+    "disk_free_gb_approx": 58
+  },
+  "A2_intersection": {
+    "method": "VCF #CHROM header fetched via s3 range (first 4 MiB) + zcat; per-sample membership",
+    "r2": {
+      "vcf": "hprc-v2.0-mc-grch38.vcf.gz",
+      "vcf_samples_total": 232,
+      "vcf_format": "GT",
+      "vcf_phased": true,
+      "vcf_includes": [
+        "CHM13",
+        "HG002"
+      ],
+      "entries_total": 464,
+      "present": 462,
+      "absent": 2,
+      "absent_samples": [
+        "HG00272"
+      ],
+      "absent_entries": [
+        "r2_HG00272_hap1_hprc_r2_v1.0.1",
+        "r2_HG00272_hap2_hprc_r2_v1.0.1"
+      ],
+      "note": "HG00272 is in the panvram cohort558 but NOT a column in the R2 GRCh38 MC VCF"
+    },
+    "y1": {
+      "vcf": "hprc-v1.0-mc-grch38.vcf.gz",
+      "vcf_samples_total": 45,
+      "vcf_format": "GT",
+      "vcf_phased": true,
+      "vcf_includes": [
+        "CHM13"
+      ],
+      "entries_total": 94,
+      "present": 88,
+      "absent": 6,
+      "absent_samples": [
+        "HG002",
+        "HG005",
+        "NA19240"
+      ],
+      "manifest_note": "names_y1_94.tsv rows 52+ carry a stray 'y1_' prefix in cols 2/3/5; normalized (strip ^y1_) before matching"
+    },
+    "mapping_verification": {
+      "both_vcfs": "per-sample diploid, FORMAT=GT, fully phased (|)",
+      "pansn_to_gt": "PanSN sample#1 = GT position 1 (left of |), sample#2 = GT position 2 (right)",
+      "mat_pat_vs_hap1_hap2": "VCF header does NOT label mat/pat; the hap1/mat->#1 pat/hap2->#2 assignment is the HPRC PanSN convention, not independently decidable from the VCF header alone",
+      "hg002_manual_check": "r2: HG002 present (both special rows r2_hg002v1.1.pat/.mat_MT -> sample HG002, present); y1: HG002 absent (not a column in R1 VCF)"
+    }
+  },
+  "A4_memory_disk": {
+    "panvram": {
+      "cohort": "cohort558 (558 refrel3 v1 archives)",
+      "q4k_archives_bytes": 12330370123,
+      "q4k_archives_gb": 11.48,
+      "q16k_archives_bytes": 8097986851,
+      "q16k_archives_gb": 7.54,
+      "r2_q4k_gb": 9.5,
+      "y1_q4k_gb": 1.99,
+      "reference_bytes": 3156259565,
+      "reference_gb": 2.94,
+      "total_disk_q4k_gb": 14.42,
+      "note": "panvram = edits-vs-CHM13; ONE shared 2.94 GB reference for the whole cohort"
+    },
+    "gvl": {
+      "status": "PENDING (gvl.write not run; GVL not installed)",
+      "dataset_gb": null,
+      "ram_peak_gb": null,
+      "grch38_reference_gb_source": 0.79,
+      "note": "GVL dataset size + peak RSS require A3 (gvl.write) after install"
+    }
+  },
+  "A3_gvl_write": {
+    "status": "PENDING",
+    "blocker": "needs GVL (auto-mode classifier denies GCP VM launch); see README"
+  },
+  "A5_coverage": {
+    "status": "DONE (R2, components a+c)",
+    "method": "stream combined PAF hprc465vsgrch38.aln.paf.gz (8,916,633 lines); per haplotype unreachable = (a) sample absent from VCF -> 1.0, else (c) 1 - union(query-aligned bases)/sum(query lengths). (b) R2 clips not published -> folded into (c). Run on <host> (CPU), no cloud.",
+    "cohort": "R2, 462 haplotypes (460 with PAF coverage + 2 absent HG00272; HG002 2 haps omitted: manifest rows lack #1/#2 pansn)",
+    "unreachable_frac": {
+      "median": 0.0288,
+      "p95": 0.0348,
+      "max": 1.0,
+      "n": 462,
+      "n_ge_1pct": 462
+    },
+    "component_c_present_only": {
+      "n": 460,
+      "min": 0.0216,
+      "median": 0.0288,
+      "mean": 0.0291,
+      "p95": 0.0347,
+      "max": 0.0386,
+      "frac_ge_1pct": 1.0
+    },
+    "component_a_absent": [
+      "r2_HG00272_hap1_hprc_r2_v1.0.1",
+      "r2_HG00272_hap2_hprc_r2_v1.0.1"
+    ],
+    "verdict": "ALL 462 R2 haplotypes have >=1% of their assembly unreachable by GVL (GRCh38+VCF): threshold >=1% met -> panvram wins on coverage. Even excluding the fully-absent HG00272, every present haplotype has >=2.16% (median 2.88%) of bases that do not align 1:1 to GRCh38 (centromeres/satellite/segdup/novel), which panvram stores losslessly.",
+    "detail_file": "a5_per_haplotype.json"
+  },
+  "A6_accuracy": {
+    "status": "PENDING (GVL side)",
+    "note": "panvram+PAF half (true-assembly windows + bit-perfect control via check_full) is implemented and the sampling pool builds from the local PAF index; GVL reconstruction + edit-distance need the VM (auto-mode classifier denies GCP launch)."
+  },
+  "thresholds_ref": "see DUEL1_TASK.md table",
+  "checks_preregistered": {
+    "plan": "DUEL1_CHECKS_PLAN.md (committed 593bb30 before run)",
+    "scale": "A6/metric4 = chr22 (500 windows/length, 230 samples); metric5 = 3-haplotype subset; A5 = whole genome (462 hap)",
+    "P0_clustering": {
+      "prediction": ">=70% of non-exact 1kb windows in SegDup/pericentromere/PAF-ambiguous",
+      "fact": {
+        "nonexact_1kb": 92,
+        "in_segdup": 74,
+        "in_pericentromere": 50,
+        "in_either": 77,
+        "either_frac": 0.837,
+        "note": "PAF-ambiguous windows pre-excluded by the unique-mapping sampler"
+      },
+      "verdict": "CONFIRMED (83.7% >= 70%)"
+    },
+    "P1_consensus_calibration": {
+      "prediction": "|bcftools consensus - GVL| <= 2pp on exact and loss>1kb",
+      "fact": {
+        "delta_exact_pp": {
+          "1000": 0.0,
+          "8000": 1.41,
+          "32000": 4.23
+        },
+        "loss1k_frac_gvl_vs_cons": {
+          "1000": [
+            0.0,
+            0.0
+          ],
+          "8000": [
+            0.0723,
+            0.0703
+          ],
+          "32000": [
+            0.0585,
+            0.0585
+          ]
+        },
+        "ed_p99_identical": true
+      },
+      "verdict": "HOLDS at 1kb,8kb; FAILS at 32kb (consensus +4.23pp exact >2pp). Big losses (loss>1kb,p99) identical GVL=consensus = genuine VCF-representation loss; the 32kb small-edit exact gap is GVL-specific -> flagged for investigation, does not affect the loss thesis."
+    },
+    "P2_metric5_classes": {
+      "prediction": ">=80% of unaligned is alpha-sat/HSat; unique 0.05-0.5% of haplotype",
+      "fact": {
+        "subset": [
+          "HG00097#1",
+          "HG00438#2",
+          "HG02630#1"
+        ],
+        "unique_mb": [
+          1.51,
+          2.84,
+          2.96
+        ],
+        "unique_mb_median": 2.84,
+        "unique_pct_assembly": [
+          0.05,
+          0.094,
+          0.097
+        ],
+        "sat_frac_of_unaligned": [
+          0.939,
+          0.867,
+          0.815
+        ],
+        "sat_frac_median": 0.867,
+        "unaligned_mb": [
+          81.0,
+          79.5,
+          90.3
+        ]
+      },
+      "verdict": "CONFIRMED. Decisive rule: unique >= 1Mb/haplotype (1.5-3.0 Mb) -> STRONG thesis (non-repeat sequence, genes/regulatory, not representable on GRCh38+VCF)."
+    },
+    "P3_panvram_control": {
+      "prediction": "100% bit-perfect on all lengths (else stop the whole duel)",
+      "fact": {
+        "check_full_local_subset": "12/12",
+        "check_full_VM_full": "460/460",
+        "per_window": "every A6 window drawn from a check_full-passing archive -> 100% per length by construction",
+        "literal_10000x_matched_total": "deferred to VM run"
+      },
+      "verdict": "CONFIRMED (no stop)"
+    }
+  },
+  "metric4_chr22": {
+    "config": "chr22, wave VCF v2.0, SparseVar2, seed 20261114, edlib global, loss threshold 1kb",
+    "all_windows": {
+      "exact_frac": {
+        "1000": 0.815,
+        "8000": 0.809,
+        "32000": 0.645
+      },
+      "loss_gt_1kb_frac": {
+        "1000": 0.0,
+        "8000": 0.0723,
+        "32000": 0.0585
+      },
+      "ed_p99": {
+        "1000": 585,
+        "8000": 4393,
+        "32000": 17234
+      }
+    },
+    "excluding_step0_regions": {
+      "note": "windows not in SegDup/pericentromere",
+      "n": {
+        "1000": 310,
+        "8000": 335,
+        "32000": 334
+      },
+      "exact_frac": {
+        "1000": 0.952,
+        "8000": 0.89,
+        "32000": 0.689
+      },
+      "loss_gt_1kb_frac": {
+        "1000": 0.0,
+        "8000": 0.0179,
+        "32000": 0.006
+      }
+    }
+  },
+  "global_cost": {
+    "phrase": "VCF-representation (GRCh38+VCF) cannot carry a median 1.99 Mb of unique non-satellite non-repeat sequence per haplotype (~29 kb of it CAT protein-coding CDS); metric-4 window loss>1kb is between 0-5% (within-block) and 30-38% (SV breakpoints counted), non-monotone artifact fixed by nesting; panvram = 0% loss (per-window 378/378 byte-exact, check_full 460/460 bit-perfect). Throughput Z = phase B (GPU).",
+    "X_unique_lost": "cohort median 1.99 Mb unique non-repeat non-satellite per haplotype (0.067% of assembly), of which ~29 kb is CAT protein-coding CDS (460 haplotypes)",
+    "Y_windows_lost": "loss>1kb: 0%/7.2%/5.8% (all, 1/8/32kb); 0%/1.8%/0.6% (clean euchromatin)",
+    "Z_throughput": "not yet (phase B)",
+    "panvram_control": "chr20-22: 26358/26358 windows byte-exact vs published assembly FASTA (100% all lengths); whole-archive check_full 460/460"
+  },
+  "status": "PRELIMINARY -> checks done (steps 1-4); VM chr20-22 run still pending for full A3/A6 scale",
+  "caveats": [
+    "1) P1 at 32kb FAILED the pre-registered rule (consensus better by 4.2pp > 2pp) \u2014 a FAILURE, not 'flagged'; the cause statement is pending the step-1 investigation.",
+    "2) Metric 5 is on 3 haplotypes only \u2014 'median 2.84 Mb' is NOT the cohort median.",
+    "3) 'genes/regulatory outside VCF' is NOT measured (unique != genes; needs CAT annotation + HMM-Flagger mask).",
+    "4) loss>1kb is non-monotonic (8kb 7.2% -> 32kb 5.8%; clean 1.8 -> 0.6): a 32kb window contains an 8kb window so the fraction cannot decrease -> the per-length samples are biased by the 'unique PAF mapping' filter; metric 4 SYSTEMATICALLY UNDER-COUNTS loss in GVL's favour.",
+    "5) P3 was checked NOT per-window (460/460 check_full = whole archives; cohort has 558); '100% by construction' is an inference, not a measurement."
+  ],
+  "caveats_resolved": {
+    "1_P1_32kb": "Mechanism found (step 1): GVL over-expands tandem repeats (+bp vs bit-exact consensus); not missing-GT (4.3%), not VCF loss. frag_step1.json",
+    "2_metric5_subset": "RESOLVED: metric 5 now on all 460 present haplotypes. frag_metric5_full.json",
+    "3_unique_not_genes": "RESOLVED (measured): CAT CDS in unique-reliable GVL-unreachable set = median 28.7 kb/haplotype (not >=0.1 Mb; P4c FALSE but non-zero).",
+    "4_loss_nonmonotonic": "RESOLVED (step 2): nested windows monotonic (0/5.03/5.07%); honest bounds loss>1kb 0-5% (lower) to 30-38% (upper); original metric under-counted by excluding 30-37% SV windows.",
+    "5_P3_not_perwindow": "RESOLVED (step 3): literal per-window 378/378 byte-exact + cohort check_full 460/460 bit-perfect."
+  },
+  "metric5_full_cohort": {
+    "n_haplotypes": 460,
+    "scale": "all present R2 haplotypes (whole genome); 2 absent HG00272 excluded (no PAF)",
+    "unaligned_mb": {
+      "median": 87.9149,
+      "p95": 104.1473,
+      "max": 119.5211,
+      "min": 65.2814
+    },
+    "sat_frac_of_unaligned": {
+      "median": 0.9176,
+      "p95": 0.9456,
+      "max": 0.9543,
+      "min": 0.7537
+    },
+    "classes_pct_assembly_median": {
+      "asat": 1.0555,
+      "hsat": 1.2199,
+      "other_censat": 0.327,
+      "other_repeat": 0.1706,
+      "unique": 0.0673
+    },
+    "unique_reliable_mb": {
+      "median": 1.9901,
+      "p95": 2.9523,
+      "max": 4.3797,
+      "min": 1.3924
+    },
+    "flagger_removed_from_unique_mb": {
+      "median": 0.0239,
+      "p95": 0.0757,
+      "max": 0.5135,
+      "min": 0.0006
+    },
+    "cds_in_unaligned_mb": {
+      "median": 0.0397,
+      "p95": 0.0722,
+      "max": 0.1587,
+      "min": 0.0111
+    },
+    "cds_in_unique_reliable_mb": {
+      "median": 0.0287,
+      "p95": 0.0594,
+      "max": 0.1443,
+      "min": 0.0082
+    },
+    "source": "HPRC R2 CenSat + RepeatMasker + CAT v1.3 + HMM-Flagger v1.2.0"
+  },
+  "metric4_chr202122": {
+    "config": "chr20-22, nested 10000/len (mapped ~8790/len), 230 samples, seed 20261114, ground truth = published assembly FASTA (streamed, exact bytes/edlib), bcftools 1.25/genoray 6.1.0/gvl 0.43.1",
+    "three_columns_exact_frac": {
+      "1000": {
+        "gvl": 0.9281,
+        "consensus": 0.9306,
+        "panvram": 1.0
+      },
+      "8000": {
+        "gvl": 0.8555,
+        "consensus": 0.8713,
+        "panvram": 1.0
+      },
+      "32000": {
+        "gvl": 0.6656,
+        "consensus": 0.7081,
+        "panvram": 1.0
+      }
+    },
+    "panvram_control_matched_total": {
+      "1000": "8790/8790",
+      "8000": "8789/8789",
+      "32000": "8779/8779"
+    },
+    "loss_gt_1kb_within_block": {
+      "1000": {
+        "gvl": 0.0003,
+        "consensus": 0.0003
+      },
+      "8000": {
+        "gvl": 0.0372,
+        "consensus": 0.0363
+      },
+      "32000": {
+        "gvl": 0.0383,
+        "consensus": 0.0369
+      }
+    },
+    "loss_gt_1kb_upper_bound_sv": {
+      "1000": 0.3517,
+      "8000": 0.3846,
+      "32000": 0.4142
+    },
+    "discard_frac": {
+      "1000": 0.3515,
+      "8000": 0.3608,
+      "32000": 0.3909
+    },
+    "ed_p99": {
+      "1000": {
+        "gvl": 557,
+        "consensus": 557
+      },
+      "8000": {
+        "gvl": 4399,
+        "consensus": 4387
+      },
+      "32000": {
+        "gvl": 17410,
+        "consensus": 17377
+      }
+    }
+  },
+  "metric3_chr202122": {
+    "config": {
+      "chroms": "chr20,chr21,chr22",
+      "samples": 231,
+      "seed": 20261114,
+      "gvl_ingestion": "genoray SparseVar2 -> gvl.write",
+      "bcftools": "1.25",
+      "genoray": "6.1.0",
+      "gvl": "0.43.1"
+    },
+    "gvl_side": {
+      "write_wall_s": 2.79,
+      "write_peak_rss_kb": 766544,
+      "write_peak_rss_mb": 748.6,
+      "dataset_bytes": 57712,
+      "dataset_mb": 0.055,
+      "note_dataset": "gvl.write dataset = region+genotype-pointer index (3 whole-chrom regions); the VARIANT DATA lives in the SparseVar2 store",
+      "svar2_store_bytes": 358056319,
+      "svar2_store_mb": 341.5,
+      "norm_bcf_mb": 117.4,
+      "grch38_ref_chr202122_mb": 157.0,
+      "total_footprint_mb": 498.6,
+      "total_footprint_note": "svar2 (341.5) + dataset (0.06) + GRCh38 chr20-22 reference (157.0)"
+    },
+    "panvram_side": {
+      "method": "panvram archives are genome-wide; chr20-22 share estimated by GRCh38 base fraction = chr20-22 bp / genome bp = 0.0524 (stated, not physically isolated)",
+      "chr202122_base_fraction": 0.0524,
+      "r2_q4k_whole_gb": 9.5,
+      "archives_chr202122_scaled_mb": 509.5,
+      "chm13_ref_chr202122_scaled_mb": 157.7,
+      "total_scaled_mb": 667.2,
+      "lossless": true
+    },
+    "verdict": "GVL footprint (chr20-22, 231 samples) ~498.5 MB (svar2+ref) is LOSSY (cannot carry the 1.99 Mb/hap unique); panvram chr20-22 scaled ~690 MB is LOSSLESS (bit-perfect assemblies). Comparable disk, opposite fidelity. GVL write peak RSS 749 MB, wall 2.8 s."
+  }
+}

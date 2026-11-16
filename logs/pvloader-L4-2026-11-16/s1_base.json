@@ -1,0 +1,70 @@
+{
+  "config": {
+    "W": 2048,
+    "n": 10000,
+    "seed": 20261115,
+    "repeats": 5,
+    "cores": 16,
+    "assemblies": [
+      "HG00097_hap1",
+      "HG00097_hap2",
+      "HG00438_mat",
+      "HG00438_pat",
+      "HG02630_mat",
+      "HG02630_pat"
+    ],
+    "note": "6 local R2 held-out-class assemblies; windows/s is per-access rate (N-independent); capacity in S5"
+  },
+  "base_A_pysam": {
+    "1": {
+      "k": 1,
+      "windows": 10000,
+      "reps_win_s": [
+        3349,
+        8250,
+        8298,
+        8315,
+        8304
+      ],
+      "median_win_s": 8298
+    },
+    "4": {
+      "k": 4,
+      "windows": 10000,
+      "reps_win_s": [
+        19057,
+        18616,
+        18178,
+        19229,
+        19765
+      ],
+      "median_win_s": 19057
+    },
+    "16": {
+      "k": 16,
+      "windows": 10000,
+      "reps_win_s": [
+        14563,
+        14537,
+        14427,
+        14419,
+        14525
+      ],
+      "median_win_s": 14525
+    }
+  },
+  "base_B_memmap": {
+    "assembly": "HG00097_hap1",
+    "memmap_bytes": 3034131346,
+    "n_windows": 1676,
+    "warm_reps_win_s": [
+      128157,
+      281287,
+      286084,
+      287523,
+      287089
+    ],
+    "cold_note": "warm (page-cached) throughput; cold = NVMe random-read bound (page-cache drop needs root, not run)"
+  },
+  "panvram_S1": "GPU \u2014 run after TRAIN-2 (pvloader_s1_panvram.py)"
+}

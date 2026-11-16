@@ -1,0 +1,24 @@
+[2026-11-15T17:06:51Z] wait for NVIDIA driver (install-nvidia-driver=True runs at first boot)
+[2026-11-15T17:06:51Z] GPU: NVIDIA L4, 23034 MiB, 580.178.04
+[2026-11-15T17:06:51Z] python: Python 3.10.12 at /usr/bin/python3
+[2026-11-15T17:06:59Z] HEALTH: torch.cuda OK on NVIDIA L4, 23034 MiB, 580.178.04
+[2026-11-15T17:06:59Z] nvcc: Build cuda_12.9.r12.9/compiler.35813241_0
+[2026-11-15T17:06:59Z] install build-essential + python3-dev + libzstd-dev (absent on DL image)
+[2026-11-15T17:07:31Z] have cohort_q4k.tgz (12071089211 B)
+[2026-11-15T17:07:31Z] have t2t.fa.gz (963558609 B)
+[2026-11-15T17:07:31Z] have panvram_src.tgz (8346850 B)
+[2026-11-15T17:07:31Z] extract cohort
+[2026-11-15T17:09:05Z] cohort at train1_out/cohort (558 q4k archives)
+[2026-11-15T17:09:05Z] decompress reference
+[2026-11-15T17:09:30Z] have t2t.fa (3156259565 B)
+[2026-11-15T17:09:30Z] extract panvram source
+[2026-11-15T17:09:31Z] panvram source sha (recorded by orchestrator): 01f0ce11ddfbe3bf42ea5c00cb2a644382e0b94d
+[2026-11-15T17:09:31Z] pip install panvram (PANVRAM_CUDA=1, from source, --no-build-isolation against image torch cu129)
+[2026-11-15T17:12:21Z] HEALTH: panvram imported (CUDA build)
+[2026-11-15T17:12:21Z] RUN seed=default batch=64 W=2048 steps=2000 holdout=50
+[2026-11-15T17:21:52Z] OK seed=default batch=64: cohort 1.7248 reference_only 1.7236 
+[2026-11-15T17:21:52Z] RUN seed=1 batch=64 W=2048 steps=2000 holdout=50
+[2026-11-15T17:31:36Z] OK seed=1 batch=64: cohort 1.7314 reference_only 1.7263 
+[2026-11-15T17:31:36Z] RUN seed=2 batch=64 W=2048 steps=2000 holdout=50
+[2026-11-15T17:41:06Z] OK seed=2 batch=64: cohort 1.7082 reference_only 1.708 
+[2026-11-15T17:41:06Z] ALL DONE
